@@ -1,0 +1,65 @@
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Ignore compiled Python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore data files (replace with your actual data files and formats)
+ANON_DATA*
+
+# Ignore model checkpoints (replace with your actual model checkpoints)
+#models/
+*pth
+
+# Ignore virtual environment files
+venv/
+
+# Ignore sensitive information (replace with your actual sensitive files)
+secrets.txt
+config.ini
+
+# Ignore IDE-specific files and directories
+.vscode/
+.idea/
+
+# Ignore log files
+*.log
+
+# Ignore compiled binaries (replace with your actual compiled binaries)
+*.exe
+*.dll
+*.so
+*.out
+
+# Ignore any other files or directories you don't want to include in version control
+progress.md
+demo.ipynb
+unet2d.ipynb
+sam.ipynb 
+preprocess.ipynb
+```

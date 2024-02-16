@@ -59,3 +59,48 @@ class MRI2D_z_data(Dataset):
             mask_slice = self.target_transform(mask_slice)
 
         return data_slice, mask_slice, subject_idx_tensor
+    
+
+
+# Datasetclass for MRI niftii data
+
+class MRI3D_data(Dataset):
+    def __init__(self, train_test_path, transform=None, target_transform=None):
+        """
+        train_test_path -- path to data folder
+        transform -- transform (from torchvision.transforms) to be applied to the data
+        """
+        self.path = train_test_path
+        self.patients = [file for file in os.listdir(self.path) if file not in ['.DS_Store','README.md']]
+        self.masks, self.images = [],[]
+
+        for patient in self.patients:
+            for file in os.listdir(os.path.join(self.path,patient)):
+                if 'mask' in file.split('.')[0]:
+                    self.masks.append(os.path.join(self.path,patient,file))
+                else: 
+                    self.images.append(os.path.join(self.path,patient,file)) 
+          
+        self.images = sorted(self.images)
+        self.masks = sorted(self.masks)
+        
+        #self.transform = transform
+        #self.target_transform = target_transform
+
+    def __len__(self):
+        return len(self.images)
+    
+    def __getitem__(self,idx):
+        image_path = self.images[idx]
+        mask_path = self.masks[idx]
+
+        image_tmp = nib.load(image_path)
+        mask_tmp = nib.load(mask_path)
+
+        image = image_tmp.get_fdata()
+        mask = mask_tmp.get_fdata()
+
+        image = torch.from_numpy(image)
+        mask = torch.from_numpy(mask)
+        
+        return (image,mask)

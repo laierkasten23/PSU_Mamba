@@ -1,12 +1,22 @@
 import os
+import sys
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from sklearn.model_selection import LeaveOneOut
 from tqdm import tqdm
-from src.models.unet2d import UNET
-from src.data.dataset import MRI2D_z_data
+
+# Get the current working directory
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# Add the project root to sys.path
+project_root = os.path.join(current_dir, "..")
+sys.path.append(project_root)
+os.chdir(project_root)
+#print("project_root: ", project_root)
+
+from models.unet2d import UNET
+from data.dataset import MRI2D_z_data
 from utils import save_checkpoint
 
 # Hyperparameters etc.
@@ -141,5 +151,6 @@ def main():
 
 
 
-    if __name__ == "__main__":
-        main()
+if __name__ == "__main__":
+    
+    main()

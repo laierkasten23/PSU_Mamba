@@ -32,6 +32,7 @@ __pycache__/
 # Ignore data files (replace with your actual data files and formats)
 ANON_DATA*
 Screenshots/
+dataset_monai/
 
 # Ignore model checkpoints (replace with your actual model checkpoints)
 #models/

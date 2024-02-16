@@ -63,4 +63,13 @@ demo.ipynb
 unet2d.ipynb
 sam.ipynb 
 preprocess.ipynb
+
+
+# Ignore large files
+*/pretrained_deepedit_dynunet.pt
+*/deepedit_dynunet/train_01/train_model.pt
+*/deepedit_dynunet.pt
+*/radiology/model/*
+
 ```
+

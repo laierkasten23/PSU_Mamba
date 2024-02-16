@@ -1,0 +1,2174 @@
+stats_summary:
+  image_stats:
+    shape:
+      max: [257, 384, 384]
+      mean: [205.58620689655172, 290.2068965517241, 290.2068965517241]
+      median: [185.0, 256.0, 256.0]
+      min: [180, 240, 240]
+      stdev: [34.54983131989295, 63.26811002030186, 63.26811002030186]
+      percentile:
+      - [180, 240, 240]
+      - [180, 240, 240]
+      - [257, 384, 384]
+      - [257, 384, 384]
+      percentile_00_5: [180, 240, 240]
+      percentile_10_0: [180, 240, 240]
+      percentile_90_0: [257, 384, 384]
+      percentile_99_5: [257, 384, 384]
+    channels:
+      max: 1
+      mean: 1.0
+      median: 1.0
+      min: 1
+      stdev: 0.0
+      percentile: [1, 1, 1, 1]
+      percentile_00_5: 1
+      percentile_10_0: 1
+      percentile_90_0: 1
+      percentile_99_5: 1
+    cropped_shape:
+      max: [257, 364, 383]
+      mean: [205.58620689655172, 283.7241379310345, 283.48275862068965]
+      median: [185.0, 256.0, 256.0]
+      min: [180, 240, 240]
+      stdev: [34.54983131989295, 53.73876565945356, 53.992733029327376]
+      percentile:
+      - [180, 240, 240]
+      - [180, 240, 240]
+      - [257, 364, 368]
+      - [257, 364, 382]
+      percentile_00_5: [180, 240, 240]
+      percentile_10_0: [180, 240, 240]
+      percentile_90_0: [257, 364, 368]
+      percentile_99_5: [257, 364, 382]
+    spacing:
+      max: [1.0000095669298559, 1.0000001003739452, 1.0000000265061435]
+      mean: [0.9068953765345571, 0.8750000100274705, 0.874999999425578]
+      median: [0.9999966694239902, 0.9375000011907361, 0.937499998219473]
+      min: [0.6999951878476425, 0.6666666679519283, 0.6666666615949646]
+      stdev: [0.13879060087433645, 0.14214337746235944, 0.1421433693937686]
+      percentile:
+      - [0.6999952690388817, 0.6666666692236067, 0.6666666624560723]
+      - [0.6999984462049018, 0.6666666823345724, 0.6666666800456159]
+      - [1.0000026866280876, 1.0000000210091313, 1.0000000015588966]
+      - [1.0000092314452127, 1.0000000902355286, 1.0000000248909977]
+      percentile_00_5: [0.6999952690388817, 0.6666666692236067, 0.6666666624560723]
+      percentile_10_0: [0.6999984462049018, 0.6666666823345724, 0.6666666800456159]
+      percentile_90_0: [1.0000026866280876, 1.0000000210091313, 1.0000000015588966]
+      percentile_99_5: [1.0000092314452127, 1.0000000902355286, 1.0000000248909977]
+    sizemm:
+      max: [185, 256, 256]
+      mean: [180.93103448275863, 244.68965517241378, 244.48275862068965]
+      median: [179.0, 240.0, 240.0]
+      min: [179, 239, 239]
+      stdev: [2.490409666933487, 7.598109784340251, 7.66371067796333]
+      percentile:
+      - [179, 239, 239]
+      - [179, 239, 239]
+      - [185, 256, 256]
+      - [185, 256, 256]
+      percentile_00_5: [179, 239, 239]
+      percentile_10_0: [179, 239, 239]
+      percentile_90_0: [185, 256, 256]
+      percentile_99_5: [185, 256, 256]
+    intensity: {max: 7284137.0, mean: 98299.37728039971, median: 7101.3448582517685,
+      min: 0.0, stdev: 135793.22200380522, percentile_00_5: 0.0, percentile_10_0: 0.0,
+      percentile_90_0: 318366.5817323882, percentile_99_5: 495951.6204960264}
+  image_foreground_stats:
+    intensity: {max: 2675041.75, mean: 217209.01282790612, median: 210784.80754562904,
+      min: 0.0, stdev: 59897.77399155189, percentile_00_5: 103473.55402453193, percentile_10_0: 143465.3713368383,
+      percentile_90_0: 301281.11207738414, percentile_99_5: 384210.49185496365}
+  label_stats:
+    labels: [0, 2]
+    image_intensity: {max: 2675041.75, mean: 217209.01282790612, median: 210784.80754562904,
+      min: 0.0, stdev: 59897.77399155189, percentile_00_5: 103473.55402453193, percentile_10_0: 143465.3713368383,
+      percentile_90_0: 301281.11207738414, percentile_99_5: 384210.49185496365}
+    label:
+    - foreground_percentage:
+        max: 0.9998875856399536
+        mean: 0.9997278205279646
+        median: 0.9997493624687195
+        min: 0.9995400905609131
+        stdev: 9.42211192792135e-05
+        percentile: [0.9995443379878998, 0.9995938658714294, 0.9998377323150635, 0.9998838305473328]
+        percentile_00_5: 0.9995443379878998
+        percentile_10_0: 0.9995938658714294
+        percentile_90_0: 0.9998377323150635
+        percentile_99_5: 0.9998838305473328
+      image_intensity: {max: 7284137.0, mean: 98078.89927410257, median: 7012.47909981629,
+        min: 0.0, stdev: 135719.05784554317, percentile_00_5: 0.0, percentile_10_0: 0.0,
+        percentile_90_0: 318100.85857101966, percentile_99_5: 495855.88335971173}
+    - foreground_percentage:
+        max: 0
+        mean: 0.0
+        median: 0.0
+        min: 0
+        stdev: 0.0
+        percentile: [0, 0, 0, 0]
+        percentile_00_5: 0
+        percentile_10_0: 0
+        percentile_90_0: 0
+        percentile_99_5: 0
+      image_intensity: {max: 0, mean: 0.0, median: 0.0, min: 0, stdev: 0.0, percentile_00_5: 0.0,
+        percentile_10_0: 0.0, percentile_90_0: 0.0, percentile_99_5: 0.0}
+  n_cases: 29
+stats_by_cases:
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/0_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/0_ChP.nii.gz
+  image_stats:
+    shape:
+    - [257, 384, 384]
+    channels: 1
+    cropped_shape:
+    - [257, 363, 358]
+    spacing: [0.6999957677850648, 0.6666666770353457, 0.6666666926010696]
+    sizemm: [179, 256, 256]
+    intensity:
+    - max: 51630.546875
+      mean: 4596.6640625
+      median: 1433.8536376953125
+      min: 0.0
+      stdev: 5563.58447265625
+      percentile: [0.0, 0.0, 12907.833984375, 21843.419921875]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 12907.833984375
+      percentile_99_5: 21843.419921875
+  image_foreground_stats:
+    intensity:
+    - max: 13790.205078125
+      mean: 4699.0263671875
+      median: 4412.64501953125
+      min: 330.8893127441406
+      stdev: 2180.364013671875
+      percentile: [772.0750122070312, 2096.420166015625, 7612.029296875, 11473.1923828125]
+      percentile_00_5: 772.0750122070312
+      percentile_10_0: 2096.420166015625
+      percentile_90_0: 7612.029296875
+      percentile_99_5: 11473.1923828125
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 13790.205078125
+      mean: 4699.0263671875
+      median: 4412.64501953125
+      min: 330.8893127441406
+      stdev: 2180.364013671875
+      percentile: [772.0750122070312, 2096.420166015625, 7612.029296875, 11473.1923828125]
+      percentile_00_5: 772.0750122070312
+      percentile_10_0: 2096.420166015625
+      percentile_90_0: 7612.029296875
+      percentile_99_5: 11473.1923828125
+    label:
+    - image_intensity:
+      - max: 51630.546875
+        mean: 4050.970947265625
+        median: 330.8893127441406
+        min: 0.0
+        stdev: 5430.796875
+        percentile: [0.0, 0.0, 12466.6484375, 21512.53125]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 12466.6484375
+        percentile_99_5: 21512.53125
+      foreground_percentage: 0.9998433589935303
+    - image_intensity:
+      - max: 13790.205078125
+        mean: 4699.0263671875
+        median: 4412.64501953125
+        min: 330.8893127441406
+        stdev: 2180.364013671875
+        percentile: [772.0750122070312, 2096.420166015625, 7612.029296875, 11473.1923828125]
+        percentile_00_5: 772.0750122070312
+        percentile_10_0: 2096.420166015625
+        percentile_90_0: 7612.029296875
+        percentile_99_5: 11473.1923828125
+      foreground_percentage: 0.00015666481340304017
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/10_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/10_ChP.nii.gz
+  image_stats:
+    shape:
+    - [180, 240, 240]
+    channels: 1
+    cropped_shape:
+    - [180, 240, 240]
+    spacing: [0.999994753382243, 1.0000000149760664, 0.999999999855218]
+    sizemm: [179, 240, 239]
+    intensity:
+    - max: 135731.59375
+      mean: 12043.9482421875
+      median: 358.3057556152344
+      min: 0.0
+      stdev: 18624.921875
+      percentile: [0.0, 0.0, 41818.21484375, 77066.8046875]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 41818.21484375
+      percentile_99_5: 77066.8046875
+  image_foreground_stats:
+    intensity:
+    - max: 64519.88671875
+      mean: 26521.58984375
+      median: 25450.0625
+      min: 4660.0458984375
+      stdev: 8860.4541015625
+      percentile: [9580.4951171875, 16250.09765625, 38593.46484375, 56254.5546875]
+      percentile_00_5: 9580.4951171875
+      percentile_10_0: 16250.09765625
+      percentile_90_0: 38593.46484375
+      percentile_99_5: 56254.5546875
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 64519.88671875
+      mean: 26521.58984375
+      median: 25450.0625
+      min: 4660.0458984375
+      stdev: 8860.4541015625
+      percentile: [9580.4951171875, 16250.09765625, 38593.46484375, 56254.5546875]
+      percentile_00_5: 9580.4951171875
+      percentile_10_0: 16250.09765625
+      percentile_90_0: 38593.46484375
+      percentile_99_5: 56254.5546875
+    label:
+    - image_intensity:
+      - max: 135731.59375
+        mean: 12037.748046875
+        median: 358.3057556152344
+        min: 0.0
+        stdev: 18625.595703125
+        percentile: [0.0, 0.0, 41818.21484375, 77066.8046875]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 41818.21484375
+        percentile_99_5: 77066.8046875
+      foreground_percentage: 0.9995719790458679
+    - image_intensity:
+      - max: 64519.88671875
+        mean: 26521.58984375
+        median: 25450.0625
+        min: 4660.0458984375
+        stdev: 8860.4541015625
+        percentile: [9580.4951171875, 16250.09765625, 38593.46484375, 56254.5546875]
+        percentile_00_5: 9580.4951171875
+        percentile_10_0: 16250.09765625
+        percentile_90_0: 38593.46484375
+        percentile_99_5: 56254.5546875
+      foreground_percentage: 0.0004280478460714221
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/11_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/11_ChP.nii.gz
+  image_stats:
+    shape:
+    - [185, 256, 256]
+    channels: 1
+    cropped_shape:
+    - [185, 255, 253]
+    spacing: [1.0000015119550856, 0.9374999739553407, 0.9374999922591812]
+    sizemm: [185, 239, 239]
+    intensity:
+    - max: 1042631.5625
+      mean: 93863.3515625
+      median: 0.0
+      min: 0.0
+      stdev: 144988.125
+      percentile: [0.0, 0.0, 339923.1875, 514180.375]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 339923.1875
+      percentile_99_5: 514180.375
+  image_foreground_stats:
+    intensity:
+    - max: 548449.5
+      mean: 245281.28125
+      median: 237083.9375
+      min: 97127.734375
+      stdev: 68238.171875
+      percentile: [122837.546875, 165681.9375, 337075.375, 468782.40625]
+      percentile_00_5: 122837.546875
+      percentile_10_0: 165681.9375
+      percentile_90_0: 337075.375
+      percentile_99_5: 468782.40625
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 548449.5
+      mean: 245281.28125
+      median: 237083.9375
+      min: 97127.734375
+      stdev: 68238.171875
+      percentile: [122837.546875, 165681.9375, 337075.375, 468782.40625]
+      percentile_00_5: 122837.546875
+      percentile_10_0: 165681.9375
+      percentile_90_0: 337075.375
+      percentile_99_5: 468782.40625
+    label:
+    - image_intensity:
+      - max: 1042631.5625
+        mean: 92356.5390625
+        median: 0.0
+        min: 0.0
+        stdev: 144315.90625
+        percentile: [0.0, 0.0, 337075.375, 514180.375]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 337075.375
+        percentile_99_5: 514180.375
+      foreground_percentage: 0.9997090697288513
+    - image_intensity:
+      - max: 548449.5
+        mean: 245281.28125
+        median: 237083.9375
+        min: 97127.734375
+        stdev: 68238.171875
+        percentile: [122837.546875, 165681.9375, 337075.375, 468782.40625]
+        percentile_00_5: 122837.546875
+        percentile_10_0: 165681.9375
+        percentile_90_0: 337075.375
+        percentile_99_5: 468782.40625
+      foreground_percentage: 0.0002909067552536726
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/12_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/12_ChP.nii.gz
+  image_stats:
+    shape:
+    - [257, 384, 384]
+    channels: 1
+    cropped_shape:
+    - [257, 363, 352]
+    spacing: [0.6999999590784605, 0.6666666824164302, 0.6666666615949646]
+    sizemm: [179, 256, 255]
+    intensity:
+    - max: 47818.10546875
+      mean: 3614.333251953125
+      median: 95.58513641357422
+      min: 0.0
+      stdev: 5107.0458984375
+      percentile: [0.0, 0.0, 11882.47265625, 19740.884765625]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 11882.47265625
+      percentile_99_5: 19740.884765625
+  image_foreground_stats:
+    intensity:
+    - max: 13032.4130859375
+      mean: 4910.61083984375
+      median: 4791.6611328125
+      min: 95.58513641357422
+      stdev: 2023.0770263671875
+      percentile: [958.0403442382812, 2395.465576171875, 7570.19677734375, 10732.5322265625]
+      percentile_00_5: 958.0403442382812
+      percentile_10_0: 2395.465576171875
+      percentile_90_0: 7570.19677734375
+      percentile_99_5: 10732.5322265625
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 13032.4130859375
+      mean: 4910.61083984375
+      median: 4791.6611328125
+      min: 95.58513641357422
+      stdev: 2023.0770263671875
+      percentile: [958.0403442382812, 2395.465576171875, 7570.19677734375, 10732.5322265625]
+      percentile_00_5: 958.0403442382812
+      percentile_10_0: 2395.465576171875
+      percentile_90_0: 7570.19677734375
+      percentile_99_5: 10732.5322265625
+    label:
+    - image_intensity:
+      - max: 47818.10546875
+        mean: 3131.70361328125
+        median: 0.0
+        min: 0.0
+        stdev: 4910.60791015625
+        percentile: [0.0, 0.0, 11307.5029296875, 19357.083984375]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 11307.5029296875
+        percentile_99_5: 19357.083984375
+      foreground_percentage: 0.9998607635498047
+    - image_intensity:
+      - max: 13032.4130859375
+        mean: 4910.61083984375
+        median: 4791.6611328125
+        min: 95.58513641357422
+        stdev: 2023.0770263671875
+        percentile: [958.0403442382812, 2395.465576171875, 7570.19677734375, 10732.5322265625]
+        percentile_00_5: 958.0403442382812
+        percentile_10_0: 2395.465576171875
+        percentile_90_0: 7570.19677734375
+        percentile_99_5: 10732.5322265625
+      foreground_percentage: 0.0001392488193232566
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/13_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/13_ChP.nii.gz
+  image_stats:
+    shape:
+    - [180, 240, 240]
+    channels: 1
+    cropped_shape:
+    - [180, 240, 240]
+    spacing: [1.0000007723107511, 1.0000000196576941, 0.9999999850121943]
+    sizemm: [180, 240, 239]
+    intensity:
+    - max: 172233.515625
+      mean: 15419.8369140625
+      median: 817.34375
+      min: 0.0
+      stdev: 22921.16015625
+      percentile: [0.0, 0.0, 53713.4140625, 93647.6171875]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 53713.4140625
+      percentile_99_5: 93647.6171875
+  image_foreground_stats:
+    intensity:
+    - max: 66675.2734375
+      mean: 28110.884765625
+      median: 27324.51171875
+      min: 6070.9453125
+      stdev: 9679.7412109375
+      percentile: [9790.779296875, 16112.97265625, 41334.9921875, 56486.80859375]
+      percentile_00_5: 9790.779296875
+      percentile_10_0: 16112.97265625
+      percentile_90_0: 41334.9921875
+      percentile_99_5: 56486.80859375
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 66675.2734375
+      mean: 28110.884765625
+      median: 27324.51171875
+      min: 6070.9453125
+      stdev: 9679.7412109375
+      percentile: [9790.779296875, 16112.97265625, 41334.9921875, 56486.80859375]
+      percentile_00_5: 9790.779296875
+      percentile_10_0: 16112.97265625
+      percentile_90_0: 41334.9921875
+      percentile_99_5: 56486.80859375
+    label:
+    - image_intensity:
+      - max: 172233.515625
+        mean: 15415.953125
+        median: 817.34375
+        min: 0.0
+        stdev: 22922.962890625
+        percentile: [0.0, 0.0, 53713.4140625, 93647.6171875]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 53713.4140625
+        percentile_99_5: 93647.6171875
+      foreground_percentage: 0.9996941685676575
+    - image_intensity:
+      - max: 66675.2734375
+        mean: 28110.884765625
+        median: 27324.51171875
+        min: 6070.9453125
+        stdev: 9679.7412109375
+        percentile: [9790.779296875, 16112.97265625, 41334.9921875, 56486.80859375]
+        percentile_00_5: 9790.779296875
+        percentile_10_0: 16112.97265625
+        percentile_90_0: 41334.9921875
+        percentile_99_5: 56486.80859375
+      foreground_percentage: 0.00030584490741603076
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/14_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/14_ChP.nii.gz
+  image_stats:
+    shape:
+    - [180, 240, 240]
+    channels: 1
+    cropped_shape:
+    - [180, 240, 240]
+    spacing: [0.9999933801092777, 0.9999999755077407, 0.9999999600157894]
+    sizemm: [179, 239, 239]
+    intensity:
+    - max: 166741.328125
+      mean: 11663.8154296875
+      median: 124.67117309570312
+      min: 0.0
+      stdev: 19923.119140625
+      percentile: [0.0, 0.0, 44464.35546875, 81270.3359375]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 44464.35546875
+      percentile_99_5: 81270.3359375
+  image_foreground_stats:
+    intensity:
+    - max: 76700.7578125
+      mean: 30810.05859375
+      median: 29519.080078125
+      min: 9757.427734375
+      stdev: 9591.7861328125
+      percentile: [12837.4921875, 19514.85546875, 43599.2890625, 63494.171875]
+      percentile_00_5: 12837.4921875
+      percentile_10_0: 19514.85546875
+      percentile_90_0: 43599.2890625
+      percentile_99_5: 63494.171875
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 76700.7578125
+      mean: 30810.05859375
+      median: 29519.080078125
+      min: 9757.427734375
+      stdev: 9591.7861328125
+      percentile: [12837.4921875, 19514.85546875, 43599.2890625, 63494.171875]
+      percentile_00_5: 12837.4921875
+      percentile_10_0: 19514.85546875
+      percentile_90_0: 43599.2890625
+      percentile_99_5: 63494.171875
+    label:
+    - image_intensity:
+      - max: 166741.328125
+        mean: 11660.1455078125
+        median: 124.67117309570312
+        min: 0.0
+        stdev: 19922.822265625
+        percentile: [0.0, 0.0, 44464.35546875, 81270.3359375]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 44464.35546875
+        percentile_99_5: 81270.3359375
+      foreground_percentage: 0.9998083710670471
+    - image_intensity:
+      - max: 76700.7578125
+        mean: 30810.05859375
+        median: 29519.080078125
+        min: 9757.427734375
+        stdev: 9591.7861328125
+        percentile: [12837.4921875, 19514.85546875, 43599.2890625, 63494.171875]
+        percentile_00_5: 12837.4921875
+        percentile_10_0: 19514.85546875
+        percentile_90_0: 43599.2890625
+        percentile_99_5: 63494.171875
+      foreground_percentage: 0.0001916473702294752
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/15_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/15_ChP.nii.gz
+  image_stats:
+    shape:
+    - [180, 240, 240]
+    channels: 1
+    cropped_shape:
+    - [180, 240, 240]
+    spacing: [0.9999942583262359, 1.000000012248961, 0.999999995906713]
+    sizemm: [179, 240, 239]
+    intensity:
+    - max: 131415.671875
+      mean: 11408.6455078125
+      median: 354.93359375
+      min: 0.0
+      stdev: 17009.6953125
+      percentile: [0.0, 0.0, 38491.24609375, 67301.0234375]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 38491.24609375
+      percentile_99_5: 67301.0234375
+  image_foreground_stats:
+    intensity:
+    - max: 58682.35546875
+      mean: 27238.955078125
+      median: 26094.63671875
+      min: 6493.0791015625
+      stdev: 8370.6357421875
+      percentile: [11099.1943359375, 17592.2734375, 38727.8671875, 52819.03515625]
+      percentile_00_5: 11099.1943359375
+      percentile_10_0: 17592.2734375
+      percentile_90_0: 38727.8671875
+      percentile_99_5: 52819.03515625
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 58682.35546875
+      mean: 27238.955078125
+      median: 26094.63671875
+      min: 6493.0791015625
+      stdev: 8370.6357421875
+      percentile: [11099.1943359375, 17592.2734375, 38727.8671875, 52819.03515625]
+      percentile_00_5: 11099.1943359375
+      percentile_10_0: 17592.2734375
+      percentile_90_0: 38727.8671875
+      percentile_99_5: 52819.03515625
+    label:
+    - image_intensity:
+      - max: 131415.671875
+        mean: 11402.73828125
+        median: 354.93359375
+        min: 0.0
+        stdev: 17009.349609375
+        percentile: [0.0, 0.0, 38491.24609375, 67301.0234375]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 38491.24609375
+        percentile_99_5: 67301.0234375
+      foreground_percentage: 0.9996270537376404
+    - image_intensity:
+      - max: 58682.35546875
+        mean: 27238.955078125
+        median: 26094.63671875
+        min: 6493.0791015625
+        stdev: 8370.6357421875
+        percentile: [11099.1943359375, 17592.2734375, 38727.8671875, 52819.03515625]
+        percentile_00_5: 11099.1943359375
+        percentile_10_0: 17592.2734375
+        percentile_90_0: 38727.8671875
+        percentile_99_5: 52819.03515625
+      foreground_percentage: 0.0003729745512828231
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/16_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/16_ChP.nii.gz
+  image_stats:
+    shape:
+    - [180, 240, 240]
+    channels: 1
+    cropped_shape:
+    - [180, 240, 240]
+    spacing: [0.9999986104675315, 1.0000001003739452, 0.9999999746305558]
+    sizemm: [179, 240, 239]
+    intensity:
+    - max: 153236.984375
+      mean: 12632.6728515625
+      median: 484.01702880859375
+      min: 0.0
+      stdev: 18922.828125
+      percentile: [0.0, 0.0, 41538.94921875, 75593.171875]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 41538.94921875
+      percentile_99_5: 75593.171875
+  image_foreground_stats:
+    intensity:
+    - max: 66897.234375
+      mean: 28029.783203125
+      median: 27532.853515625
+      min: 7124.63720703125
+      stdev: 8716.2900390625
+      percentile: [10505.7421875, 17267.951171875, 39607.55859375, 55666.63671875]
+      percentile_00_5: 10505.7421875
+      percentile_10_0: 17267.951171875
+      percentile_90_0: 39607.55859375
+      percentile_99_5: 55666.63671875
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 66897.234375
+      mean: 28029.783203125
+      median: 27532.853515625
+      min: 7124.63720703125
+      stdev: 8716.2900390625
+      percentile: [10505.7421875, 17267.951171875, 39607.55859375, 55666.63671875]
+      percentile_00_5: 10505.7421875
+      percentile_10_0: 17267.951171875
+      percentile_90_0: 39607.55859375
+      percentile_99_5: 55666.63671875
+    label:
+    - image_intensity:
+      - max: 153236.984375
+        mean: 12629.404296875
+        median: 484.01702880859375
+        min: 0.0
+        stdev: 18923.080078125
+        percentile: [0.0, 0.0, 41538.94921875, 75593.171875]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 41538.94921875
+        percentile_99_5: 75593.171875
+      foreground_percentage: 0.9997876882553101
+    - image_intensity:
+      - max: 66897.234375
+        mean: 28029.783203125
+        median: 27532.853515625
+        min: 7124.63720703125
+        stdev: 8716.2900390625
+        percentile: [10505.7421875, 17267.951171875, 39607.55859375, 55666.63671875]
+        percentile_00_5: 10505.7421875
+        percentile_10_0: 17267.951171875
+        percentile_90_0: 39607.55859375
+        percentile_99_5: 55666.63671875
+      foreground_percentage: 0.00021228780678939074
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/17_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/17_ChP.nii.gz
+  image_stats:
+    shape:
+    - [257, 384, 384]
+    channels: 1
+    cropped_shape:
+    - [257, 361, 368]
+    spacing: [0.6999989155296533, 0.6666666965769543, 0.6666666677457344]
+    sizemm: [179, 256, 256]
+    intensity:
+    - max: 46635.49609375
+      mean: 3587.929931640625
+      median: 0.0
+      min: 0.0
+      stdev: 5518.8515625
+      percentile: [0.0, 0.0, 13001.86328125, 20308.6953125]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 13001.86328125
+      percentile_99_5: 20308.6953125
+  image_foreground_stats:
+    intensity:
+    - max: 19019.255859375
+      mean: 8292.548828125
+      median: 8273.9130859375
+      min: 214.90684509277344
+      stdev: 2786.785400390625
+      percentile: [1751.49072265625, 4620.4970703125, 11819.8759765625, 15655.984375]
+      percentile_00_5: 1751.49072265625
+      percentile_10_0: 4620.4970703125
+      percentile_90_0: 11819.8759765625
+      percentile_99_5: 15655.984375
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 19019.255859375
+      mean: 8292.548828125
+      median: 8273.9130859375
+      min: 214.90684509277344
+      stdev: 2786.785400390625
+      percentile: [1751.49072265625, 4620.4970703125, 11819.8759765625, 15655.984375]
+      percentile_00_5: 1751.49072265625
+      percentile_10_0: 4620.4970703125
+      percentile_90_0: 11819.8759765625
+      percentile_99_5: 15655.984375
+    label:
+    - image_intensity:
+      - max: 46635.49609375
+        mean: 3231.915771484375
+        median: 0.0
+        min: 0.0
+        stdev: 5346.849609375
+        percentile: [0.0, 0.0, 12357.1435546875, 20093.7890625]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 12357.1435546875
+        percentile_99_5: 20093.7890625
+      foreground_percentage: 0.9998875856399536
+    - image_intensity:
+      - max: 19019.255859375
+        mean: 8292.548828125
+        median: 8273.9130859375
+        min: 214.90684509277344
+        stdev: 2786.785400390625
+        percentile: [1751.49072265625, 4620.4970703125, 11819.8759765625, 15655.984375]
+        percentile_00_5: 1751.49072265625
+        percentile_10_0: 4620.4970703125
+        percentile_90_0: 11819.8759765625
+        percentile_99_5: 15655.984375
+      foreground_percentage: 0.00011243873450439423
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/18_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/18_ChP.nii.gz
+  image_stats:
+    shape:
+    - [257, 384, 384]
+    channels: 1
+    cropped_shape:
+    - [257, 363, 372]
+    spacing: [0.6999951878476425, 0.6666666959776352, 0.6666666962835379]
+    sizemm: [179, 256, 256]
+    intensity:
+    - max: 49944.7734375
+      mean: 4533.1708984375
+      median: 439.7365417480469
+      min: 0.0
+      stdev: 6109.35205078125
+      percentile: [0.0, 0.0, 14411.4697265625, 22441.8046875]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 14411.4697265625
+      percentile_99_5: 22441.8046875
+  image_foreground_stats:
+    intensity:
+    - max: 16061.4345703125
+      mean: 6847.9306640625
+      median: 6820.8701171875
+      min: 220.24932861328125
+      stdev: 2626.019775390625
+      percentile: [1058.4921875, 3410.43505859375, 10231.3046875, 13861.2275390625]
+      percentile_00_5: 1058.4921875
+      percentile_10_0: 3410.43505859375
+      percentile_90_0: 10231.3046875
+      percentile_99_5: 13861.2275390625
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 16061.4345703125
+      mean: 6847.9306640625
+      median: 6820.8701171875
+      min: 220.24932861328125
+      stdev: 2626.019775390625
+      percentile: [1058.4921875, 3410.43505859375, 10231.3046875, 13861.2275390625]
+      percentile_00_5: 1058.4921875
+      percentile_10_0: 3410.43505859375
+      percentile_90_0: 10231.3046875
+      percentile_99_5: 13861.2275390625
+    label:
+    - image_intensity:
+      - max: 49944.7734375
+        mean: 4150.9873046875
+        median: 0.0
+        min: 0.0
+        stdev: 5980.7333984375
+        percentile: [0.0, 0.0, 13970.970703125, 22222.318359375]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 13970.970703125
+        percentile_99_5: 22222.318359375
+      foreground_percentage: 0.9998331069946289
+    - image_intensity:
+      - max: 16061.4345703125
+        mean: 6847.9306640625
+        median: 6820.8701171875
+        min: 220.24932861328125
+        stdev: 2626.019775390625
+        percentile: [1058.4921875, 3410.43505859375, 10231.3046875, 13861.2275390625]
+        percentile_00_5: 1058.4921875
+        percentile_10_0: 3410.43505859375
+        percentile_90_0: 10231.3046875
+        percentile_99_5: 13861.2275390625
+      foreground_percentage: 0.00016690330812707543
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/19_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/19_ChP.nii.gz
+  image_stats:
+    shape:
+    - [185, 256, 256]
+    channels: 1
+    cropped_shape:
+    - [185, 256, 256]
+    spacing: [0.9999997653256348, 0.9375000011907361, 0.9374999617778095]
+    sizemm: [184, 240, 239]
+    intensity:
+    - max: 8041.8466796875
+      mean: 357.9422302246094
+      median: 21.35166358947754
+      min: 0.0
+      stdev: 477.3434143066406
+      percentile: [0.0, 0.0, 1120.3487548828125, 1697.089111328125]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 1120.3487548828125
+      percentile_99_5: 1697.089111328125
+  image_foreground_stats:
+    intensity:
+    - max: 1654.3858642578125
+      mean: 780.7264404296875
+      median: 773.8137817382812
+      min: 270.5771179199219
+      stdev: 190.27484130859375
+      percentile: [401.1413269042969, 538.82275390625, 1032.4879150390625, 1336.6317138671875]
+      percentile_00_5: 401.1413269042969
+      percentile_10_0: 538.82275390625
+      percentile_90_0: 1032.4879150390625
+      percentile_99_5: 1336.6317138671875
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 1654.3858642578125
+      mean: 780.7264404296875
+      median: 773.8137817382812
+      min: 270.5771179199219
+      stdev: 190.27484130859375
+      percentile: [401.1413269042969, 538.82275390625, 1032.4879150390625, 1336.6317138671875]
+      percentile_00_5: 401.1413269042969
+      percentile_10_0: 538.82275390625
+      percentile_90_0: 1032.4879150390625
+      percentile_99_5: 1336.6317138671875
+    label:
+    - image_intensity:
+      - max: 8041.8466796875
+        mean: 357.79766845703125
+        median: 21.35166358947754
+        min: 0.0
+        stdev: 477.3479919433594
+        percentile: [0.0, 0.0, 1120.3487548828125, 1697.089111328125]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 1120.3487548828125
+        percentile_99_5: 1697.089111328125
+      foreground_percentage: 0.9996581077575684
+    - image_intensity:
+      - max: 1654.3858642578125
+        mean: 780.7264404296875
+        median: 773.8137817382812
+        min: 270.5771179199219
+        stdev: 190.27484130859375
+        percentile: [401.1413269042969, 538.82275390625, 1032.4879150390625, 1336.6317138671875]
+        percentile_00_5: 401.1413269042969
+        percentile_10_0: 538.82275390625
+        percentile_90_0: 1032.4879150390625
+        percentile_99_5: 1336.6317138671875
+      foreground_percentage: 0.0003418793494347483
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/1_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/1_ChP.nii.gz
+  image_stats:
+    shape:
+    - [257, 384, 384]
+    channels: 1
+    cropped_shape:
+    - [257, 364, 343]
+    spacing: [0.6999965689058956, 0.666666682007141, 0.6666667163187037]
+    sizemm: [179, 256, 256]
+    intensity:
+    - max: 47413.015625
+      mean: 4351.365234375
+      median: 296.625244140625
+      min: 0.0
+      stdev: 6104.9873046875
+      percentile: [0.0, 0.0, 14125.150390625, 24397.7890625]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 14125.150390625
+      percentile_99_5: 24397.7890625
+  image_foreground_stats:
+    intensity:
+    - max: 19064.322265625
+      mean: 5828.94189453125
+      median: 5531.69921875
+      min: 197.50901794433594
+      stdev: 2743.27880859375
+      percentile: [987.5450439453125, 2469.224365234375, 9581.71875, 13927.640625]
+      percentile_00_5: 987.5450439453125
+      percentile_10_0: 2469.224365234375
+      percentile_90_0: 9581.71875
+      percentile_99_5: 13927.640625
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 19064.322265625
+      mean: 5828.94189453125
+      median: 5531.69921875
+      min: 197.50901794433594
+      stdev: 2743.27880859375
+      percentile: [987.5450439453125, 2469.224365234375, 9581.71875, 13927.640625]
+      percentile_00_5: 987.5450439453125
+      percentile_10_0: 2469.224365234375
+      percentile_90_0: 9581.71875
+      percentile_99_5: 13927.640625
+    label:
+    - image_intensity:
+      - max: 47413.015625
+        mean: 3683.95263671875
+        median: 0.0
+        min: 0.0
+        stdev: 5832.65625
+        percentile: [0.0, 0.0, 13235.998046875, 23706.869140625]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 13235.998046875
+        percentile_99_5: 23706.869140625
+      foreground_percentage: 0.9997855424880981
+    - image_intensity:
+      - max: 19064.322265625
+        mean: 5828.94189453125
+        median: 5531.69921875
+        min: 197.50901794433594
+        stdev: 2743.27880859375
+        percentile: [987.5450439453125, 2469.224365234375, 9581.71875, 13927.640625]
+        percentile_00_5: 987.5450439453125
+        percentile_10_0: 2469.224365234375
+        percentile_90_0: 9581.71875
+        percentile_99_5: 13927.640625
+      foreground_percentage: 0.00021445426682475954
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/20_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/20_ChP.nii.gz
+  image_stats:
+    shape:
+    - [185, 256, 256]
+    channels: 1
+    cropped_shape:
+    - [185, 256, 256]
+    spacing: [1.0000034327656753, 0.9375000029936627, 0.9375000039995934]
+    sizemm: [185, 240, 240]
+    intensity:
+    - max: 7284137.0
+      mean: 643625.6875
+      median: 95699.1171875
+      min: 0.0
+      stdev: 789449.6875
+      percentile: [0.0, 0.0, 1854851.25, 2937440.5]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 1854851.25
+      percentile_99_5: 2937440.5
+  image_foreground_stats:
+    intensity:
+    - max: 2244316.75
+      mean: 1251707.875
+      median: 1224526.375
+      min: 346561.96875
+      stdev: 339319.59375
+      percentile: [571088.0625, 815165.3125, 1729475.375, 2092487.375]
+      percentile_00_5: 571088.0625
+      percentile_10_0: 815165.3125
+      percentile_90_0: 1729475.375
+      percentile_99_5: 2092487.375
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 2244316.75
+      mean: 1251707.875
+      median: 1224526.375
+      min: 346561.96875
+      stdev: 339319.59375
+      percentile: [571088.0625, 815165.3125, 1729475.375, 2092487.375]
+      percentile_00_5: 571088.0625
+      percentile_10_0: 815165.3125
+      percentile_90_0: 1729475.375
+      percentile_99_5: 2092487.375
+    label:
+    - image_intensity:
+      - max: 7284137.0
+        mean: 643364.375
+        median: 95699.1171875
+        min: 0.0
+        stdev: 789487.25
+        percentile: [0.0, 0.0, 1854851.25, 2937440.5]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 1854851.25
+        percentile_99_5: 2937440.5
+      foreground_percentage: 0.9995704293251038
+    - image_intensity:
+      - max: 2244316.75
+        mean: 1251707.875
+        median: 1224526.375
+        min: 346561.96875
+        stdev: 339319.59375
+        percentile: [571088.0625, 815165.3125, 1729475.375, 2092487.375]
+        percentile_00_5: 571088.0625
+        percentile_10_0: 815165.3125
+        percentile_90_0: 1729475.375
+        percentile_99_5: 2092487.375
+      foreground_percentage: 0.00042955554090440273
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/21_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/21_ChP.nii.gz
+  image_stats:
+    shape:
+    - [180, 240, 240]
+    channels: 1
+    cropped_shape:
+    - [180, 240, 240]
+    spacing: [0.9999924663228426, 0.9999999902142901, 1.0000000265061435]
+    sizemm: [179, 239, 240]
+    intensity:
+    - max: 130077.484375
+      mean: 12482.8388671875
+      median: 325.5162353515625
+      min: 0.0
+      stdev: 19276.77734375
+      percentile: [0.0, 0.0, 43648.94921875, 81650.984375]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 43648.94921875
+      percentile_99_5: 81650.984375
+  image_foreground_stats:
+    intensity:
+    - max: 60478.5390625
+      mean: 25403.1484375
+      median: 23887.732421875
+      min: 1845.915283203125
+      stdev: 9689.490234375
+      percentile: [7435.515625, 13897.9560546875, 39522.4375, 53317.60546875]
+      percentile_00_5: 7435.515625
+      percentile_10_0: 13897.9560546875
+      percentile_90_0: 39522.4375
+      percentile_99_5: 53317.60546875
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 60478.5390625
+      mean: 25403.1484375
+      median: 23887.732421875
+      min: 1845.915283203125
+      stdev: 9689.490234375
+      percentile: [7435.515625, 13897.9560546875, 39522.4375, 53317.60546875]
+      percentile_00_5: 7435.515625
+      percentile_10_0: 13897.9560546875
+      percentile_90_0: 39522.4375
+      percentile_99_5: 53317.60546875
+    label:
+    - image_intensity:
+      - max: 130077.484375
+        mean: 12477.732421875
+        median: 325.5162353515625
+        min: 0.0
+        stdev: 19277.912109375
+        percentile: [0.0, 0.0, 43648.94921875, 81650.984375]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 43648.94921875
+        percentile_99_5: 81650.984375
+      foreground_percentage: 0.9996049404144287
+    - image_intensity:
+      - max: 60478.5390625
+        mean: 25403.1484375
+        median: 23887.732421875
+        min: 1845.915283203125
+        stdev: 9689.490234375
+        percentile: [7435.515625, 13897.9560546875, 39522.4375, 53317.60546875]
+        percentile_00_5: 7435.515625
+        percentile_10_0: 13897.9560546875
+        percentile_90_0: 39522.4375
+        percentile_99_5: 53317.60546875
+      foreground_percentage: 0.00039506173925474286
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/22_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/22_ChP.nii.gz
+  image_stats:
+    shape:
+    - [185, 256, 256]
+    channels: 1
+    cropped_shape:
+    - [185, 256, 256]
+    spacing: [0.9999966694239902, 0.9374999730221226, 0.9374999923026136]
+    sizemm: [184, 239, 239]
+    intensity:
+    - max: 3502.3759765625
+      mean: 268.4150085449219
+      median: 6.359696865081787
+      min: 0.0
+      stdev: 453.2967834472656
+      percentile: [0.0, 0.0, 1055.9769287109375, 1705.681396484375]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 1055.9769287109375
+      percentile_99_5: 1705.681396484375
+  image_foreground_stats:
+    intensity:
+    - max: 1599.8646240234375
+      mean: 802.3155517578125
+      median: 789.3506469726562
+      min: 294.14935302734375
+      stdev: 206.77572631835938
+      percentile: [361.5592041015625, 541.9638061523438, 1085.6376953125, 1369.205322265625]
+      percentile_00_5: 361.5592041015625
+      percentile_10_0: 541.9638061523438
+      percentile_90_0: 1085.6376953125
+      percentile_99_5: 1369.205322265625
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 1599.8646240234375
+      mean: 802.3155517578125
+      median: 789.3506469726562
+      min: 294.14935302734375
+      stdev: 206.77572631835938
+      percentile: [361.5592041015625, 541.9638061523438, 1085.6376953125, 1369.205322265625]
+      percentile_00_5: 361.5592041015625
+      percentile_10_0: 541.9638061523438
+      percentile_90_0: 1085.6376953125
+      percentile_99_5: 1369.205322265625
+    label:
+    - image_intensity:
+      - max: 3502.3759765625
+        mean: 268.30169677734375
+        median: 6.359696865081787
+        min: 0.0
+        stdev: 453.2681579589844
+        percentile: [0.0, 0.0, 1055.9769287109375, 1705.681396484375]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 1055.9769287109375
+        percentile_99_5: 1705.681396484375
+      foreground_percentage: 0.9997878670692444
+    - image_intensity:
+      - max: 1599.8646240234375
+        mean: 802.3155517578125
+        median: 789.3506469726562
+        min: 294.14935302734375
+        stdev: 206.77572631835938
+        percentile: [361.5592041015625, 541.9638061523438, 1085.6376953125, 1369.205322265625]
+        percentile_00_5: 361.5592041015625
+        percentile_10_0: 541.9638061523438
+        percentile_90_0: 1085.6376953125
+        percentile_99_5: 1369.205322265625
+      foreground_percentage: 0.0002121384022757411
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/23_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/23_ChP.nii.gz
+  image_stats:
+    shape:
+    - [257, 384, 384]
+    channels: 1
+    cropped_shape:
+    - [257, 364, 351]
+    spacing: [0.6999999897249739, 0.6666666947540931, 0.666666670305979]
+    sizemm: [179, 256, 256]
+    intensity:
+    - max: 50607.71484375
+      mean: 4302.09716796875
+      median: 99.61692810058594
+      min: 0.0
+      stdev: 6016.8330078125
+      percentile: [0.0, 0.0, 14345.609375, 22016.11328125]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 14345.609375
+      percentile_99_5: 22016.11328125
+  image_foreground_stats:
+    intensity:
+    - max: 16935.650390625
+      mean: 5725.7802734375
+      median: 5379.31396484375
+      min: 0.0
+      stdev: 2741.52294921875
+      percentile: [896.5523681640625, 2490.423095703125, 9563.9970703125, 13449.0576171875]
+      percentile_00_5: 896.5523681640625
+      percentile_10_0: 2490.423095703125
+      percentile_90_0: 9563.9970703125
+      percentile_99_5: 13449.0576171875
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 16935.650390625
+      mean: 5725.7802734375
+      median: 5379.31396484375
+      min: 0.0
+      stdev: 2741.52294921875
+      percentile: [896.5523681640625, 2490.423095703125, 9563.9970703125, 13449.0576171875]
+      percentile_00_5: 896.5523681640625
+      percentile_10_0: 2490.423095703125
+      percentile_90_0: 9563.9970703125
+      percentile_99_5: 13449.0576171875
+    label:
+    - image_intensity:
+      - max: 50607.71484375
+        mean: 3727.280517578125
+        median: 0.0
+        min: 0.0
+        stdev: 5789.03369140625
+        percentile: [0.0, 0.0, 13648.291015625, 21717.26171875]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 13648.291015625
+        percentile_99_5: 21717.26171875
+      foreground_percentage: 0.9998345971107483
+    - image_intensity:
+      - max: 16935.650390625
+        mean: 5725.7802734375
+        median: 5379.31396484375
+        min: 0.0
+        stdev: 2741.52294921875
+        percentile: [896.5523681640625, 2490.423095703125, 9563.9970703125, 13449.0576171875]
+        percentile_00_5: 896.5523681640625
+        percentile_10_0: 2490.423095703125
+        percentile_90_0: 9563.9970703125
+        percentile_99_5: 13449.0576171875
+      foreground_percentage: 0.00016542559023946524
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/24_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/24_ChP.nii.gz
+  image_stats:
+    shape:
+    - [180, 240, 240]
+    channels: 1
+    cropped_shape:
+    - [180, 240, 240]
+    spacing: [1.0000000025808935, 1.0000000135455336, 0.99999999558715]
+    sizemm: [180, 240, 239]
+    intensity:
+    - max: 175649.53125
+      mean: 17631.369140625
+      median: 4998.64794921875
+      min: 0.0
+      stdev: 22776.21484375
+      percentile: [0.0, 0.0, 54864.515625, 89206.4296875]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 54864.515625
+      percentile_99_5: 89206.4296875
+  image_foreground_stats:
+    intensity:
+    - max: 60522.50390625
+      mean: 33623.95703125
+      median: 33945.2421875
+      min: 6842.6533203125
+      stdev: 8487.212890625
+      percentile: [13590.693359375, 22103.94140625, 44470.54296875, 54299.78125]
+      percentile_00_5: 13590.693359375
+      percentile_10_0: 22103.94140625
+      percentile_90_0: 44470.54296875
+      percentile_99_5: 54299.78125
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 60522.50390625
+      mean: 33623.95703125
+      median: 33945.2421875
+      min: 6842.6533203125
+      stdev: 8487.212890625
+      percentile: [13590.693359375, 22103.94140625, 44470.54296875, 54299.78125]
+      percentile_00_5: 13590.693359375
+      percentile_10_0: 22103.94140625
+      percentile_90_0: 44470.54296875
+      percentile_99_5: 54299.78125
+    label:
+    - image_intensity:
+      - max: 175649.53125
+        mean: 17625.412109375
+        median: 4998.64794921875
+        min: 0.0
+        stdev: 22777.775390625
+        percentile: [0.0, 0.0, 54864.515625, 89206.4296875]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 54864.515625
+        percentile_99_5: 89206.4296875
+      foreground_percentage: 0.9996275901794434
+    - image_intensity:
+      - max: 60522.50390625
+        mean: 33623.95703125
+        median: 33945.2421875
+        min: 6842.6533203125
+        stdev: 8487.212890625
+        percentile: [13590.693359375, 22103.94140625, 44470.54296875, 54299.78125]
+        percentile_00_5: 13590.693359375
+        percentile_10_0: 22103.94140625
+        percentile_90_0: 44470.54296875
+        percentile_99_5: 54299.78125
+      foreground_percentage: 0.00037239582161419094
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/25_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/25_ChP.nii.gz
+  image_stats:
+    shape:
+    - [180, 240, 240]
+    channels: 1
+    cropped_shape:
+    - [180, 240, 240]
+    spacing: [1.0000025000936907, 1.0000000279566843, 0.9999999579987724]
+    sizemm: [180, 240, 239]
+    intensity:
+    - max: 165082.53125
+      mean: 18075.326171875
+      median: 1609.6396484375
+      min: 0.0
+      stdev: 25380.103515625
+      percentile: [0.0, 0.0, 59322.40234375, 102271.3125]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 59322.40234375
+      percentile_99_5: 102271.3125
+  image_foreground_stats:
+    intensity:
+    - max: 96364.265625
+      mean: 32747.931640625
+      median: 30467.279296875
+      min: 7247.15673828125
+      stdev: 11404.34765625
+      percentile: [12078.5947265625, 20401.36328125, 48719.9375, 69286.1640625]
+      percentile_00_5: 12078.5947265625
+      percentile_10_0: 20401.36328125
+      percentile_90_0: 48719.9375
+      percentile_99_5: 69286.1640625
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 96364.265625
+      mean: 32747.931640625
+      median: 30467.279296875
+      min: 7247.15673828125
+      stdev: 11404.34765625
+      percentile: [12078.5947265625, 20401.36328125, 48719.9375, 69286.1640625]
+      percentile_00_5: 12078.5947265625
+      percentile_10_0: 20401.36328125
+      percentile_90_0: 48719.9375
+      percentile_99_5: 69286.1640625
+    label:
+    - image_intensity:
+      - max: 165082.53125
+        mean: 18069.443359375
+        median: 1609.6396484375
+        min: 0.0
+        stdev: 25382.4609375
+        percentile: [0.0, 0.0, 59322.40234375, 102271.3125]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 59322.40234375
+        percentile_99_5: 102271.3125
+      foreground_percentage: 0.9995993375778198
+    - image_intensity:
+      - max: 96364.265625
+        mean: 32747.931640625
+        median: 30467.279296875
+        min: 7247.15673828125
+        stdev: 11404.34765625
+        percentile: [12078.5947265625, 20401.36328125, 48719.9375, 69286.1640625]
+        percentile_00_5: 12078.5947265625
+        percentile_10_0: 20401.36328125
+        percentile_90_0: 48719.9375
+        percentile_99_5: 69286.1640625
+      foreground_percentage: 0.000400655873818323
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/26_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/26_ChP.nii.gz
+  image_stats:
+    shape:
+    - [185, 256, 256]
+    channels: 1
+    cropped_shape:
+    - [185, 256, 256]
+    spacing: [0.9999984818787394, 0.9375000143391409, 0.937499998219473]
+    sizemm: [184, 240, 239]
+    intensity:
+    - max: 7254360.0
+      mean: 528334.5
+      median: 17268.33203125
+      min: 0.0
+      stdev: 765881.125
+      percentile: [0.0, 0.0, 1772992.75, 2740683.5]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 1772992.75
+      percentile_99_5: 2740683.5
+  image_foreground_stats:
+    intensity:
+    - max: 2675041.75
+      mean: 1221717.375
+      median: 1185426.75
+      min: 518382.03125
+      stdev: 316529.75
+      percentile: [600301.4375, 839838.6875, 1658977.5, 2139280.75]
+      percentile_00_5: 600301.4375
+      percentile_10_0: 839838.6875
+      percentile_90_0: 1658977.5
+      percentile_99_5: 2139280.75
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 2675041.75
+      mean: 1221717.375
+      median: 1185426.75
+      min: 518382.03125
+      stdev: 316529.75
+      percentile: [600301.4375, 839838.6875, 1658977.5, 2139280.75]
+      percentile_00_5: 600301.4375
+      percentile_10_0: 839838.6875
+      percentile_90_0: 1658977.5
+      percentile_99_5: 2139280.75
+    label:
+    - image_intensity:
+      - max: 7254360.0
+        mean: 528170.25
+        median: 17268.33203125
+        min: 0.0
+        stdev: 765881.9375
+        percentile: [0.0, 0.0, 1772992.75, 2740683.5]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 1772992.75
+        percentile_99_5: 2740683.5
+      foreground_percentage: 0.9997631907463074
+    - image_intensity:
+      - max: 2675041.75
+        mean: 1221717.375
+        median: 1185426.75
+        min: 518382.03125
+        stdev: 316529.75
+        percentile: [600301.4375, 839838.6875, 1658977.5, 2139280.75]
+        percentile_00_5: 600301.4375
+        percentile_10_0: 839838.6875
+        percentile_90_0: 1658977.5
+        percentile_99_5: 2139280.75
+      foreground_percentage: 0.00023679991136305034
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/28_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/28_ChP.nii.gz
+  image_stats:
+    shape:
+    - [184, 256, 256]
+    channels: 1
+    cropped_shape:
+    - [184, 256, 256]
+    spacing: [0.9999993939852209, 0.9375000213715583, 0.9374999512793514]
+    sizemm: [183, 240, 239]
+    intensity:
+    - max: 5642685.0
+      mean: 599272.5625
+      median: 51316.703125
+      min: 0.0
+      stdev: 780986.3125
+      percentile: [0.0, 0.0, 1868065.75, 2773168.5]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 1868065.75
+      percentile_99_5: 2773168.5
+  image_foreground_stats:
+    intensity:
+    - max: 2455452.75
+      mean: 1249085.25
+      median: 1229362.25
+      min: 558456.625
+      stdev: 307721.71875
+      percentile: [642644.4375, 853785.9375, 1678322.875, 2098828.75]
+      percentile_00_5: 642644.4375
+      percentile_10_0: 853785.9375
+      percentile_90_0: 1678322.875
+      percentile_99_5: 2098828.75
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 2455452.75
+      mean: 1249085.25
+      median: 1229362.25
+      min: 558456.625
+      stdev: 307721.71875
+      percentile: [642644.4375, 853785.9375, 1678322.875, 2098828.75]
+      percentile_00_5: 642644.4375
+      percentile_10_0: 853785.9375
+      percentile_90_0: 1678322.875
+      percentile_99_5: 2098828.75
+    label:
+    - image_intensity:
+      - max: 5642685.0
+        mean: 599109.625
+        median: 51316.703125
+        min: 0.0
+        stdev: 781001.25
+        percentile: [0.0, 0.0, 1868065.75, 2773168.5]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 1868065.75
+        percentile_99_5: 2773168.5
+      foreground_percentage: 0.9997493624687195
+    - image_intensity:
+      - max: 2455452.75
+        mean: 1249085.25
+        median: 1229362.25
+        min: 558456.625
+        stdev: 307721.71875
+        percentile: [642644.4375, 853785.9375, 1678322.875, 2098828.75]
+        percentile_00_5: 642644.4375
+        percentile_10_0: 853785.9375
+        percentile_90_0: 1678322.875
+        percentile_99_5: 2098828.75
+      foreground_percentage: 0.00025060903863050044
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/29_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/29_ChP.nii.gz
+  image_stats:
+    shape:
+    - [180, 240, 240]
+    channels: 1
+    cropped_shape:
+    - [180, 240, 240]
+    spacing: [0.9999928255972564, 0.9999999612172734, 1.0000000149693882]
+    sizemm: [179, 239, 240]
+    intensity:
+    - max: 111656.0078125
+      mean: 10779.236328125
+      median: 216.37770080566406
+      min: 0.0
+      stdev: 16701.013671875
+      percentile: [0.0, 0.0, 38695.83203125, 65393.7734375]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 38695.83203125
+      percentile_99_5: 65393.7734375
+  image_foreground_stats:
+    intensity:
+    - max: 55125.203125
+      mean: 25119.279296875
+      median: 24535.869140625
+      min: 4864.23876953125
+      stdev: 8452.4619140625
+      percentile: [9779.9990234375, 14807.390625, 36036.58984375, 51938.76171875]
+      percentile_00_5: 9779.9990234375
+      percentile_10_0: 14807.390625
+      percentile_90_0: 36036.58984375
+      percentile_99_5: 51938.76171875
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 55125.203125
+      mean: 25119.279296875
+      median: 24535.869140625
+      min: 4864.23876953125
+      stdev: 8452.4619140625
+      percentile: [9779.9990234375, 14807.390625, 36036.58984375, 51938.76171875]
+      percentile_00_5: 9779.9990234375
+      percentile_10_0: 14807.390625
+      percentile_90_0: 36036.58984375
+      percentile_99_5: 51938.76171875
+    label:
+    - image_intensity:
+      - max: 111656.0078125
+        mean: 10776.8876953125
+        median: 216.37770080566406
+        min: 0.0
+        stdev: 16701.0234375
+        percentile: [0.0, 0.0, 38695.83203125, 65393.7734375]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 38695.83203125
+        percentile_99_5: 65393.7734375
+      foreground_percentage: 0.9998363256454468
+    - image_intensity:
+      - max: 55125.203125
+        mean: 25119.279296875
+        median: 24535.869140625
+        min: 4864.23876953125
+        stdev: 8452.4619140625
+        percentile: [9779.9990234375, 14807.390625, 36036.58984375, 51938.76171875]
+        percentile_00_5: 9779.9990234375
+        percentile_10_0: 14807.390625
+        percentile_90_0: 36036.58984375
+        percentile_99_5: 51938.76171875
+      foreground_percentage: 0.00016367669741157442
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/2_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/2_ChP.nii.gz
+  image_stats:
+    shape:
+    - [185, 256, 256]
+    channels: 1
+    cropped_shape:
+    - [185, 256, 256]
+    spacing: [1.0000071706109768, 0.937500002451093, 0.9374999567644045]
+    sizemm: [185, 240, 239]
+    intensity:
+    - max: 4981753.0
+      mean: 352696.96875
+      median: 5549.21728515625
+      min: 0.0
+      stdev: 583670.0
+      percentile: [0.0, 0.0, 1357429.875, 2161914.25]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 1357429.875
+      percentile_99_5: 2161914.25
+  image_foreground_stats:
+    intensity:
+    - max: 2037475.0
+      mean: 979676.5625
+      median: 934397.0
+      min: 284758.46875
+      stdev: 314576.25
+      percentile: [449933.21875, 608209.4375, 1426529.0, 1881279.75]
+      percentile_00_5: 449933.21875
+      percentile_10_0: 608209.4375
+      percentile_90_0: 1426529.0
+      percentile_99_5: 1881279.75
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 2037475.0
+      mean: 979676.5625
+      median: 934397.0
+      min: 284758.46875
+      stdev: 314576.25
+      percentile: [449933.21875, 608209.4375, 1426529.0, 1881279.75]
+      percentile_00_5: 449933.21875
+      percentile_10_0: 608209.4375
+      percentile_90_0: 1426529.0
+      percentile_99_5: 1881279.75
+    label:
+    - image_intensity:
+      - max: 4981753.0
+        mean: 352543.03125
+        median: 5549.21728515625
+        min: 0.0
+        stdev: 583638.125
+        percentile: [0.0, 0.0, 1357429.875, 2161914.25]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 1357429.875
+        percentile_99_5: 2161914.25
+      foreground_percentage: 0.9997545480728149
+    - image_intensity:
+      - max: 2037475.0
+        mean: 979676.5625
+        median: 934397.0
+        min: 284758.46875
+        stdev: 314576.25
+        percentile: [449933.21875, 608209.4375, 1426529.0, 1881279.75]
+        percentile_00_5: 449933.21875
+        percentile_10_0: 608209.4375
+        percentile_90_0: 1426529.0
+        percentile_99_5: 1881279.75
+      foreground_percentage: 0.00024546030908823013
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/3_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/3_ChP.nii.gz
+  image_stats:
+    shape:
+    - [257, 384, 384]
+    channels: 1
+    cropped_shape:
+    - [257, 363, 358]
+    spacing: [0.6999999887285417, 0.6666667051401849, 0.6666667073339646]
+    sizemm: [179, 256, 256]
+    intensity:
+    - max: 61127.23046875
+      mean: 3707.88330078125
+      median: 0.0
+      min: 0.0
+      stdev: 5647.01708984375
+      percentile: [0.0, 0.0, 13188.0361328125, 21562.19140625]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 13188.0361328125
+      percentile_99_5: 21562.19140625
+  image_foreground_stats:
+    intensity:
+    - max: 18735.984375
+      mean: 5500.07763671875
+      median: 5442.54833984375
+      min: 0.0
+      stdev: 2583.1220703125
+      percentile: [733.135009765625, 2302.939453125, 8792.0234375, 13568.171875]
+      percentile_00_5: 733.135009765625
+      percentile_10_0: 2302.939453125
+      percentile_90_0: 8792.0234375
+      percentile_99_5: 13568.171875
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 18735.984375
+      mean: 5500.07763671875
+      median: 5442.54833984375
+      min: 0.0
+      stdev: 2583.1220703125
+      percentile: [733.135009765625, 2302.939453125, 8792.0234375, 13568.171875]
+      percentile_00_5: 733.135009765625
+      percentile_10_0: 2302.939453125
+      percentile_90_0: 8792.0234375
+      percentile_99_5: 13568.171875
+    label:
+    - image_intensity:
+      - max: 61127.23046875
+        mean: 3267.3662109375
+        median: 0.0
+        min: 0.0
+        stdev: 5435.64697265625
+        percentile: [0.0, 0.0, 12560.30078125, 21247.857421875]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 12560.30078125
+        percentile_99_5: 21247.857421875
+      foreground_percentage: 0.9997657537460327
+    - image_intensity:
+      - max: 18735.984375
+        mean: 5500.07763671875
+        median: 5442.54833984375
+        min: 0.0
+        stdev: 2583.1220703125
+        percentile: [733.135009765625, 2302.939453125, 8792.0234375, 13568.171875]
+        percentile_00_5: 733.135009765625
+        percentile_10_0: 2302.939453125
+        percentile_90_0: 8792.0234375
+        percentile_99_5: 13568.171875
+      foreground_percentage: 0.00023419239732902497
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/4_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/4_ChP.nii.gz
+  image_stats:
+    shape:
+    - [185, 256, 256]
+    channels: 1
+    cropped_shape:
+    - [185, 256, 256]
+    spacing: [1.0000095669298559, 0.937499993171903, 0.9375000125402139]
+    sizemm: [185, 239, 240]
+    intensity:
+    - max: 2811.788818359375
+      mean: 300.07489013671875
+      median: 7.637116432189941
+      min: 0.0
+      stdev: 432.1505432128906
+      percentile: [0.0, 0.0, 1022.9874267578125, 1554.4964599609375]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 1022.9874267578125
+      percentile_99_5: 1554.4964599609375
+  image_foreground_stats:
+    intensity:
+    - max: 1215.3741455078125
+      mean: 668.4986572265625
+      median: 641.98974609375
+      min: 327.6666259765625
+      stdev: 166.76083374023438
+      percentile: [372.3128662109375, 474.35931396484375, 906.80029296875, 1150.20556640625]
+      percentile_00_5: 372.3128662109375
+      percentile_10_0: 474.35931396484375
+      percentile_90_0: 906.80029296875
+      percentile_99_5: 1150.20556640625
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 1215.3741455078125
+      mean: 668.4986572265625
+      median: 641.98974609375
+      min: 327.6666259765625
+      stdev: 166.76083374023438
+      percentile: [372.3128662109375, 474.35931396484375, 906.80029296875, 1150.20556640625]
+      percentile_00_5: 372.3128662109375
+      percentile_10_0: 474.35931396484375
+      percentile_90_0: 906.80029296875
+      percentile_99_5: 1150.20556640625
+    label:
+    - image_intensity:
+      - max: 2811.788818359375
+        mean: 299.97625732421875
+        median: 7.637116432189941
+        min: 0.0
+        stdev: 432.1577453613281
+        percentile: [0.0, 0.0, 1022.9874267578125, 1554.4964599609375]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 1022.9874267578125
+        percentile_99_5: 1554.4964599609375
+      foreground_percentage: 0.9997323751449585
+    - image_intensity:
+      - max: 1215.3741455078125
+        mean: 668.4986572265625
+        median: 641.98974609375
+        min: 327.6666259765625
+        stdev: 166.76083374023438
+        percentile: [372.3128662109375, 474.35931396484375, 906.80029296875, 1150.20556640625]
+        percentile_00_5: 372.3128662109375
+        percentile_10_0: 474.35931396484375
+        percentile_90_0: 906.80029296875
+        percentile_99_5: 1150.20556640625
+      foreground_percentage: 0.0002676474105101079
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/5_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/5_ChP.nii.gz
+  image_stats:
+    shape:
+    - [257, 384, 384]
+    channels: 1
+    cropped_shape:
+    - [257, 364, 383]
+    spacing: [0.7000007029798196, 0.6666666849303238, 0.6666666924596303]
+    sizemm: [179, 256, 256]
+    intensity:
+    - max: 73692.1328125
+      mean: 4137.06884765625
+      median: 321.598388671875
+      min: 0.0
+      stdev: 5678.8310546875
+      percentile: [0.0, 0.0, 13282.23828125, 21529.099609375]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 13282.23828125
+      percentile_99_5: 21529.099609375
+  image_foreground_stats:
+    intensity:
+    - max: 15959.6005859375
+      mean: 6037.59765625
+      median: 5891.09765625
+      min: 0.0
+      stdev: 2585.572265625
+      percentile: [963.670654296875, 2677.36279296875, 9533.255859375, 13174.2890625]
+      percentile_00_5: 963.670654296875
+      percentile_10_0: 2677.36279296875
+      percentile_90_0: 9533.255859375
+      percentile_99_5: 13174.2890625
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 15959.6005859375
+      mean: 6037.59765625
+      median: 5891.09765625
+      min: 0.0
+      stdev: 2585.572265625
+      percentile: [963.670654296875, 2677.36279296875, 9533.255859375, 13174.2890625]
+      percentile_00_5: 963.670654296875
+      percentile_10_0: 2677.36279296875
+      percentile_90_0: 9533.255859375
+      percentile_99_5: 13174.2890625
+    label:
+    - image_intensity:
+      - max: 73692.1328125
+        mean: 3910.94091796875
+        median: 106.82463836669922
+        min: 0.0
+        stdev: 5601.56591796875
+        percentile: [0.0, 0.0, 13067.46484375, 21315.451171875]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 13067.46484375
+        percentile_99_5: 21315.451171875
+      foreground_percentage: 0.9997572302818298
+    - image_intensity:
+      - max: 15959.6005859375
+        mean: 6037.59765625
+        median: 5891.09765625
+        min: 0.0
+        stdev: 2585.572265625
+        percentile: [963.670654296875, 2677.36279296875, 9533.255859375, 13174.2890625]
+        percentile_00_5: 963.670654296875
+        percentile_10_0: 2677.36279296875
+        percentile_90_0: 9533.255859375
+        percentile_99_5: 13174.2890625
+      foreground_percentage: 0.0002427948493277654
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/6_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/6_ChP.nii.gz
+  image_stats:
+    shape:
+    - [185, 256, 256]
+    channels: 1
+    cropped_shape:
+    - [185, 256, 256]
+    spacing: [0.999998484948271, 0.9374999839429283, 0.9375000047288449]
+    sizemm: [184, 239, 240]
+    intensity:
+    - max: 3939.263916015625
+      mean: 346.3566589355469
+      median: 8.715850830078125
+      min: 0.0
+      stdev: 487.8182678222656
+      percentile: [0.0, 0.0, 1145.74365234375, 1719.7274169921875]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 1145.74365234375
+      percentile_99_5: 1719.7274169921875
+  image_foreground_stats:
+    intensity:
+    - max: 1828.885986328125
+      mean: 718.3606567382812
+      median: 667.814453125
+      min: 202.98915100097656
+      stdev: 228.0749053955078
+      percentile: [309.9236145019531, 473.6012878417969, 1053.0250244140625, 1403.58251953125]
+      percentile_00_5: 309.9236145019531
+      percentile_10_0: 473.6012878417969
+      percentile_90_0: 1053.0250244140625
+      percentile_99_5: 1403.58251953125
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 1828.885986328125
+      mean: 718.3606567382812
+      median: 667.814453125
+      min: 202.98915100097656
+      stdev: 228.0749053955078
+      percentile: [309.9236145019531, 473.6012878417969, 1053.0250244140625, 1403.58251953125]
+      percentile_00_5: 309.9236145019531
+      percentile_10_0: 473.6012878417969
+      percentile_90_0: 1053.0250244140625
+      percentile_99_5: 1403.58251953125
+    label:
+    - image_intensity:
+      - max: 3939.263916015625
+        mean: 346.1854553222656
+        median: 8.715850830078125
+        min: 0.0
+        stdev: 487.84063720703125
+        percentile: [0.0, 0.0, 1145.74365234375, 1719.7274169921875]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 1145.74365234375
+        percentile_99_5: 1719.7274169921875
+      foreground_percentage: 0.9995400905609131
+    - image_intensity:
+      - max: 1828.885986328125
+        mean: 718.3606567382812
+        median: 667.814453125
+        min: 202.98915100097656
+        stdev: 228.0749053955078
+        percentile: [309.9236145019531, 473.6012878417969, 1053.0250244140625, 1403.58251953125]
+        percentile_00_5: 309.9236145019531
+        percentile_10_0: 473.6012878417969
+        percentile_90_0: 1053.0250244140625
+        percentile_99_5: 1403.58251953125
+      foreground_percentage: 0.00045990815851837397
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/7_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/7_ChP.nii.gz
+  image_stats:
+    shape:
+    - [180, 240, 240]
+    channels: 1
+    cropped_shape:
+    - [180, 240, 240]
+    spacing: [0.9999975426804321, 1.00000002641488, 1.0000000083736102]
+    sizemm: [179, 240, 240]
+    intensity:
+    - max: 145634.546875
+      mean: 12368.7431640625
+      median: 222.2240753173828
+      min: 0.0
+      stdev: 19572.45703125
+      percentile: [0.0, 0.0, 44155.921875, 82887.3515625]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 44155.921875
+      percentile_99_5: 82887.3515625
+  image_foreground_stats:
+    intensity:
+    - max: 57324.921875
+      mean: 24203.90625
+      median: 23460.1953125
+      min: 7746.73095703125
+      stdev: 7641.9580078125
+      percentile: [9626.7470703125, 14829.01171875, 34526.953125, 46666.6875]
+      percentile_00_5: 9626.7470703125
+      percentile_10_0: 14829.01171875
+      percentile_90_0: 34526.953125
+      percentile_99_5: 46666.6875
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 57324.921875
+      mean: 24203.90625
+      median: 23460.1953125
+      min: 7746.73095703125
+      stdev: 7641.9580078125
+      percentile: [9626.7470703125, 14829.01171875, 34526.953125, 46666.6875]
+      percentile_00_5: 9626.7470703125
+      percentile_10_0: 14829.01171875
+      percentile_90_0: 34526.953125
+      percentile_99_5: 46666.6875
+    label:
+    - image_intensity:
+      - max: 145634.546875
+        mean: 12365.35546875
+        median: 222.2240753173828
+        min: 0.0
+        stdev: 19573.806640625
+        percentile: [0.0, 0.0, 44155.921875, 82887.3515625]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 44155.921875
+        percentile_99_5: 82887.3515625
+      foreground_percentage: 0.9997138977050781
+    - image_intensity:
+      - max: 57324.921875
+        mean: 24203.90625
+        median: 23460.1953125
+        min: 7746.73095703125
+        stdev: 7641.9580078125
+        percentile: [9626.7470703125, 14829.01171875, 34526.953125, 46666.6875]
+        percentile_00_5: 9626.7470703125
+        percentile_10_0: 14829.01171875
+        percentile_90_0: 34526.953125
+        percentile_99_5: 46666.6875
+      foreground_percentage: 0.00028607252170331776
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/8_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/8_ChP.nii.gz
+  image_stats:
+    shape:
+    - [185, 256, 256]
+    channels: 1
+    cropped_shape:
+    - [185, 256, 256]
+    spacing: [0.9999972494521645, 0.9374999954550541, 0.9375000034906286]
+    sizemm: [184, 239, 240]
+    intensity:
+    - max: 4666400.0
+      mean: 460111.65625
+      median: 23426.345703125
+      min: 0.0
+      stdev: 618666.8125
+      percentile: [0.0, 0.0, 1454071.125, 2236254.75]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 1454071.125
+      percentile_99_5: 2236254.75
+  image_foreground_stats:
+    intensity:
+    - max: 1968881.125
+      mean: 1014432.1875
+      median: 976074.0
+      min: 280760.125
+      stdev: 276581.375
+      percentile: [497273.65625, 678580.75, 1415321.25, 1779141.25]
+      percentile_00_5: 497273.65625
+      percentile_10_0: 678580.75
+      percentile_90_0: 1415321.25
+      percentile_99_5: 1779141.25
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 1968881.125
+      mean: 1014432.1875
+      median: 976074.0
+      min: 280760.125
+      stdev: 276581.375
+      percentile: [497273.65625, 678580.75, 1415321.25, 1779141.25]
+      percentile_00_5: 497273.65625
+      percentile_10_0: 678580.75
+      percentile_90_0: 1415321.25
+      percentile_99_5: 1779141.25
+    label:
+    - image_intensity:
+      - max: 4666400.0
+        mean: 459957.1875
+        median: 23426.345703125
+        min: 0.0
+        stdev: 618666.5625
+        percentile: [0.0, 0.0, 1454071.125, 2236254.75]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 1454071.125
+        percentile_99_5: 2236254.75
+      foreground_percentage: 0.9997214674949646
+    - image_intensity:
+      - max: 1968881.125
+        mean: 1014432.1875
+        median: 976074.0
+        min: 280760.125
+        stdev: 276581.375
+        percentile: [497273.65625, 678580.75, 1415321.25, 1779141.25]
+        percentile_00_5: 497273.65625
+        percentile_10_0: 678580.75
+        percentile_90_0: 1415321.25
+        percentile_99_5: 1779141.25
+      foreground_percentage: 0.00027853474603034556
+- image_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/9_ChP.nii.gz
+  label_filepath: /var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai/labels/final/9_ChP.nii.gz
+  image_stats:
+    shape:
+    - [257, 384, 384]
+    channels: 1
+    cropped_shape:
+    - [257, 364, 379]
+    spacing: [0.6999999997753344, 0.6666666679519283, 0.6666666824805252]
+    sizemm: [179, 256, 256]
+    intensity:
+    - max: 53572.83203125
+      mean: 4167.48046875
+      median: 436.5284423828125
+      min: 0.0
+      stdev: 5655.97314453125
+      percentile: [0.0, 0.0, 13093.4013671875, 22149.322265625]
+      percentile_00_5: 0.0
+      percentile_10_0: 0.0
+      percentile_90_0: 13093.4013671875
+      percentile_99_5: 22149.322265625
+  image_foreground_stats:
+    intensity:
+    - max: 14948.23828125
+      mean: 4538.93115234375
+      median: 4254.92626953125
+      min: 218.26422119140625
+      stdev: 2112.579833984375
+      percentile: [763.5160522460938, 1964.3780517578125, 7528.8896484375, 10972.0546875]
+      percentile_00_5: 763.5160522460938
+      percentile_10_0: 1964.3780517578125
+      percentile_90_0: 7528.8896484375
+      percentile_99_5: 10972.0546875
+  label_stats:
+    labels: [0, 2]
+    image_intensity:
+    - max: 14948.23828125
+      mean: 4538.93115234375
+      median: 4254.92626953125
+      min: 218.26422119140625
+      stdev: 2112.579833984375
+      percentile: [763.5160522460938, 1964.3780517578125, 7528.8896484375, 10972.0546875]
+      percentile_00_5: 763.5160522460938
+      percentile_10_0: 1964.3780517578125
+      percentile_90_0: 7528.8896484375
+      percentile_99_5: 10972.0546875
+    label:
+    - image_intensity:
+      - max: 53572.83203125
+        mean: 3898.871826171875
+        median: 108.72337341308594
+        min: 0.0
+        stdev: 5566.35205078125
+        percentile: [0.0, 0.0, 12765.595703125, 22039.78125]
+        percentile_00_5: 0.0
+        percentile_10_0: 0.0
+        percentile_90_0: 12765.595703125
+        percentile_99_5: 22039.78125
+      foreground_percentage: 0.9996809959411621
+    - image_intensity:
+      - max: 14948.23828125
+        mean: 4538.93115234375
+        median: 4254.92626953125
+        min: 218.26422119140625
+        stdev: 2112.579833984375
+        percentile: [763.5160522460938, 1964.3780517578125, 7528.8896484375, 10972.0546875]
+        percentile_00_5: 763.5160522460938
+        percentile_10_0: 1964.3780517578125
+        percentile_90_0: 7528.8896484375
+        percentile_99_5: 10972.0546875
+      foreground_percentage: 0.00031900304020382464

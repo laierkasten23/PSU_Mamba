@@ -31,6 +31,7 @@ __pycache__/
 
 # Ignore data files (replace with your actual data files and formats)
 ANON_DATA*
+Screenshots/
 
 # Ignore model checkpoints (replace with your actual model checkpoints)
 #models/

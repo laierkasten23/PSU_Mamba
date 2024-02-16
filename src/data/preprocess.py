@@ -6,8 +6,10 @@ import argparse
 
 '''
 Sample usage
-python3 preprocess.py -i interpol_2d_xy -shape '(257, 384)'   or 
-python3 preprocess.py -i interpol_3d -shape '(257, 384, 384)'   
+python3 preprocess.py -i interpol_2d_xy -shape '(257, 384)' -pt preprocess  or 
+python3 preprocess.py -i interpol_3d -shape '(257, 384, 256)' -pt preprocess or 
+python3 preprocess.py -i center_and_resize_3d -shape '(180, 240, 160)' -pt preprocess 
+python3 preprocess.py -pt correct_label 
 '''
 
 def interpolate_2d(image, target_shape):
@@ -200,11 +202,36 @@ def center_and_resize_3d(image, output_shape):
     return centered_resized_image
 
 
-def process_subject(data_path, subject_name, method, target_shape, save_data = True):
+def resize_subjects_by_factor(t1_data, mask_data, factor = 3):
+    """
+    Resize 3D images of multiple subjects by cutting away 1/factor of the slices in the z-direction.
+
+    Parameters:
+    - subjects_data: List of 3D NumPy arrays representing the original images for each subject.
+
+    Returns:
+    - resized_subject: resized 3D images.
+    """
+    
+    # Calculate the number of slices to be removed (one-third of the original slices)
+    slices_to_remove = int(t1_data.shape[2] / factor)
+
+     # Resize the subject in the z-direction
+    t1_data_new = t1_data[:, :, slices_to_remove:]
+    #t1_data_new = t1_data[:, :, :t1_data.shape[2] - slices_to_remove]
+    mask_data_new = mask_data[:, :, slices_to_remove:]
+
+    return t1_data_new, mask_data_new
+
+
+
+#------------------ MAIN FUNCTIONS ------------------#
+
+def process_subject(data_path, subject_name, method, target_shape, resize_z = True, save_data = True):
     
     subject_folder = os.path.join(data_path, subject_name)
     print("subject folder: " + subject_folder)
-
+    
     # Load T1.nii data and mask.nii data
     t1_file = os.path.join(subject_folder, 'T1.nii')
     mask_file = os.path.join(subject_folder, 'mask.nii')
@@ -214,6 +241,9 @@ def process_subject(data_path, subject_name, method, target_shape, save_data = T
 
     # preprocess mask data to just have 0 and 1 as labels
     mask_data[mask_data > 0] = 1
+
+    # Resize the subject in the z-direction (cut away 1/3 of the lower slices)
+    t1_data, mask_data = resize_subjects_by_factor(t1_data, mask_data, factor = 3)
 
     # Define target shape
     if len(target_shape) == 2:
@@ -272,7 +302,7 @@ def process_subject(data_path, subject_name, method, target_shape, save_data = T
     
     root_path = os.path.abspath(os.path.join(data_path, os.pardir))
     # Create new folder for processed data
-    new_data_path = os.path.join(root_path, 'ANON_DATA_'+f'{method.upper()}_'+'_'.join(str(x) for x in target_shape))
+    new_data_path = os.path.join(root_path, 'ANON_DATA_resized_z_'+f'{method.upper()}_'+'_'.join(str(x) for x in target_shape))
     print("new data path: " + new_data_path)
     os.makedirs(new_data_path, exist_ok=True)
     
@@ -293,6 +323,38 @@ def process_subject(data_path, subject_name, method, target_shape, save_data = T
         nib.save(nib.Nifti1Image(processed_mask_data, affine=None), output_mask_file)
 
 
+def process_subject_correct_label(data_path, subject_name, save_data = True):
+    subject_folder = os.path.join(data_path, subject_name)
+    print("subject folder: " + subject_folder)
+    
+    # Load T1.nii data and mask.nii data
+    t1_file = os.path.join(subject_folder, 'T1.nii')
+    mask_file = os.path.join(subject_folder, 'mask.nii')
+
+    t1_data = nib.load(t1_file).get_fdata()
+    mask_data = nib.load(mask_file).get_fdata()
+
+    # preprocess mask data to just have 0 and 1 as labels
+    mask_data[mask_data > 0] = 1
+
+    root_path = os.path.abspath(os.path.join(data_path, os.pardir))
+    # Create new folder for processed data
+    new_data_path = os.path.join(root_path, 'ANON_DATA_01_labels')
+    print("new data path: " + new_data_path)
+    os.makedirs(new_data_path, exist_ok=True)
+
+    # Create output folders
+    new_subject_folder = os.path.join(new_data_path, subject_name)
+    os.makedirs(new_subject_folder, exist_ok=True)
+
+    # Save T1.nii and changed mask.nii
+    if save_data:
+        output_t1_file = os.path.join(new_subject_folder, 'T1.nii')
+        output_mask_file = os.path.join(new_subject_folder, 'mask.nii')
+        print('saving to ' + new_subject_folder)
+        nib.save(nib.Nifti1Image(t1_data, affine=None), output_t1_file)
+        nib.save(nib.Nifti1Image(mask_data, affine=None), output_mask_file)
+
 def process_all_subjects(data_path, method, target_shape = (256, 256, 256), save_data = True):
     # Process each subject in the root path
     for subject_name in sorted(os.listdir(data_path)):
@@ -301,13 +363,22 @@ def process_all_subjects(data_path, method, target_shape = (256, 256, 256), save
             continue
         process_subject(data_path, subject_name, method, target_shape, save_data)
 
+def process_all_subejcts_correct_label(data_path, save_data = True):
+    # Process each subject in the root path
+    for subject_name in sorted(os.listdir(data_path)):
+        print("processing subject: " + subject_name)
+        if subject_name in ['.DS_Store','README.md']:
+            continue
+        process_subject_correct_label(data_path, subject_name, save_data)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--root_path', help='Root path where to store the data (project folder)', required=False, default="/Users/liaschmid/Documents/Uni Heidelberg/7. Semester Thesis/project")
+    parser.add_argument('-p', '--root_path', help='Root path where to store the data (project folder)', required=False, default="/Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/phuse_thesis_2024")
     parser.add_argument('-i', '--interpolation_method', help='Which method to use for interpolation, one of "interpol_2d_xy", "zero_pad_2d_xz", "zero_pad_2d_yz",  "interpol_3d", "zero_pad_3d" ', required=False, default="interpol_3d")
-    parser.add_argument('-shape', '--target_shape', help='Target shape for interpolation', required=True, default="(256, 256, 256)")
+    parser.add_argument('-shape', '--target_shape', help='Target shape for interpolation', required=False, default="(256, 256, 256)")
     parser.add_argument('-s', '--save_data', help='Whether to save the data', required=False, default=True)
+    parser.add_argument('-pt', '--preprocessing_task', help='Apply resizing/interpolation etc., or just correcting label from 2->1. One of ["correct_label", "preprocess"]', choices=['correct_label', 'preprocess'], required=True, default='correct_label')
     args = parser.parse_args()
 
     root_path = args.root_path
@@ -318,4 +389,10 @@ if __name__ == "__main__":
     print("target shape and type: " + args.target_shape + " " + str(type(target_shape)))
     print("save data: " + str(args.save_data))
     
-    process_all_subjects(data_path, args.interpolation_method, target_shape, args.save_data)
+    if args.preprocessing_task == 'preprocess':
+        process_all_subjects(data_path, args.interpolation_method, target_shape, args.save_data)
+    elif args.preprocessing_task == 'correct_label':
+        process_all_subejcts_correct_label(data_path, args.save_data)
+    else:
+        raise ValueError("Invalid preprocessing task. Use one of: 'correct_label', 'preprocess'.")
+

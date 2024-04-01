@@ -10,6 +10,8 @@ class WriteTrainJSON:
     """
     Class for writing .json files to run from training from scratch, finetuning and/or the prediction of Choroid Plexus segmentations.
 
+    python3 step0a_create_train_json.py --dataroot /var/data/MONAI_Choroid_Plexus/dataset_monai_train_from_scratch --description "Dataset for Choroid Plexus segmentation" --work_dir /var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training --train_json train.json
+
     """
     def __init__(self, dataroot: str=".", description=None, work_dir: str=".", train_json: str="train.json"):
         """
@@ -17,7 +19,7 @@ class WriteTrainJSON:
 
         :param dataroot: The path to the data directory. (/var/data/MONAI_Choroid_Plexus/dataset_monai)
         :param description: The description of the experiment.
-        :param work_dir: The working directory. (/var/data/student_home/lia/thesis/monai_segmentation/monai_training)
+        :param work_dir: The working directory. (/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training)
         :param train_json: The name of the train.json file. (train.json)
         """
         self.dataroot = dataroot
@@ -33,6 +35,7 @@ class WriteTrainJSON:
 
         # Set path to output file
         output_folder = os.path.join(self.work_dir, 'JSON_dir')
+        print('Output folder: %s' % output_folder)
 
         # Create output folder if it does not exist
         if not os.path.exists(output_folder):
@@ -108,9 +111,9 @@ if __name__ == '__main__':
     )
 
     # Add the parameters positional/optional
-    parser.add_argument('--dataroot', required=True, default="/var/data/MONAI_Choroid_Plexus/dataset_train_from_scratch_monai" , help="Data directory. Where the data is stored")
+    parser.add_argument('--dataroot', required=True, default="/var/data/MONAI_Choroid_Plexus/dataset_monai_train_from_scratch" , help="Data directory. Where the data is stored")
     parser.add_argument('--description', required=False, help="Data description")
-    parser.add_argument('--work_dir', required=True, default="/var/data/student_home/lia/thesis/monai_segmentation/monai_training", help="working directory")
+    parser.add_argument('--work_dir', required=True, default="/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training", help="working directory")
     parser.add_argument('--train_json', required=False, default="train.json", help="Name of the train.json file")
     # Parse the arguments
     args = parser.parse_args()

@@ -65,6 +65,24 @@ unet2d.ipynb
 sam.ipynb 
 preprocess.ipynb
 
+# ignore some folders 
+runs/
+working_dir*/
+bundle_dir_json/   
+algorithm_trained/  
+
+*/.ipynb_checkpoints/*
+*/.vscode/*
+*/.idea/*
+*/.git/*
+*/.gitignore
+*/.gitattributes
+*/.gitmodules
+*/.gitkeep
+*/.gitlab-ci.yml
+*/.github/*
+*/.gitlab/*
+
 
 # Ignore large files
 */pretrained_deepedit_dynunet.pt

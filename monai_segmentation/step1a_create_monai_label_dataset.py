@@ -39,10 +39,14 @@ def folderstructure_changer(path, folder_name, amount_train_subjects='all'):
 
     Example Usage: 
     python step1a_create_monai_dataset.py --path /var/data/MONAI_Choroid_Plexus/ANON_DATA_01_labels --folder_name dataset_monai --amount_train_subjects 10
+    python step1a_create_monai_dataset.py --path /var/data/MONAI_Choroid_Plexus/ANON_DATA_01_labels --folder_name dataset_monai_train_from_scract --amount_train_subjects 'all'
     """
 
-    print(amount_train_subjects)
-    if amount_train_subjects is not 'all' and amount_train_subjects is not int:
+
+    if not (amount_train_subjects == 'all') and not isinstance(amount_train_subjects, int):
+        print("entered", amount_train_subjects)
+        print("not (amount_train_subjects == 'all')", not (amount_train_subjects == 'all'))
+        print(amount_train_subjects is not 'all')
         raise ValueError('amount_train_subjects has to be either "all" or an integer')
     
     # Create the folder structure
@@ -76,6 +80,83 @@ def folderstructure_changer(path, folder_name, amount_train_subjects='all'):
     for subject in test_subjects:
         mask = nib.load(os.path.join(path, subject, 'mask.nii'))
         nib.save(mask, os.path.join(new_dataset_path, 'labels', 'final', subject + '_ChP.nii.gz'))
+        
+    print('Images and labels copied to the correct folder')
+    
+    return new_dataset_path
+
+
+def folderstructure_changer_reverse(path, folder_name, amount_train_subjects='all'):
+    """
+    This function changes the folder structure of the dataset from the following structure 
+    
+    DATASET
+    |-MRI_IDsj_image.nii.gz
+    |-MRI_IDsi_image.nii.gz
+    |- ....
+    |-labels
+        |-final
+            |-MRI_IDsj_seg.nii.gz
+            |- ....
+
+    where i,j are the subject IDs from 0 to N, the folder labels contains a subfolder final containing the 
+    segmentation masks of the corresponding amount_train_subjects images which were randomly chosen. 
+
+
+    to the following structure:
+    DATASET
+        -MRI_IDsj
+            -T1.nii
+            -mask.nii
+        -MRI_IDsj
+            -T1.nii
+            -mask.nii
+        ...
+    where MRI_IDsj is the subject ID from 0 to N
+
+    :param path: path to the dataset
+    :param folder_name: name of the folder to be created
+    :param amount_train_subjects: amount of subjects to be used for training (meaning, the labels are known for these subjects). 
+        If 'all' is given, all subjects are used for training, otherwise integer value is expected
+    
+    """
+
+    if not (amount_train_subjects == 'all') and not isinstance(amount_train_subjects, int):
+        print("entered", amount_train_subjects)
+        print("not (amount_train_subjects == 'all')", not (amount_train_subjects == 'all'))
+        print(amount_train_subjects is not 'all')
+        raise ValueError('amount_train_subjects has to be either "all" or an integer')
+    
+    # Create the folder structure
+    new_dataset_path = os.path.join(path, '..', folder_name)
+    os.makedirs(new_dataset_path, exist_ok=True)
+    print('Folder structure created')
+    
+
+    # Get the list of all the subjects
+    subjects = os.listdir(os.path.join(path, 'labels', 'final'))
+    #subjects.remove(folder_name)
+    if '.DS_Store' in subjects:
+        subjects.remove('.DS_Store')
+
+    # Randomly choose the train subjects and test subjects
+    train_subjects = [subject for subject in subjects]
+
+    if amount_train_subjects == 'all':
+        test_subjects = [subject for subject in subjects]
+    else:
+        test_subjects = random.sample(subjects, amount_train_subjects)
+    print('Train subjects: %s' % train_subjects)
+    print('Test subjects: %s' % test_subjects)
+                
+    # Copy the images and labels to the correct folder
+    for subject in train_subjects:
+        img = nib.load(os.path.join(path, 'labels', 'final', subject + '_ChP.nii.gz'))
+        nib.save(img, os.path.join(new_dataset_path, subject, 'mask.nii'))
+        
+    for subject in test_subjects:
+        mask = nib.load(os.path.join(path, subject + '_ChP.nii.gz'))
+        nib.save(mask, os.path.join(new_dataset_path, subject, 'T1.nii'))
         
     print('Images and labels copied to the correct folder')
     

@@ -1,0 +1,25 @@
+---
+image_key: image
+label_key: label
+transforms_validate:
+  _target_: Compose
+  transforms:
+  - _target_: LoadImaged                          # load the image and label data identified by the image_key and label_key.
+    keys: ["@image_key", "@label_key"]
+  - _target_: EnsureChannelFirstd                 # rearrange the dimensions of the image and label data to ensure that the channel dimension is first
+    keys: ["@image_key", "@label_key"]
+  - _target_: Orientationd                        # change the orientation of the image and label data to the RAS (Right-Anterior-Superior) orientation.
+    keys: ["@image_key", "@label_key"]      
+    axcodes: RAS                                  # R: Dir towards patient`s right hand side; A: Dir towards patient`s front; S: Dir towards patient`s head
+  - _target_: Spacingd                            # resamples the image and label data to a certain pixel spacing
+    keys: ["@image_key", "@label_key"]
+    pixdim: null
+    mode: [bilinear, nearest]
+    align_corners: [true, true]
+  - _target_: CastToTyped
+    keys: "@image_key"
+    dtype: "$torch.float32"
+  - PLACEHOLDER_INTENSITY_NORMALIZATION
+  - _target_: CastToTyped
+    keys: ["@image_key", "@label_key"]
+    dtype: ["$torch.float32", "$torch.uint8"]

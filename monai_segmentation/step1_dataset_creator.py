@@ -39,6 +39,8 @@ def folderstructure_changer(path, folder_name, amount_train_subjects=5):
 
     Example Usage:
     python step1_dataset_creator.py --path /var/data/MONAI_Choroid_Plexus/ANON_DATA_01_labels --folder_name dataset_aschoplex --amount_train_subjects 10
+    python step1_dataset_creator.py --path /var/data/MONAI_Choroid_Plexus/ANON_DATA_01_labels --folder_name dataset_aschoplex --amount_train_subjects 10
+    
     """
 
 

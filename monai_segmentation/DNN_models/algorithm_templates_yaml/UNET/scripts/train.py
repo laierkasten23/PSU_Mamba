@@ -44,7 +44,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
     _args = _update_args(config_file=config_file, **override)
-    config_file_ = _pop_args(_args, "config_file")[0]
+    config_file_ = _pop_args(_args, "config_file")[0]                   # get the configuration file from the arguments
 
     parser = ConfigParser()
     parser.read_config(config_file_)
@@ -79,13 +79,13 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
     print("PARSING SUCCESSFUL!")
 
-    if not os.path.exists(ckpt_path):
+    if not os.path.exists(ckpt_path):                       # create checkpoint directory if it doesn't exist
         os.makedirs(ckpt_path, exist_ok=True)
 
     if determ:
         set_determinism(seed=0)
 
-    print("[info] number of GPUs:", torch.cuda.device_count())
+    print("[info] number of GPUs:", torch.cuda.device_count())          # initialize distributed process group if there is >1 GPU
     if torch.cuda.device_count() > 1:
         dist.init_process_group(backend="nccl", init_method="env://")
         world_size = dist.get_world_size()
@@ -93,11 +93,12 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         world_size = 1
     print("[info] world_size:", world_size)
 
-    datalist = ConfigParser.load_config_file(data_list_file_path)
+    datalist = ConfigParser.load_config_file(data_list_file_path)          # load list of data files
 
+    # get training/validation data from the list of data files
     list_train = []
     list_valid = []
-    for item in datalist["training"]:
+    for item in datalist["training"]:                                   
         item.pop("fold", None)
         list_train.append(item)
 
@@ -106,6 +107,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         list_valid.append(item)
 
     files = []
+    # go through training data & checks if image and label files exist. If they do, add to list of training files.
     for _i in range(len(list_train)):
         str_img = os.path.join(data_file_base_dir, list_train[_i]["image"])
         str_seg = os.path.join(data_file_base_dir, list_train[_i]["label"])
@@ -118,13 +120,14 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     train_files = files
     random.shuffle(train_files)
 
-    if torch.cuda.device_count() > 1:
+    if torch.cuda.device_count() > 1:           # partitions the training data among the GPUs if there is >1 GPU.
         train_files = partition_dataset(data=train_files, shuffle=True, num_partitions=world_size, even_divisible=True)[
             dist.get_rank()
         ]
     print("train_files:", len(train_files))
 
     files = []
+    # go through val data & checks if image and label files exist. If they do, add to list of training files.
     for _i in range(len(list_valid)):
         str_img = os.path.join(data_file_base_dir, list_valid[_i]["image"])
         str_seg = os.path.join(data_file_base_dir, list_valid[_i]["label"])
@@ -145,6 +148,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         ]
     print("val_files:", len(val_files))
 
+    # create training and val datasets. If >= 4 GPUs, use all of them for data loading. Otherwise, use a fraction of them.
     if torch.cuda.device_count() >= 4:
         train_ds = monai.data.CacheDataset(
             data=train_files, transform=train_transforms, cache_rate=1.0, num_workers=8, progress=False
@@ -168,6 +172,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             progress=False,
         )
 
+    # create training/ val data loader
     train_loader = DataLoader(train_ds, num_workers=2, batch_size=num_images_per_batch, shuffle=True)
     val_loader = DataLoader(val_ds, num_workers=2, batch_size=1, shuffle=False)
 
@@ -177,10 +182,10 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     model = parser.get_parsed_content("network")
     model = model.to(device)
 
-    if torch.cuda.device_count() > 1:
+    if torch.cuda.device_count() > 1:  # convert the model's batch norma. layers to synchronized batch norm if >1 GPU
         model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
 
-    if softmax:
+    if softmax:     # set the post-processing transformations for the predictions and labels
         post_pred = transforms.Compose(
             [transforms.EnsureType(), transforms.AsDiscrete(argmax=True, to_onehot=output_classes)]
         )
@@ -192,8 +197,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
     loss_function = parser.get_parsed_content("training#loss")
 
-    optimizer_part = parser.get_parsed_content("training#optimizer", instantiate=False)
-    optimizer = optimizer_part.instantiate(params=model.parameters())
+    optimizer_part = parser.get_parsed_content("training#optimizer", instantiate=False) # TODO: why not instantiate?
+    optimizer = optimizer_part.instantiate(params=model.parameters()) # because it is done here
 
     num_epochs_per_validation = num_iterations_per_validation // len(train_loader)
     num_epochs_per_validation = max(num_epochs_per_validation, 1)
@@ -206,9 +211,11 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     lr_scheduler_part = parser.get_parsed_content("training#lr_scheduler", instantiate=False)
     lr_scheduler = lr_scheduler_part.instantiate(optimizer=optimizer)
 
+    # wrap model in a DistributedDataParallel wrapper if >1 GPU
     if torch.cuda.device_count() > 1:
         model = DistributedDataParallel(model, device_ids=[device], find_unused_parameters=False)
 
+    # load the pre-trained model if fine-tuning is enabled and the pre-trained model file exists.
     if finetune["activate"] and os.path.isfile(finetune["pretrained_ckpt_name"]):
         print("[info] fine-tuning pre-trained checkpoint {:s}".format(finetune["pretrained_ckpt_name"]))
         if torch.cuda.device_count() > 1:
@@ -218,7 +225,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     else:
         print("[info] training from scratch")
 
-    if amp:
+    if amp:         # import GradScaler and autocast functions and create a new GradScaler if AMP is enabled
         from torch.cuda.amp import GradScaler, autocast
 
         scaler = GradScaler()
@@ -231,13 +238,14 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     idx_iter = 0
     metric_dim = output_classes - 1 if softmax else output_classes
 
-    if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
+    if torch.cuda.device_count() == 1 or dist.get_rank() == 0:      # creates a SummaryWriter and a CSV file to log the accuracy history
         writer = SummaryWriter(log_dir=os.path.join(ckpt_path, "Events"))
 
         with open(os.path.join(ckpt_path, "accuracy_history.csv"), "a") as f:
             f.write("epoch\tmetric\tloss\tlr\ttime\titer\n")
 
     start_time = time.time()
+    # main training loop
     for epoch in range(num_epochs):
         lr = lr_scheduler.get_last_lr()[0]
         if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
@@ -254,21 +262,21 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             step += 1
             inputs, labels = batch_data["image"].to(device), batch_data["label"].to(device)
 
-            for param in model.parameters():
+            for param in model.parameters():        # set the gradients of all model parameters to None
                 param.grad = None
 
             if amp:
                 with autocast():
-                    outputs = model(inputs)
+                    outputs = model(inputs)         # perform forward pass and compute loss
                     loss = loss_function(outputs.float(), labels)
 
-                scaler.scale(loss).backward()
-                scaler.unscale_(optimizer)
-                torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)
-                scaler.step(optimizer)
-                scaler.update()
+                scaler.scale(loss).backward()       # performs backward pass
+                scaler.unscale_(optimizer)          # unscales gradients
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)     # clip gradients
+                scaler.step(optimizer)              # perform optimizer step
+                scaler.update()                     # updates scaler in the autocast context
             else:
-                outputs = model(inputs)
+                outputs = model(inputs)             # else: same steps WITHOUT the autocast context.
                 loss = loss_function(outputs.float(), labels)
 
                 loss.backward()
@@ -285,9 +293,9 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                 print(f"[{str(datetime.now())[:19]}] " + f"{step}/{epoch_len}, train_loss: {loss.item():.4f}")
                 writer.add_scalar("Loss/train", loss.item(), epoch_len * epoch + step)
 
-            lr_scheduler.step()
+            lr_scheduler.step()             # step learning rate scheduler
 
-        if torch.cuda.device_count() > 1:
+        if torch.cuda.device_count() > 1:       # >1 GPU, synchronize loss tensor across all GPUs.
             dist.barrier()
             dist.all_reduce(loss_torch, op=torch.distributed.ReduceOp.SUM)
 
@@ -312,12 +320,12 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                 val_outputs = None
 
                 _index = 0
-                for val_data in val_loader:
+                for val_data in val_loader:     # go through each batch in validation data loader
                     val_images = val_data["image"].to(device)
                     val_labels = val_data["label"].to(device)
 
                     with torch.cuda.amp.autocast(enabled=amp):
-                        val_outputs = sliding_window_inference(
+                        val_outputs = sliding_window_inference(    # perform forward pass with sliding window inference
                             val_images,
                             patch_size_valid,
                             num_sw_batch_size,
@@ -326,6 +334,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                             overlap=overlap_ratio,
                         )
 
+                    # apply post-processing transformations to the outputs and labels.
                     val_outputs = post_pred(val_outputs[0, ...])
                     val_outputs = val_outputs[None, ...]
 
@@ -336,7 +345,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     value = compute_dice(y_pred=val_outputs, y=val_labels, include_background=False)
 
                     print(_index + 1, "/", len(val_loader), value)
-
+                    # update the metric tensor and the metric sum and count
                     metric_count += len(value)
                     metric_sum += value.sum().item()
                     metric_vals = value.cpu().numpy()
@@ -353,7 +362,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
                     _index += 1
 
-                if torch.cuda.device_count() > 1:
+                if torch.cuda.device_count() > 1:       # >1 GPU, synchronize the metric tensor across all GPUs
                     dist.barrier()
                     dist.all_reduce(metric, op=torch.distributed.ReduceOp.SUM)
 
@@ -411,7 +420,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         writer.flush()
         writer.close()
 
-    if torch.cuda.device_count() > 1:
+    if torch.cuda.device_count() > 1:               # >1 GPU, destroy the process group
         dist.destroy_process_group()
 
     return best_metric

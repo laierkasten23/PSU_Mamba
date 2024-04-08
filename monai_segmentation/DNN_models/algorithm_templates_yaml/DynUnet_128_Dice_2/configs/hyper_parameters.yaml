@@ -7,10 +7,6 @@ data_list_file_path: null
 
 fold: 0
 
-finetune:
-  activate: True
-  pretrained_ckpt_name: $@pretrained_path + '/model_fold2' + '/best_metric_model.pt'
-
 model_selection: Dice
 
 
@@ -58,6 +54,25 @@ training:
     gamma: 0.5
     optimizer: $@training#optimizer
     step_size: $@training#num_iterations // 5
+
+batch_size: '@training#num_images_per_batch'
+num_epochs: 300
+num_warmup_epochs: 3
+resample: false
+resample_resolution: [1, 1, 1]
+crop_mode: ratio
+normalize_mode: meanstd
+intensity_bounds: null
+
+num_epochs_per_validation: null
+num_epochs_per_saving: 1
+num_workers: 4
+num_steps_per_image: null
+num_crops_per_image: 1
+
+finetune:
+  activate: True
+  pretrained_ckpt_name: $@pretrained_path + '/model_fold2' + '/best_metric_model.pt'
 
 
 # validation 

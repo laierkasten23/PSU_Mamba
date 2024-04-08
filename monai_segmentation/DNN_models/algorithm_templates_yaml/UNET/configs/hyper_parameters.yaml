@@ -36,7 +36,7 @@ training:
   amp: true
   determ: false
   input_channels: null
-  learning_rate: 0.2
+  learning_rate: 0.0001
   num_images_per_batch: 2
   num_iterations: 40000
   num_iterations_per_validation: 500
@@ -64,6 +64,13 @@ training:
     lr: '@training#learning_rate'
     weight_decay: 1.e-5
 
+  lr_scheduler:
+    _target_: torch.optim.lr_scheduler.StepLR
+    optimizer: "$@training#optimizer"
+    step_size: "$@training#num_iterations // 5"             # number of iterations before decreasing the learning rate
+    gamma: 0.5                                              # multiplicative factor by which the learning rate is decreased
+
+
 batch_size: '@training#num_images_per_batch'
 num_epochs: 300
 num_warmup_epochs: 3
@@ -79,9 +86,15 @@ num_workers: 4
 num_steps_per_image: null
 num_crops_per_image: 1
 
-finetune:
-  enabled: false
-  ckpt_name: $@bundle_root + '/model/model.pt'
+#finetune:
+#  enabled: false
+#  ckpt_name: $@bundle_root + '/model/model.pt'
+
+# fine-tuning
+finetune:                                                   # fine-tuning is not activated
+  activate: false
+  pretrained_ckpt_name: "$@bundle_root + '/model_fold' + str(@fold) + '/best_metric_model.pt'"
+
 
 validate:
   enabled: false

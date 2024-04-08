@@ -12,6 +12,5 @@ network:
   norm: INSTANCE
   dropout: 0.0
   bias: True
-  num_classes: 2
   act: 'PRELU'
   adn_ordering: 'NDA'

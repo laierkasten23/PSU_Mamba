@@ -30,9 +30,10 @@ __pycache__/
 .ipynb_checkpoints/
 
 # Ignore data files (replace with your actual data files and formats)
-ANON_DATA*
+ANON*
 Screenshots/
-dataset_monai/
+dataset_*/
+pazienti_*
 
 # Ignore model checkpoints (replace with your actual model checkpoints)
 #models/
@@ -57,6 +58,7 @@ config.ini
 *.dll
 *.so
 *.out
+*.pdf
 
 # Ignore any other files or directories you don't want to include in version control
 progress.md

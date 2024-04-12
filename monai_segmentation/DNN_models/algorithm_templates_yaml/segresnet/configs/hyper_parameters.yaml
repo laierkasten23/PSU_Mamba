@@ -13,16 +13,6 @@ fold: 0
 
 num_epochs: 1250
 
-
-
-
-
-
-
-
-
-
-
 # training
 training:
   amp: true

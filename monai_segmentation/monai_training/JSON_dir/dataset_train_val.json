@@ -1,0 +1,63 @@
+{
+    "description": "Dataset for Choroid Plexus segmentation",
+    "labels": {
+        "0": "background",
+        "1": "Choroid Plexus"
+    },
+    "modality": {
+        "0": "MR"
+    },
+    "name": "MRI Dataset - Choroid Plexus Segmentation",
+    "numTraining": 5,
+    "numValidation": 5,
+    "tensorImageSize": "3D",
+    "training": [
+        {
+            "fold": 0,
+            "image": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/image_Tr/6_image.nii",
+            "label": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/label_Tr/6_seg.nii"
+        },
+        {
+            "fold": 1,
+            "image": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/image_Tr/0_image.nii",
+            "label": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/label_Tr/0_seg.nii"
+        },
+        {
+            "fold": 2,
+            "image": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/image_Tr/15_image.nii",
+            "label": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/label_Tr/15_seg.nii"
+        },
+        {
+            "fold": 3,
+            "image": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/image_Tr/19_image.nii",
+            "label": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/label_Tr/19_seg.nii"
+        },
+        {
+            "fold": 4,
+            "image": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/image_Tr/10_image.nii",
+            "label": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/label_Tr/10_seg.nii"
+        }
+    ],
+    "validation": [
+        {
+            "image": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/image_Tr/11_image.nii",
+            "label": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/label_Tr/11_seg.nii"
+        },
+        {
+            "image": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/image_Tr/14_image.nii",
+            "label": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/label_Tr/14_seg.nii"
+        },
+        {
+            "image": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/image_Tr/18_image.nii",
+            "label": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/label_Tr/18_seg.nii"
+        },
+        {
+            "image": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/image_Tr/2_image.nii",
+            "label": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/label_Tr/2_seg.nii"
+        },
+        {
+            "image": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/image_Tr/5_image.nii",
+            "label": "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex/label_Tr/5_seg.nii"
+        }
+    ]
+}

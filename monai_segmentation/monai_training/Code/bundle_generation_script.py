@@ -16,8 +16,6 @@ from monai.utils.enums import AlgoKeys # added to work
 
 print_config()
 
-join=os.path.join
-
 logger = get_logger(module_name=__name__)
 ALGO_HASH = os.environ.get("MONAI_ALGO_HASH", "004a63c")
 
@@ -50,24 +48,29 @@ class MyBundleGen(AlgoGen):
             {"modality": "ct", "datalist": "path_to_json_datalist", "dataroot": "path_dir_data"}
     """
 
-    def __init__(self, algo_path: str = ".", algo_template: str = ".", algos=None, data_stats_filename=None, data_src_cfg_name=None):
+    def __init__(self,
+                algo_path: str = ".", 
+                algo_template_path: str = ".", 
+                algos: dict | list | str | None = None, 
+                data_stats_filename: str | None = None, 
+                data_src_cfg_name: str | None = None):
         self.algos: Any = []
 
-        if algos is None or isinstance(algos, str):
-            
-            scr_dir=algo_template
-            # files=os.listdir(scr_dir)
-            new_path=join(algo_path, "algorithm_templates")
+        if algos is None or isinstance(algos, (list, tuple, str)):
+            logger.info(f"BundleGen from directory {algo_template_path}")
+            scr_dir=algo_template_path
+            new_path=os.path.join(algo_path, "algorithm_templates_yaml")
+            # prepending the new path to the sys.path -> Python will look in new_path first when importing modules.
             sys.path.insert(0, new_path)
-            shutil.copytree(scr_dir, new_path)
+            shutil.copytree(scr_dir, new_path) # recursively copy entire directory tree rooted at scr_dir (source directory) to new_path (destination directory)
             algos = deepcopy(default_algos)
             for name in algos:
-                algos[name]["template_path"] = join(
-                    algo_path, "algorithm_templates", # algos[name]["template_path"]
+                algos[name]["template_path"] = os.path.join(
+                    algo_path, "algorithm_templates_yaml", 
                 )
 
         if isinstance(algos, dict):
-            for algo_name, algo_params in algos.items():
+            for algo_name, algo_params in sorted(algos.items()):
                 try:
                     self.algos.append(ConfigParser(algo_params).get_parsed_content())
                 except RuntimeError as e:
@@ -87,7 +90,7 @@ class MyBundleGen(AlgoGen):
                                 └── validate.py
                         """
                         raise RuntimeError(msg) from e
-                self.algos[-1].name = algo_name
+                self.algos[-1].name = algo_name # set the name attribute of the last object in the algos list to the value of algo_name
         else:
             self.algos = ensure_tuple(algos)
 
@@ -95,7 +98,7 @@ class MyBundleGen(AlgoGen):
         self.data_src_cfg_filename = data_src_cfg_name
         self.history: List[Dict] = []
 
-    def set_data_stats(self, data_stats_filename: str):  # type: ignore
+    def set_data_stats(self, data_stats_filename: str) -> None:  # type: ignore
         """
         Set the data stats filename
 
@@ -121,11 +124,11 @@ class MyBundleGen(AlgoGen):
         """Get the data source filename"""
         return self.data_src_cfg_filename
 
-    def get_history(self) -> List:  # type: ignore
+    def get_history(self) -> list:  # type: ignore
         """get the history of the bundleAlgo object with their names/identifiers"""
         return self.history
 
-    def generate(self, output_folder=".", num_fold: int = 1): 
+    def generate(self, output_folder=".", num_fold: int = 1) -> None: 
         """
         Generate the bundle scripts/configs for each bundleAlgo
 
@@ -151,88 +154,6 @@ class MyBundleGen(AlgoGen):
                 
         
 
-class Finetuning:
-
-    # Finetuning step on an unseen sample of images.
-
-    # initialization
-    def __init__(self, work_dir: str=".", dataroot: str = ".", json_file: str = ".", output_dir=None):
-
-        self.Workdir=work_dir
-        self.Dataroot=dataroot
-        self.JSON_file=json_file
-        if output_dir is None:
-            self.Output_dir=join(self.Workdir, 'working_directory_finetuning')
-        elif  isinstance(output_dir, str):
-            self.Output_dir=output_dir
-    
-    def finetuning_run(self):
-
-        dataroot = self.Dataroot
-        work_dir = self.Output_dir
-
-        # create working directory
-        if not os.path.isdir(work_dir):
-            os.makedirs(work_dir)
-
-        algorithm_path=join(os.environ['ASCHOPLEXDIR'], 'DNN_models', 'algorithm_templates')
-
-        da_output_yaml = join(work_dir, "datastats.yaml")
-        data_src_cfg = join(work_dir, "data_src_cfg.yaml")
-
-        if not os.path.isdir(dataroot):
-            os.makedirs(dataroot)
-
-        if not os.path.isdir(work_dir):
-            os.makedirs(work_dir)
-
-
-        # write to a json file
-        datalist = self.JSON_file
-
-        # 1. Analyze Dataset
-
-        da = DataAnalyzer(datalist, dataroot, output_path=da_output_yaml)
-        da.get_all_case_stats()
-
-        data_src = {
-            "modality": "MRI",
-            "datalist": datalist,
-            "dataroot": dataroot,
-        }
-
-        ConfigParser.export_config_file(data_src, data_src_cfg)
-
-        # 2. Training
-
-        bundle_generator = MyBundleGen(
-            algo_path=work_dir, algo_template=algorithm_path, data_stats_filename=da_output_yaml, data_src_cfg_name=data_src_cfg
-        )
-        bundle_generator.generate(work_dir, num_fold=1)
-        history = bundle_generator.get_history()
-        ("DONE")
-        export_bundle_algo_history(history)
-
-
-        max_epochs = 100
-        max_epochs = max(max_epochs, 2)
-
-        train_param = {
-            "CUDA_VISIBLE_DEVICES": [0],  # use only 1 gpu
-            "num_iterations": 10000,
-            "num_iterations_per_validation": 2 * max_epochs,
-            "num_images_per_batch": 1,
-            "num_epochs": max_epochs,
-            "num_warmup_iterations": 2 * max_epochs,
-        }
-
-        for h in history: # [1::4] (added) to get only the algo_bunde objects
-            for i, (_, algo) in enumerate(h.items()):
-                if i % 2 == 1: 
-                    algo.train(train_param)
-                    print("DONE")
-        
-        return self.Output_dir
 
 
 

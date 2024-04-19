@@ -36,6 +36,8 @@ dataset_*/
 pazienti_*
 data/
 
+# Ignore SAM Lia folder 
+SAM_LIA/
 # Ignore model checkpoints (replace with your actual model checkpoints)
 #models/
 *pth

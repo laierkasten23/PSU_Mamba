@@ -34,6 +34,7 @@ ANON*
 Screenshots/
 dataset_*/
 pazienti_*
+data/
 
 # Ignore model checkpoints (replace with your actual model checkpoints)
 #models/

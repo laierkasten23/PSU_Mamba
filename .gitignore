@@ -67,7 +67,9 @@ config.ini
 progress.md
 demo.ipynb
 unet2d.ipynb
+sam_stuff.ipynb
 sam.ipynb 
+
 preprocess.ipynb
 
 # ignore some folders 

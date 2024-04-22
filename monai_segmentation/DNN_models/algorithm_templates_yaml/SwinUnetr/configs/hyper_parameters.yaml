@@ -67,6 +67,12 @@ training:
   lr: '@training#learning_rate'
   weight_decay: 1.e-5
 
+  lr_scheduler:
+  _target_: monai.optimizers.WarmupCosineSchedule
+  optimizer: "$@training#optimizer"
+  warmup_steps: $@num_epochs // 10
+  t_total: '@num_epochs // @num_epochs_per_validation + 0.1'
+  warumup_multiplier: 0.1
 
 batch_size: '@training#num_images_per_batch'
 
@@ -85,23 +91,32 @@ num_workers: 4
 num_steps_per_image: null
 num_crops_per_image: 1
 
-
+# fine-tuning
 finetune:
+  activate: false
+  pretrained_ckpt_name: "$@bundle_root + '/model_fold' + str(@fold) + '/best_metric_model.pt'"
   enabled: false
   ckpt_name: $@bundle_root + '/model/model.pt'
 
+
+# validation
 validate:
-  enabled: false
-  ckpt_name: $@bundle_root + '/model/model.pt'
-  output_path: $@bundle_root + '/prediction_validation'
-  save_mask: false
-  invert: true
+  ckpt_name: "$@bundle_root + '/model_fold' + str(@fold) + '/best_metric_model.pt'"
+  save_mask: true # before: false 
+  log_output_file: "$@bundle_root + '/model_fold' + str(@fold) + '/validation.log'"
+  output_path: "$@bundle_root + '/prediction_fold' + str(@fold)" #  $@bundle_root + '/prediction_validation' before
+  # invert: true
+  # enabled: false
 
+
+# inference
 infer:
-  enabled: false
-  ckpt_name: $@bundle_root + '/model/model.pt'
-  output_path: $@bundle_root + '/prediction_' + @infer#data_list_key
+  ckpt_name: "$@bundle_root + '/model_fold' + str(@fold) + '/best_metric_model.pt'" # $@bundle_root + '/model/model.pt' before
+  fast: false
   data_list_key: testing
+  log_output_file: "$@bundle_root + '/model_fold' + str(@fold) + '/inference.log'"
+  output_path: "$@bundle_root + '/prediction_' + @infer#data_list_key"
+  #enabled: false
 
 
 

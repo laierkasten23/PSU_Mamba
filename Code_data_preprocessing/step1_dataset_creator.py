@@ -133,7 +133,8 @@ if __name__ == '__main__':
 
     Example Usage:
     python step1_dataset_creator.py --path /var/data/MONAI_Choroid_Plexus/ANON_DATA_01_labels --folder_name dataset_aschoplex --amount_train_subjects 10
-    python3 step1_dataset_creator.py --path /Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/phuse_thesis_2024/data/ANON_FLAIR_COREG_2 --folder_name dataset_aschoplex_2 
+    python step1_dataset_creator.py --path /var/data/MONAI_Choroid_Plexus/ANON_FLAIR_COREG_2 --folder_name dataset_aschoplex_2 --test_data_only True
+    python3 step1_dataset_creator.py --path /Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/phuse_thesis_2024/data/ANON_FLAIR_COREG_2 --folder_name dataset_aschoplex_2 --test_data_only True
     
     /Users/liaschmid/Documents/Uni Heidelberg/7_Semester_Thesis/ASCHOPLEX/launching_tool.py
     --path /Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/ASCHOPLEX/ANON_DATA

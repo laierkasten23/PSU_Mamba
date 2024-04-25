@@ -8,40 +8,63 @@ transforms_train:
     keys: ['@image_key', '@label_key']
   - _target_: EnsureChannelFirstd
     keys: ['@image_key', '@label_key']
+  - PLACEHOLDER_INTENSITY_NORMALIZATION
   - _target_: Orientationd
+    keys: ['@image_key', '@label_key']
     axcodes: RAS
-    keys: ['@image_key', '@label_key']
   - _target_: Spacingd
-    align_corners: [true, true]
     keys: ['@image_key', '@label_key']
+    align_corners: [true, true]
     mode: [bilinear, nearest]
-    pixdim: [1.00000175362016, 0.9999999784513205, 0.9999999960636288]
-  - {_target_: CastToTyped, dtype: $torch.float32, keys: '@image_key'}
+    pixdim: "$@transforms#resample_resolution"
+  - _target_: CastToTyped
+    keys: ['@image_key', '@label_key']
+    dtype: ["$torch.float32", "$torch.uint8"]
+
   - {_target_: NormalizeIntensityd, channel_wise: true, keys: '@image_key', nonzero: true}
   - _target_: EnsureTyped
     keys: ['@image_key', '@label_key']
+    track_meta: true
   - _target_: SpatialPadd
     keys: ['@image_key', '@label_key']
-    mode: [reflect, constant]
-    spatial_size: '@patch_size'
+    mode: [constant, constant]
+    spatial_size: '@training#patch_size'
+
+  - _target_: IdentityD  # make the label uptodate (the next transform requires label_key input)
+    keys: ["@label_key"]
+
+  # data augmentation  
   - _target_: RandCropByLabelClassesd
     keys: ['@image_key', '@label_key']
     label_key: '@label_key'
-    num_classes: '@output_classes'
-    num_samples: '@num_patches_per_image'
-    spatial_size: '@patch_size'
+    num_classes: '@training#output_classes'
+    num_samples: '@training#num_patches_per_image' # maybe change to "@training#num_crops_per_image"
+    spatial_size: '@training#patch_size' # maybe change to '@training#roi_size'
+    warn: false
+
+  - _target_: IdentityD   # make image up-to-date, before this line the cropping hasn't been applied
+    keys: ["@image_key"]
+
   - _target_: RandFlipd
     keys: ['@image_key', '@label_key']
-    prob: 0.15
+    prob: 0.2
     spatial_axis: 0
   - _target_: RandFlipd
     keys: ['@image_key', '@label_key']
-    prob: 0.15
+    prob: 0.2
     spatial_axis: 1
   - _target_: RandFlipd
     keys: ['@image_key', '@label_key']
-    prob: 0.15
+    prob: 0.2
     spatial_axis: 2
+  - _target_: RandRotate90d
+    keys: ['@image_key', '@label_key']
+    prob: 0.2
+    max_k: 3
+  - _target_: RandScaleIntensityd
+    keys: ['@image_key']
+    prob: 0.1
+    factors: 0.1
   - _target_: RandRotated
     keys: ['@image_key', '@label_key']
     mode: [bilinear, nearest]
@@ -49,7 +72,8 @@ transforms_train:
     range_x: 0.3
     range_y: 0.3
     range_z: 0.0
-  - {_target_: RandShiftIntensityd, keys: '@image_key', offsets: 0.1, prob: 0.15}
-  - _target_: CastToTyped
-    dtype: [$torch.float32, $torch.uint8]
-    keys: ['@image_key', '@label_key']
+  - _target_: RandShiftIntensityd 
+    keys: '@image_key'
+    offsets: 0.1
+    prob: 0.1
+

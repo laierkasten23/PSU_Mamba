@@ -49,25 +49,22 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     parser.update(pairs=_args)
 
     amp = parser.get_parsed_content("training#amp")
-    bundle_root = parser.get_parsed_content("bundle_root")
     ckpt_path = parser.get_parsed_content("ckpt_path")
     data_file_base_dir = parser.get_parsed_content("data_file_base_dir")
     data_list_file_path = parser.get_parsed_content("data_list_file_path")
     determ = parser.get_parsed_content("training#determ")
     finetune = parser.get_parsed_content("finetune")
     fold = parser.get_parsed_content("fold")
-    mlflow_tracking_uri = parser.get_parsed_content("mlflow_tracking_uri")
-    mlflow_experiment_name = parser.get_parsed_content("mlflow_experiment_name")
     num_images_per_batch = parser.get_parsed_content("training#num_images_per_batch")
     num_iterations = parser.get_parsed_content("training#num_iterations")
     num_iterations_per_validation = parser.get_parsed_content("training#num_iterations_per_validation")
     num_sw_batch_size = parser.get_parsed_content("training#num_sw_batch_size")
-    num_patches_per_iter = parser.get_parsed_content("training#num_patches_per_iter")
     output_classes = parser.get_parsed_content("training#output_classes")
     overlap_ratio = parser.get_parsed_content("training#overlap_ratio")
     patch_size_valid = parser.get_parsed_content("training#patch_size_valid")
-    random_seed = parser.get_parsed_content("random_seed")
     softmax = parser.get_parsed_content("training#softmax")
+    num_workers = parser.get_parsed_content("training#num_workers")
+    num_workers_val = parser.get_parsed_content("training#num_workers_val")
 
     train_transforms = parser.get_parsed_content("transforms_train")
     val_transforms = parser.get_parsed_content("transforms_validate")
@@ -76,7 +73,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         os.makedirs(ckpt_path, exist_ok=True)
 
     if determ:
-        set_determinism(seed=random_seed)
+        set_determinism(seed=0)
 
     print("[info] number of GPUs:", torch.cuda.device_count())
     if torch.cuda.device_count() > 1:
@@ -140,10 +137,10 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
     if torch.cuda.device_count() >= 4:
         train_ds = monai.data.CacheDataset(
-            data=train_files, transform=train_transforms, cache_rate=1.0, num_workers=8, progress=False
+            data=train_files, transform=train_transforms, cache_rate=1.0, num_workers=num_workers, progress=False
         )
         val_ds = monai.data.CacheDataset(
-            data=val_files, transform=val_transforms, cache_rate=1.0, num_workers=2, progress=False
+            data=val_files, transform=val_transforms, cache_rate=1.0, num_workers=num_workers_val, progress=False
         )
     else:
         train_ds = monai.data.CacheDataset(
@@ -183,9 +180,9 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             [transforms.EnsureType(), transforms.Activations(sigmoid=True), transforms.AsDiscrete(threshold=0.5)]
         )
 
-    loss_function = parser.get_parsed_content("training#loss")
+    loss_function = parser.get_parsed_content("loss")
 
-    optimizer_part = parser.get_parsed_content("training#optimizer", instantiate=False)
+    optimizer_part = parser.get_parsed_content("optimizer", instantiate=False)
     optimizer = optimizer_part.instantiate(params=model.parameters())
 
     num_epochs_per_validation = num_iterations_per_validation // len(train_loader)
@@ -196,7 +193,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         print("num_epochs", num_epochs)
         print("num_epochs_per_validation", num_epochs_per_validation)
 
-    lr_scheduler_part = parser.get_parsed_content("training#lr_scheduler", instantiate=False)
+    lr_scheduler_part = parser.get_parsed_content("lr_scheduler", instantiate=False)
     lr_scheduler = lr_scheduler_part.instantiate(optimizer=optimizer)
 
     if torch.cuda.device_count() > 1:

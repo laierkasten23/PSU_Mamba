@@ -15,7 +15,7 @@ from copy import deepcopy
 from monai.apps.auto3dseg import BundleAlgo
 from monai.bundle import ConfigParser
 
-class SwinUnetrAlgo(BundleAlgo):
+class SwinunetrAlgo(BundleAlgo):
     def fill_template_config(self, data_stats_file, output_path, **kwargs):
         """
         Fill the freshly copied config templates
@@ -56,7 +56,7 @@ class SwinUnetrAlgo(BundleAlgo):
             output_classes = len(data_stats["stats_summary#label_stats#labels"])
 
             #TODO to change
-            hyper_parameters.update({"pretrained_path": os.path.join(os.path.dirname(os.path.abspath(data_src_cfg["dataroot"])), "DNN_models", "algorithm_trained", "SwinUnetr_128_Dice_2")}) 
+            hyper_parameters.update({"pretrained_path": os.path.join(os.path.dirname(os.path.abspath(data_src_cfg["dataroot"])), "DNN_models", "algorithm_trained", "Swinunetr_128_Dice_2")}) 
 
             hyper_parameters.update({"training#patch_size": patch_size})
             hyper_parameters.update({"training#patch_size_valid": patch_size})
@@ -144,4 +144,4 @@ if __name__ == "__main__":
     from monai.utils import optional_import
 
     fire, _ = optional_import("fire")
-    fire.Fire({"SwinUnetrAlgo": SwinUnetrAlgo}) #TODO to change
+    fire.Fire({"SwinunetrAlgo": SwinunetrAlgo}) #TODO to change

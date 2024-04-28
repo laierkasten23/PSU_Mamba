@@ -39,7 +39,10 @@ from torch.nn.modules.loss import _Loss
 
 
 def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
+    print("-------------------------------------- starting run --------------------------------------")
+
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+    print("-------------------------------------- starting run --------------------------------------")
 
     _args = _update_args(config_file=config_file, **override)
     config_file_ = _pop_args(_args, "config_file")[0]
@@ -69,6 +72,9 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     train_transforms = parser.get_parsed_content("transforms_train")
     val_transforms = parser.get_parsed_content("transforms_validate")
 
+    print("-------------------------------------- parsed all stuff --------------------------------------")
+
+
     if not os.path.exists(ckpt_path):
         os.makedirs(ckpt_path, exist_ok=True)
 
@@ -84,6 +90,9 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     print("[info] world_size:", world_size)
 
     datalist = ConfigParser.load_config_file(data_list_file_path)
+
+    print("-------------------------------------- creating list train and list valid --------------------------------------")
+
 
     list_train = []
     list_valid = []
@@ -113,6 +122,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             dist.get_rank()
         ]
     print("train_files:", len(train_files))
+    print("-------------------------------------- listing files --------------------------------------")
 
     files = []
     for _i in range(len(list_valid)):
@@ -409,6 +419,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
 if __name__ == "__main__":
     from monai.utils import optional_import
+    print("-------------------------------------- starting main --------------------------------------")
 
     fire, _ = optional_import("fire")
     fire.Fire()

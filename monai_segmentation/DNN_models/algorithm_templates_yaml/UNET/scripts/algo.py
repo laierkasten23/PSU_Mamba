@@ -17,6 +17,7 @@ from monai.bundle import ConfigParser
 
 class UnetAlgo(BundleAlgo):
     def fill_template_config(self, data_stats_file, output_path, **kwargs):
+        print("---------------------- UnetAlgo ----------------------")
         """
         Fill the freshly copied config templates
         Args:
@@ -38,7 +39,6 @@ class UnetAlgo(BundleAlgo):
             data_src_cfg = ConfigParser(globals=False)
             if self.data_list_file is not None and os.path.exists(str(self.data_list_file)):
                 data_src_cfg.read_config(self.data_list_file)
-
 
             hyper_parameters = {"bundle_root": output_path}
             network = {}  # no change on network.yaml in segresnet2d
@@ -115,6 +115,8 @@ class UnetAlgo(BundleAlgo):
                 'transforms_validate.yaml': transforms_validate,
                 'transforms_infer.yaml': transforms_infer
                 }
+            
+            print("---------------------- fill_records done ----------------------")
 
         else:
             fill_records = self.fill_records
@@ -123,6 +125,7 @@ class UnetAlgo(BundleAlgo):
             file_path = os.path.join(output_path, 'configs', yaml_file)
 
             parser = ConfigParser(globals=False)
+            print("---------------------- parsed stuff  ----------------------")
             parser.read_config(file_path)
             for k, v in yaml_contents.items():
                 if k in kwargs:
@@ -143,5 +146,7 @@ class UnetAlgo(BundleAlgo):
 if __name__ == "__main__":
     from monai.utils import optional_import
 
+    print("---------------------- UnetAlgo ON FIREEEE----------------------")
+
     fire, _ = optional_import("fire")
-    fire.Fire({"UNetAlgo": UnetAlgo}) #TODO to change
+    fire.Fire({"UNetAlgo": UnetAlgo}) 

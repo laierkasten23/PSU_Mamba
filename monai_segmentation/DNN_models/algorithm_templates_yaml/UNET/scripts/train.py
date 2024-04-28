@@ -429,5 +429,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 if __name__ == "__main__":
     from monai.utils import optional_import
 
+    print("IN MAIN OF PRINT of UNET train.py")
+
     fire, _ = optional_import("fire")
     fire.Fire()

@@ -14,6 +14,11 @@ class_index: null
 modality: mri                               # main image modality, must be one of mri, ct, pet
 fold: 0
 
+auto_scale_allowed: true
+auto_scale_batch: true
+auto_scale_roi: false
+auto_scale_filters: false
+
 num_epochs: 1250
 
 # training
@@ -36,7 +41,7 @@ training:
   intensity_bounds: null
 
   loss:
-    _target_: loss.DiceCELoss2
+    _target_: loss.DiceCELoss
     include_background: true
     sigmoid: $not @training#softmax
     smooth_dr: 1.0e-05

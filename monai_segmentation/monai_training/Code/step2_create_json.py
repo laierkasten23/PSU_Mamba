@@ -20,7 +20,8 @@ def generate_json(args):
     Usage: 
         python step2_create_json.py --mode "train" --dataroot "/var/data/MONAI_Choroid_Plexus/dataset_monai_train_from_scratch" --work_dir "/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training" --train_val_ratio 0.5 --num_folds 5   
         python step2_create_json.py --mode "test" --dataroot "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex" --work_dir "/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training" --train_val_ratio 0.5 --num_folds 5   
-
+        python step2_create_json.py --mode "train" --dataroot "C:/Users/lia/Documents/Lia_Masterthesis/data/dataset_aschoplex" --work_dir "C:/Users/lia/Documents/Lia_Masterthesis/phuse_thesis_2024/monai_segmentation/monai_training/run_240426" --train_val_ratio 0.5 --num_folds 5   
+        
     Args:
         dataroot (str): The root directory of the dataset. Default is ".".
         description (str, optional): Description of the dataset. Default is None.

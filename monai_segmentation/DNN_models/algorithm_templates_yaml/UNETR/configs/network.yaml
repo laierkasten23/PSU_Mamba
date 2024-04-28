@@ -1,3 +1,4 @@
+_meta_: {}
 network:
   _target_: UNETR
   feature_size: 16                    # size of the feature maps in the network

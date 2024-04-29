@@ -19,22 +19,22 @@ training:
     _target_: DiceCELoss
     batch: true
     include_background: false
-    sigmoid: $not @softmax
+    sigmoid: $not @training#softmax
     smooth_dr: 1.0e-06
     smooth_nr: 0
-    softmax: $@softmax
+    softmax: $@training#softmax
     squared_pred: true
-    to_onehot_y: $@softmax
+    to_onehot_y: $@training#softmax
 
   lr_scheduler:
     _target_: torch.optim.lr_scheduler.StepLR
     gamma: 0.5
-    optimizer: $@optimizer
-    step_size: $@num_iterations // 5
+    optimizer: $@training#optimizer
+    step_size: $@training#num_iterations // 5
 
   optimizer:
     _target_: torch.optim.AdamW
-    lr: '@learning_rate'
+    lr: '@training#learning_rate'
     weight_decay: 1.0e-05
 
   num_images_per_batch: 1
@@ -59,11 +59,11 @@ finetune:
 
 validate:
   ckpt_name: $@bundle_root + '/model_fold' + str(@fold) + '/best_metric_model.pt'
-  ouptut_path: $@bundle_root + '/prediction_fold' + str(@fold)
+  output_path: $@bundle_root + '/prediction_fold' + str(@fold)
   save_mask: true
 
 infer:
   ckpt_name: $@bundle_root + '/model_fold' + str(@fold) + '/best_metric_model.pt'
   data_list_key: testing
   fast: false
-  ouptut_path: $@bundle_root + '/prediction_' + @infer#data_list_key
+  output_path: $@bundle_root + '/prediction_' + @infer#data_list_key

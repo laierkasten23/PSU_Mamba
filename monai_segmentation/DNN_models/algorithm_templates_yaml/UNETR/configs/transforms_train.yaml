@@ -45,16 +45,16 @@ transforms_train:
     mode:
     - reflect
     - constant
-    spatial_size: '@patch_size'
+    spatial_size: '@training#patch_size'
   # data augmentation transformations
   - _target_: RandCropByLabelClassesd
     keys:
     - '@image_key'
     - '@label_key'
     label_key: '@label_key'
-    num_classes: '@output_classes'
-    num_samples: '@num_patches_per_image'
-    spatial_size: '@patch_size'
+    num_classes: '@training#output_classes'
+    num_samples: '@training#num_patches_per_image'
+    spatial_size: '@training#patch_size'
   - _target_: RandFlipd
     keys:
     - '@image_key'

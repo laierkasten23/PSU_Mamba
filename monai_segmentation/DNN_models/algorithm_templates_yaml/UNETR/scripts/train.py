@@ -190,9 +190,9 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             [transforms.EnsureType(), transforms.Activations(sigmoid=True), transforms.AsDiscrete(threshold=0.5)]
         )
 
-    loss_function = parser.get_parsed_content("loss")
+    loss_function = parser.get_parsed_content("training#loss")
 
-    optimizer_part = parser.get_parsed_content("optimizer", instantiate=False)
+    optimizer_part = parser.get_parsed_content("training#optimizer", instantiate=False)
     optimizer = optimizer_part.instantiate(params=model.parameters())
 
     num_epochs_per_validation = num_iterations_per_validation // len(train_loader)
@@ -203,7 +203,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         print("num_epochs", num_epochs)
         print("num_epochs_per_validation", num_epochs_per_validation)
 
-    lr_scheduler_part = parser.get_parsed_content("lr_scheduler", instantiate=False)
+    lr_scheduler_part = parser.get_parsed_content("training#lr_scheduler", instantiate=False)
     lr_scheduler = lr_scheduler_part.instantiate(optimizer=optimizer)
 
     if torch.cuda.device_count() > 1:

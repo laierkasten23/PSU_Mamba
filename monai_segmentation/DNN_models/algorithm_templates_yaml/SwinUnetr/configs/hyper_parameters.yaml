@@ -9,37 +9,38 @@ data_list_file_path: null                   # location of the file with a list o
 modality: mri                               # main image modality, must be one of mri, ct, pet
 fold: 0
 
-class_names: null
-class_index: null
+class_names: null                           # names of the classes for a classification task -> null for segmentation
+class_index: null                           # indices of the classes for a classification task -> null for segmentation
 
 debug: false
 ckpt_save: true
-cache_rate: null
-roi_size: [180, 240, 240]
+cache_rate: 0                            # rate at which data is cached during training/val
+roi_size: [128, 128, 128]                   # might be changed to patch_size
 roi_size_valid: null
 random_seed: 0
 
-auto_scale_allowed: true
+adapt_valid_mode: true
+adapt_valid_progress_percentages: [10, 40, 70]
+adapt_valid_num_epochs_per_validation: [5, 5, 5]
+
+auto_scale_allowed: true                    # indicating whether auto-scaling (hence, normalization) is allowed
 auto_scale_batch: true
 auto_scale_roi: false
 auto_scale_filters: false
-auto_scale_max_epochs: 1000
+auto_scale_max_epochs: 1000                 # maximum number of epochs for auto-scaling.
 
-quick: false
+
+quick: false                                # whether to run a quick version of the model for testing or debugging
 channels_last: true
-validate_final_original_res: true
-calc_val_loss: false
-log_output_file: "$@bundle_root + '/model_fold' + str(@fold) + '/training.log'"
-cache_class_indices: null
-early_stopping_fraction: 0.001
-early_stop_mode: true
-early_stop_delta: 0
-early_stop_patience: 5
-stop_on_lowacc: false
+validate_final_original_res: true           # whether to validate the model at the original resolution of the input data
+calc_val_loss: false                        # indicating whether to calculate the validation loss
+log_output_file: "$@bundle_root + '/model/training.log'"
+cache_class_indices: null                   # indices of the classes to be cached during training
 
-cache_rate: 0                                   # rate at which data is cached during training/val
-train_cache_rate: "$@cache_rate"
-validate_cache_rate: "$@cache_rate"
+stop_on_lowacc: false                       # stop training if the accuracy is too low
+                               
+train_cache_rate: "$@cache_rate"            # rate at which training data is cached. Same as cache_rate by default
+validate_cache_rate: "$@cache_rate"         # rate at which validation data is cached
 show_cache_progress: false
 
 use_pretrain: false
@@ -48,13 +49,18 @@ training:
   # hyper-parameters
   amp: true                                     # automatic mixed precision is used for training -° speed up training, reduce GPU memory usage
   determ: false
+  early_stopping_fraction: 0.001
+  early_stop_mode: true
+  early_stop_delta: 0
+  early_stop_patience: 5
   input_channels: null
   learning_rate: 0.0002
   num_images_per_batch: 2
   num_iterations: 20000
   num_iterations_per_validation: 500
   num_patches_per_image: 1
-  num_sw_batch_size: 2
+  num_patches_per_iter: 2     # maybe see how this should be set
+  num_sw_batch_size: "$@training#num_patches_per_iter"
   output_classes: null
   n_cases: null
   overlap_ratio: 0.125
@@ -62,6 +68,9 @@ training:
   patch_size: null
   patch_size_valid: null
   softmax: true
+  sw_input_on_cpu: false
+  valid_at_orig_resolution_at_last: true
+  valid_at_orig_resolution_only: false
 
   resample_resolution: null
 
@@ -89,8 +98,8 @@ training:
     _target_: monai.optimizers.WarmupCosineSchedule
     optimizer: "$@training#optimizer"
     warmup_steps: $@num_epochs // 100
-    t_total: '@num_epochs // @num_epochs_per_validation + 1'
-    warumup_multiplier: 0.1
+    t_total: '$@num_epochs // @num_epochs_per_validation + 1'
+    warmup_multiplier: 0.1
 
 batch_size: '@training#num_images_per_batch'
 num_epochs: 300

@@ -70,6 +70,8 @@ unet2d.ipynb
 sam_stuff.ipynb
 sam.ipynb 
 
+train22.py
+
 preprocess.ipynb
 
 # ignore some folders 

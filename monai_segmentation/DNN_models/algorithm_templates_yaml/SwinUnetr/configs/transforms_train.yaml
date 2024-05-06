@@ -8,15 +8,15 @@ transforms_train:
     keys: ['@image_key', '@label_key']
   - _target_: EnsureChannelFirstd
     keys: ['@image_key', '@label_key']
-  - PLACEHOLDER_INTENSITY_NORMALIZATION
   - _target_: Orientationd
     keys: ['@image_key', '@label_key']
     axcodes: RAS
+  #- PLACEHOLDER_INTENSITY_NORMALIZATION
   - _target_: Spacingd
     keys: ['@image_key', '@label_key']
     align_corners: [true, true]
     mode: [bilinear, nearest]
-    pixdim: "$@transforms#resample_resolution"
+    pixdim: "$@training#resample_resolution"
   - _target_: CastToTyped
     keys: ['@image_key', '@label_key']
     dtype: ["$torch.float32", "$torch.uint8"]

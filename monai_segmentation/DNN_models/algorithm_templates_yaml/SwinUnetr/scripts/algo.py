@@ -9,11 +9,63 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import os
 from copy import deepcopy
 
+import numpy as np
+import torch
+import yaml
+
 from monai.apps.auto3dseg import BundleAlgo
+from monai.apps.utils import get_logger
 from monai.bundle import ConfigParser
+
+logger = get_logger(module_name=__name__)
+
+
+def modify_hierarchical_dict(hierarchical_dict, keys, value):
+    if len(keys) == 1:
+        hierarchical_dict[keys[0]] = value
+    else:
+        if keys[0] not in hierarchical_dict:
+            hierarchical_dict[keys[0]] = {}
+        modify_hierarchical_dict(hierarchical_dict[keys[0]], keys[1:], value)
+
+
+def get_mem_from_visible_gpus():
+    available_mem_visible_gpus = []
+    for d in range(torch.cuda.device_count()):
+        available_mem_visible_gpus.append(torch.cuda.mem_get_info(device=d)[0])
+    return available_mem_visible_gpus
+
+def auto_scale(output_classes, n_cases, max_epoch=1000):
+    """Scale batch size based on gpu memory and output class. Includes heuristics."""
+    mem = get_mem_from_visible_gpus()
+    mem = min(mem) if isinstance(mem, list) else mem
+    mem = float(mem) / (1024.0**3)
+    mem = max(1.0, mem - 1.0)
+    # heuristics copied from dints template
+    mem_bs2 = 6.0 + (20.0 - 6.0) * (output_classes - 2) / (105 - 2)
+    mem_bs9 = 24.0 + (74.0 - 24.0) * (output_classes - 2) / (105 - 2)
+    # heuristic scaling for swinunetr
+    mem_bs2 = 12 / 6 * mem_bs2
+    mem_bs9 = 12 / 6 * mem_bs9
+    batch_size = 2 + (9 - 2) * (mem - mem_bs2) / (mem_bs9 - mem_bs2)
+    batch_size = max(int(batch_size), 1)
+
+    # fixed two iters per whole image, each iter with num_patches_per_iter
+    num_patches_per_iter = batch_size
+    num_crops_per_image = batch_size * 2
+    # heuristics for 800k patch iteration. epoch * n_cases * num_crops_per_image = total 400k patch
+    num_epochs = min(max_epoch, int(800000 / n_cases / num_crops_per_image))
+    return {
+        "num_patches_per_iter": num_patches_per_iter,
+        "num_crops_per_image": num_crops_per_image,
+        "num_epochs": num_epochs,
+    }
+
+
 
 class SwinunetrAlgo(BundleAlgo):
     def fill_template_config(self, data_stats_file, output_path, **kwargs):
@@ -54,6 +106,8 @@ class SwinunetrAlgo(BundleAlgo):
 
             input_channels = data_stats["stats_summary#image_stats#channels#max"]
             output_classes = len(data_stats["stats_summary#label_stats#labels"])
+            n_cases = data_stats["stats_summary#n_cases"]
+
 
             #TODO to change
             hyper_parameters.update({"pretrained_path": os.path.join(os.path.dirname(os.path.abspath(data_src_cfg["dataroot"])), "DNN_models", "algorithm_trained", "Swinunetr_128_Dice_2")}) 
@@ -64,9 +118,12 @@ class SwinunetrAlgo(BundleAlgo):
             hyper_parameters.update({"data_list_file_path": os.path.abspath(data_src_cfg["datalist"])})
             hyper_parameters.update({"training#input_channels": input_channels})
             hyper_parameters.update({"training#output_classes": output_classes})
+            hyper_parameters.update({"training#n_cases": n_cases})
 
             modality = data_src_cfg.get("modality", "ct").lower()
             spacing = data_stats["stats_summary#image_stats#spacing#median"]
+
+            hyper_parameters.update({"training#resample_resolution": spacing})
 
             intensity_upper_bound = float(data_stats["stats_summary#image_foreground_stats#intensity#percentile_99_5"])
             intensity_lower_bound = float(data_stats["stats_summary#image_foreground_stats#intensity#percentile_00_5"])
@@ -94,9 +151,9 @@ class SwinunetrAlgo(BundleAlgo):
                 "channel_wise": True,
             }
 
-            transforms_train.update({'transforms_train#transforms#3#pixdim': spacing})
-            transforms_validate.update({'transforms_validate#transforms#3#pixdim': spacing})
-            transforms_infer.update({'transforms_infer#transforms#3#pixdim': spacing})
+            #transforms_train.update({'transforms_train#transforms#3#pixdim': spacing})
+            #transforms_validate.update({'transforms_validate#transforms#3#pixdim': spacing})
+            #transforms_infer.update({'transforms_infer#transforms#3#pixdim': spacing})
 
             if modality.startswith("ct"):
                 transforms_train.update({"transforms_train#transforms#5": ct_intensity_xform})

@@ -176,6 +176,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     valid_at_orig_resolution_only = parser.get_parsed_content("training#valid_at_orig_resolution_only")
     use_pretrain = parser.get_parsed_content("use_pretrain")
     pretrained_path = parser.get_parsed_content("pretrained_path")
+    pin_memory = parser.get_parsed_content("training#pin_memory")
 
     if not valid_at_orig_resolution_only:
         train_transforms = parser.get_parsed_content("transforms_train")
@@ -303,7 +304,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             batch_size=num_images_per_batch,
             shuffle=True,
             persistent_workers=True,
-            pin_memory=True,
+            pin_memory=pin_memory,
         )
         val_loader = DataLoader(
             val_ds, num_workers=parser.get_parsed_content("num_workers_validation"), batch_size=1, shuffle=False
@@ -505,11 +506,14 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     _idx = torch.randperm(inputs_l.shape[0])
                     inputs_l = inputs_l[_idx]
                     labels_l = labels_l[_idx]
-
+            
+                    print("num_patches_per_iter: ", num_patches_per_iter)
+                    print("check wheter its entering the for loop ", inputs_l.shape[0] // num_patches_per_iter)
                     for _k in range(inputs_l.shape[0] // num_patches_per_iter):
                         inputs = inputs_l[_k * num_patches_per_iter : (_k + 1) * num_patches_per_iter, ...]
                         labels = labels_l[_k * num_patches_per_iter : (_k + 1) * num_patches_per_iter, ...]
-
+                        # shape: num_patches_per_iter, C, D, H, W = 1, 1, 128, 128, 128
+                    
                         inputs = inputs.to(device)
                         labels = labels.to(device)
 
@@ -517,9 +521,11 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                             param.grad = None
 
                         if amp:
+                            print("In swinunetr train, using amp")
                             with autocast():
                                 outputs = model(inputs)
-                                loss = loss_function(outputs.float(), labels)
+                                loss = loss_function(outputs.float(), labels)   # loss for the current batch
+                                print("Current loss: ", loss)
 
                             scaler.scale(loss).backward()
                             scaler.unscale_(optimizer)
@@ -527,8 +533,10 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                             scaler.step(optimizer)
                             scaler.update()
                         else:
+                            print("In swinunetr train, not using amp")
                             outputs = model(inputs)
                             loss = loss_function(outputs.float(), labels)
+                            print("Else loss: ", loss)
 
                             loss.backward()
                             clip_grad_norm_(model.parameters(), 0.5)
@@ -536,7 +544,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
                         epoch_loss += loss.item()
                         loss_torch[0] += loss.item()
-                        loss_torch[1] += 1.0
+                        loss_torch[1] += 1.0                # counter for the number of batches
                         epoch_len = len(train_loader)
                         idx_iter += 1
 
@@ -554,7 +562,9 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     dist.all_reduce(loss_torch, op=torch.distributed.ReduceOp.SUM)
 
                 loss_torch = loss_torch.tolist()
+                print("In swinunetr train, loss_torch: ", loss_torch)
                 if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
+                    print("trying to compute loss_torch_epoch ")
                     loss_torch_epoch = loss_torch[0] / loss_torch[1]
                     logger.debug(
                         f"Epoch {epoch} average loss: {loss_torch_epoch:.4f}, "

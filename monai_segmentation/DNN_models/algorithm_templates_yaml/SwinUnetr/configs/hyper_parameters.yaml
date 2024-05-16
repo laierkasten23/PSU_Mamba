@@ -55,11 +55,11 @@ training:
   early_stop_patience: 5
   input_channels: null
   learning_rate: 0.0002
-  num_images_per_batch: 2
+  num_images_per_batch: 1
   num_iterations: 20000
   num_iterations_per_validation: 500
   num_patches_per_image: 1
-  num_patches_per_iter: 2     # maybe see how this should be set
+  num_patches_per_iter: 1     # maybe see how this should be set
   num_sw_batch_size: "$@training#num_patches_per_iter"
   output_classes: null
   n_cases: null
@@ -67,6 +67,7 @@ training:
   overlap_ratio_final: 0.625
   patch_size: null
   patch_size_valid: null
+  pin_memory: false    # was true 
   softmax: true
   sw_input_on_cpu: false
   valid_at_orig_resolution_at_last: true
@@ -114,7 +115,7 @@ num_epochs_per_validation: 5
 num_epochs_per_saving: 1
 num_workers: 8
 num_workers_validation: 2
-num_cache_workers: 8
+num_cache_workers: 4
 num_steps_per_image: null
 num_crops_per_image: 1
 

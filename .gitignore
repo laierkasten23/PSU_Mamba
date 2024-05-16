@@ -63,6 +63,11 @@ config.ini
 *.out
 *.pdf
 
+# Ignore .nii and .nii.gz files
+*.nii
+*.nii.gz
+
+
 # Ignore any other files or directories you don't want to include in version control
 progress.md
 demo.ipynb

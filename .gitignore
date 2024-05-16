@@ -103,6 +103,8 @@ algorithm_trained/
 *.pth
 *.pt
 
+# Ignore rar files
+*.rar
 
 
 # From FastSam3D

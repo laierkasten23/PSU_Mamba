@@ -1,0 +1,19 @@
+name: env_monai_101
+channels:
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=main
+  - libgcc-ng=11.2.0=h1234567_1
+  - pip=23.3=py39h06a4308_0
+  - python=3.9.18=h955ad1f_0
+  - pip:
+      - monai==1.0.1
+      - nibabel==5.0.0
+      - numpy==1.23.5
+      - pyyaml==6.0
+      - torch==1.13.1
+      - tqdm==4.64.1
+      - tensorboard==2.11.2
+      - fire==0.5.0
+      - einops==0.6.0
+      - scikit-image==0.19.3

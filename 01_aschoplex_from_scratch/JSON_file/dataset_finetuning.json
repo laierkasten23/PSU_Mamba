@@ -1,0 +1,96 @@
+{
+    "description": "Dataset for Choroid Plexus segmentation",
+    "labels": {
+        "0": "background",
+        "1": "Choroid Plexus"
+    },
+    "modality": {
+        "0": "MR"
+    },
+    "name": "MRI Dataset - Choroid Plexus Segmentation",
+    "numTest": 10,
+    "numTraining": 5,
+    "numValidation": 5,
+    "tensorImageSize": "3D",
+    "testing": [
+        {
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Ts\\00_image.nii"
+        },
+        {
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Ts\\01_image.nii"
+        },
+        {
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Ts\\05_image.nii"
+        },
+        {
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Ts\\06_image.nii"
+        },
+        {
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Ts\\07_image.nii"
+        },
+        {
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Ts\\10_image.nii"
+        },
+        {
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Ts\\13_image.nii"
+        },
+        {
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Ts\\14_image.nii"
+        },
+        {
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Ts\\15_image.nii"
+        },
+        {
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Ts\\17_image.nii"
+        }
+    ],
+    "training": [
+        {
+            "fold": 0,
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Tr\\02_image.nii",
+            "label": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\label_Tr\\02_seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Tr\\03_image.nii",
+            "label": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\label_Tr\\03_seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Tr\\04_image.nii",
+            "label": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\label_Tr\\04_seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Tr\\08_image.nii",
+            "label": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\label_Tr\\08_seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Tr\\09_image.nii",
+            "label": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\label_Tr\\09_seg.nii"
+        }
+    ],
+    "validation": [
+        {
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Tr\\11_image.nii",
+            "label": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\label_Tr\\11_seg.nii"
+        },
+        {
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Tr\\12_image.nii",
+            "label": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\label_Tr\\12_seg.nii"
+        },
+        {
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Tr\\16_image.nii",
+            "label": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\label_Tr\\16_seg.nii"
+        },
+        {
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Tr\\18_image.nii",
+            "label": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\label_Tr\\18_seg.nii"
+        },
+        {
+            "image": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\image_Tr\\19_image.nii",
+            "label": "C:\\Users\\lia\\Documents\\Lia_Masterthesis\\data\\dataset_aschoplex\\label_Tr\\19_seg.nii"
+        }
+    ]
+}

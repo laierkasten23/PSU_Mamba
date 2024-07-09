@@ -1,5 +1,6 @@
 image_key: image
 label_key: label
+ref_label_key: ref_label
 transforms_train:
   _target_: Compose
   transforms:
@@ -7,15 +8,18 @@ transforms_train:
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'
   - _target_: EnsureChannelFirstd
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'
   - _target_: Orientationd
     axcodes: RAS
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'
   - _target_: Spacingd
     align_corners:
     - true
@@ -23,6 +27,7 @@ transforms_train:
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'
     mode:
     - bilinear
     - nearest
@@ -38,10 +43,12 @@ transforms_train:
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'
   - _target_: SpatialPadd
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'
     mode:
     - reflect
     - constant
@@ -51,6 +58,7 @@ transforms_train:
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'
     label_key: '@label_key'
     num_classes: '@output_classes'
     num_samples: '@num_patches_per_image'
@@ -59,24 +67,28 @@ transforms_train:
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'
     prob: 0.15
     spatial_axis: 0
   - _target_: RandFlipd
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'
     prob: 0.15
     spatial_axis: 1
   - _target_: RandFlipd
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'
     prob: 0.15
     spatial_axis: 2
   - _target_: RandRotated
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'
     mode:
     - bilinear
     - nearest
@@ -95,3 +107,4 @@ transforms_train:
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'

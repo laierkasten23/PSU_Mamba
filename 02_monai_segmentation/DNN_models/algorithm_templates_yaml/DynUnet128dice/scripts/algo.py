@@ -19,7 +19,7 @@ from monai.bundle import ConfigParser
 logger = get_logger(module_name=__name__)
 
 
-class DynUNetAlgo(BundleAlgo):
+class Dynunet128diceAlgo(BundleAlgo):
     def fill_template_config(self, data_stats_file, output_path, **kwargs):
         """
         Fill the freshly copied config templates
@@ -151,4 +151,4 @@ if __name__ == "__main__":
     from monai.utils import optional_import
 
     fire, _ = optional_import("fire")
-    fire.Fire({"DynUNetAlgo": DynUNetAlgo})
+    fire.Fire({"Dynunet128diceAlgo": Dynunet128diceAlgo})

@@ -52,7 +52,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
     amp = parser.get_parsed_content("amp")
     ckpt_path = parser.get_parsed_content("ckpt_path")
-    data_benchmark_base_dir = parser.get_parsed_content("data_benchmark_base_dir")
     data_file_base_dir = parser.get_parsed_content("data_file_base_dir")
     data_list_file_path = parser.get_parsed_content("data_list_file_path")
     determ = parser.get_parsed_content("determ")
@@ -87,6 +86,9 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
     datalist = ConfigParser.load_config_file(data_list_file_path)
 
+    # Get reference label path if available
+    data_benchmark_base_dir = datalist["benchmark_base_dir"] if "benchmark_base_dir" in datalist else None
+
     list_train = []
     list_valid = []
     for item in datalist["training"]:
@@ -101,28 +103,41 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     for _i in range(len(list_train)):
         str_img = os.path.join(data_file_base_dir, list_train[_i]["image"])
         str_seg = os.path.join(data_file_base_dir, list_train[_i]["label"])
+        
         # T1xFLAIR img-seg comparison
         str_ref_seg = get_reference_label_path(str_seg, data_benchmark_base_dir)
-
 
         if (not os.path.exists(str_img)) or (not os.path.exists(str_seg)):
             continue
 
         files.append({"image": str_img, "label": str_seg, "ref_label": str_ref_seg})
-
+        
     train_files = files
-    random.shuffle(train_files)
+    # Step 1: Generate a list of indices
+    indices = list(range(len(train_files)))
+    # Step 2: Shuffle the indices with a fixed seed
+    random.seed(42)  # Use the same seed for reproducibility
+    random.shuffle(indices)
+    
+    # Step 3: Reorder both datasets according to the shuffled indices
+    train_files = [train_files[i] for i in indices]
+
 
     if torch.cuda.device_count() > 1:
-        train_files = partition_dataset(data=train_files, shuffle=True, num_partitions=world_size, even_divisible=True)[
+        train_files = partition_dataset(data=train_files, shuffle=False, num_partitions=world_size, even_divisible=True)[
             dist.get_rank()
         ]
+
+    # Get just the image paths as list: TxFLAIR comparison
+    #train_images_files = [item["image"] for item in train_files]
+    #train_reference_labels = get_reference_label_paths(train_images_files, data_benchmark_base_dir)
     print("train_files:", len(train_files))
 
     files = []
     for _i in range(len(list_valid)):
         str_img = os.path.join(data_file_base_dir, list_valid[_i]["image"])
         str_seg = os.path.join(data_file_base_dir, list_valid[_i]["label"])
+
         # T1xFLAIR img-seg comparison
         str_ref_seg = get_reference_label_path(str_img, data_benchmark_base_dir)
 
@@ -304,8 +319,9 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             loss_torch_epoch_t1xflair = loss_torch_t1xflair[0] / loss_torch_t1xflair[1]
             print(
                 f"epoch {epoch + 1} average loss: {loss_torch_epoch:.4f}, "
-                f"average loss_T1xFLAIR: {loss_torch_epoch_t1xflair:.4f}"
                 f"best mean dice: {best_metric:.4f} at epoch {best_metric_epoch}"
+
+                f"epoch {epoch + 1} average loss T1xFLAIR: {loss_torch_epoch_t1xflair:.4f}, "
             )
 
         if (epoch + 1) % val_interval == 0 or (epoch + 1) == num_epochs:
@@ -351,13 +367,11 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         val_ref_labels = post_label(val_ref_labels[0, ...])
                         val_ref_labels = val_ref_labels[None, ...]
 
-
                     value = compute_dice(y_pred=val_outputs, y=val_labels, include_background=False)
                     ref_value = compute_dice(y_pred=val_outputs, y=val_ref_labels, include_background=False)
 
                     print(_index + 1, "/", len(val_loader), value)
                     print("reference ", _index + 1, "/", len(val_loader), ref_value)
-
 
                     metric_count += len(value)
                     ref_metric_count += len(ref_value)
@@ -374,7 +388,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     else:
                         ref_metric_mat = np.concatenate((ref_metric_mat, ref_metric_vals), axis=0)
 
-
                     for _c in range(metric_dim):
                         val0 = torch.nan_to_num(value[0, _c], nan=0.0)
                         val1 = 1.0 - torch.isnan(value[0, 0]).float()
@@ -387,7 +400,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         ref_metric[2 * _c] += val0 * val1
                         ref_metric[2 * _c + 1] += val1
 
-
                     _index += 1
 
                 if torch.cuda.device_count() > 1:
@@ -395,12 +407,13 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     dist.all_reduce(metric, op=torch.distributed.ReduceOp.SUM)
                     dist.all_reduce(ref_metric, op=torch.distributed.ReduceOp.SUM)
 
+
                 metric = metric.tolist()
                 ref_metric = ref_metric.tolist()
                 if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
                     for _c in range(metric_dim):
                         print(f"evaluation metric - class {_c + 1:d}:", metric[2 * _c] / metric[2 * _c + 1])
-                        print(f"reference metric - class {_c + 1:d}:", ref_metric[2 * _c] / ref_metric[2 * _c + 1])
+                        print(f"evaluation metric - class {_c + 1:d} reference:", ref_metric[2 * _c] / ref_metric[2 * _c + 1])
                     avg_metric = 0
                     avg_metric_ref = 0
                     for _c in range(metric_dim):

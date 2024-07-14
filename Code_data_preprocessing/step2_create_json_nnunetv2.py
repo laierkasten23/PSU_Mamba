@@ -37,6 +37,7 @@ def generate_json(args):
         01.nii  
     Args:
         dataroot (str): The root directory of the dataset. Default is ".".
+        benchmark_dataroot (str, optional): The root directory of the benchmark dataset. Default is None.
         description (str, optional): Description of the dataset. Default is None.
         mode (str): One of: 'train', 'finetune', 'test', 'train_predict', 'finetune_predict'. Which operation mode is used. 
         work_dir (str): The working directory. Default is ".".
@@ -151,6 +152,7 @@ def generate_json(args):
     json_dict = OrderedDict()
     json_dict['name'] = "MRI Dataset - Choroid Plexus Segmentation" 
     json_dict['description'] = args.description if args.description is not None else "Dataset for Choroid Plexus segmentation"
+    json_dict['data_benchmark_base_dir'] = args.benchmark_dataroot if args.benchmark_dataroot is not None else "/home/linuxlia/Lia_Masterthesis/data/reference_labels" # TODO: Generalize when setting overall projectdirectory for later distribution 
     json_dict['tensorImageSize'] = "3D"
 
     # add channel_names or modality to json file depending on the datasettype
@@ -362,6 +364,7 @@ def setup_argparse():
     parser.add_argument("--description", required=False, help="Data description")
     parser.add_argument("--mode", type=str, required=True, choices=['train', 'finetune', 'test', 'train_predict', 'finetune_predict'], default='train', help="Operation mode")
     parser.add_argument("--dataroot", type=str, required=True, help="Base path to the dataset directory")
+    parser.add_argument("--benchmark_dataroot", type=str, required=False, help="Base path to the benchmark dataset directory")
     parser.add_argument("--work_dir", required=True, help="working directory")
     parser.add_argument("--pretrained_model_path", type=str, help="Path to pretrained model")
     parser.add_argument("--train_val_ratio", type=float, default=0.5 ,help="Ratio of training to validation data")

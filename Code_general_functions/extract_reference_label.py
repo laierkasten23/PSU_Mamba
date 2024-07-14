@@ -30,12 +30,13 @@ def get_reference_label_path(image_path, reference_labels_base_path):
     # Construct the pathname for the reference label
     # Assuming reference labels have a specific naming pattern you can adjust below
     reference_label_filename = f"{index}_ChP_mask_T1xFLAIR_manual_seg.nii"  # T1xFLAIR reference label
-    reference_label_path = os.path.join(reference_labels_base_path, reference_label_filename)
+    # Walk through the directory tree to find the file
 
-    if os.path.isfile(reference_label_path):
-        return reference_label_path
-    else:
-        raise FileNotFoundError(f"Reference label not found at {reference_label_path}.")
+    for dirpath, dirnames, filenames in os.walk(reference_labels_base_path):
+        if reference_label_filename in filenames:
+            return os.path.join(dirpath, reference_label_filename)
+    
+    raise FileNotFoundError(f"Reference label {reference_label_filename} not found in {reference_labels_base_path} or its subdirectories. SKIPPING!!")
 
 
 # Example usage

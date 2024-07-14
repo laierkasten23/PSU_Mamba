@@ -39,8 +39,6 @@ from Code_general_functions.extract_reference_label import get_reference_label_p
 
 
 
-
-
 def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
@@ -53,7 +51,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
     amp = parser.get_parsed_content("amp")
     ckpt_path = parser.get_parsed_content("ckpt_path")
-    data_benchmark_base_dir = parser.get_parsed_content("data_benchmark_base_dir")
     data_file_base_dir = parser.get_parsed_content("data_file_base_dir")
     data_list_file_path = parser.get_parsed_content("data_list_file_path")
     determ = parser.get_parsed_content("determ")
@@ -89,6 +86,9 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
     datalist = ConfigParser.load_config_file(data_list_file_path)
 
+    # Get reference label path if available
+    data_benchmark_base_dir = datalist["benchmark_base_dir"] if "benchmark_base_dir" in datalist else None
+
     list_train = []
     list_valid = []
     for item in datalist["training"]:
@@ -104,7 +104,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         str_img = os.path.join(data_file_base_dir, list_train[_i]["image"])
         str_seg = os.path.join(data_file_base_dir, list_train[_i]["label"])
         # T1xFLAIR img-seg comparison
-        str_ref_seg = get_reference_label_path(str_img, data_benchmark_base_dir)
+        str_ref_seg = get_reference_label_path(str_seg, data_benchmark_base_dir)
+
 
         if (not os.path.exists(str_img)) or (not os.path.exists(str_seg)):
             continue
@@ -125,8 +126,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         str_img = os.path.join(data_file_base_dir, list_valid[_i]["image"])
         str_seg = os.path.join(data_file_base_dir, list_valid[_i]["label"])
         # T1xFLAIR img-seg comparison
-        str_ref_seg = get_reference_label_path(str_seg, data_benchmark_base_dir)
-
+        str_ref_seg = get_reference_label_path(str_img, data_benchmark_base_dir)
 
         if (not os.path.exists(str_img)) or (not os.path.exists(str_seg)):
             continue
@@ -360,6 +360,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     print(_index + 1, "/", len(val_loader), value)
                     print("reference ", _index + 1, "/", len(val_loader), ref_value)
 
+
                     metric_count += len(value)
                     ref_metric_count += len(ref_value)
                     metric_sum += value.sum().item()
@@ -401,7 +402,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                 if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
                     for _c in range(metric_dim):
                         print(f"evaluation metric - class {_c + 1:d}:", metric[2 * _c] / metric[2 * _c + 1])
-                        print(f"reference metric - class {_c + 1:d}:", ref_metric[2 * _c] / ref_metric[2 * _c + 1])
+                        ref_metric = ref_metric.tolist()
                     avg_metric = 0
                     avg_metric_ref = 0
                     for _c in range(metric_dim):
@@ -446,7 +447,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                                 epoch + 1, avg_metric, avg_metric_ref, loss_torch_epoch, loss_torch_epoch_t1xflair, lr, elapsed_time, idx_iter
                             )
                         )
-
                 if torch.cuda.device_count() > 1:
                     dist.barrier()
 

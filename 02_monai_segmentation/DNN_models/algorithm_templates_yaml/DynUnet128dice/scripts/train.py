@@ -38,6 +38,7 @@ from monai.inferers import sliding_window_inference
 from monai.metrics import compute_dice
 from monai.utils import RankFilter, set_determinism
 from torch.nn.modules.loss import _Loss 
+from monai.auto3dseg.utils import datafold_read
 
 from Code_general_functions.extract_reference_label import get_reference_label_path, get_reference_label_paths    
 
@@ -55,7 +56,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
     amp = parser.get_parsed_content("training#amp")
     ckpt_path = parser.get_parsed_content("ckpt_path")
-    data_benchmark_base_dir = parser.get_parsed_content("data_benchmark_base_dir")
     data_file_base_dir = parser.get_parsed_content("data_file_base_dir")
     data_list_file_path = parser.get_parsed_content("data_list_file_path")
     determ = parser.get_parsed_content("training#determ")
@@ -89,6 +89,15 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
     datalist = ConfigParser.load_config_file(data_list_file_path)
 
+    # Get reference label path if available
+    data_benchmark_base_dir = datalist["data_benchmark_base_dir"] if "data_benchmark_base_dir" in datalist else None
+
+    # Data loading
+    # TODO: include own data loading to also include reference labels
+    #train_files, val_files = datafold_read(datalist=data_list_file_path, basedir=data_file_base_dir, fold=fold)
+
+    
+
     list_train = []
     list_valid = []
     for item in datalist["training"]:
@@ -105,7 +114,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         str_seg = os.path.join(data_file_base_dir, list_train[_i]["label"])
 
         # T1xFLAIR img-seg comparison
-        #str_ref_seg = get_reference_label_path(str_img, data_benchmark_base_dir)
+        str_ref_seg = get_reference_label_path(str_img, data_benchmark_base_dir)
 
 
         if (not os.path.exists(str_img)) or (not os.path.exists(str_seg)):

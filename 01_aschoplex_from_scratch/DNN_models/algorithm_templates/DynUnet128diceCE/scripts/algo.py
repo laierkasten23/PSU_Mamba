@@ -15,7 +15,7 @@ from copy import deepcopy
 from monai.apps.auto3dseg import BundleAlgo
 from monai.bundle import ConfigParser
 
-class UNETRAlgo(BundleAlgo):
+class Dynunet128diceceAlgo(BundleAlgo):
     def fill_template_config(self, data_stats_file, output_path, **kwargs):
         """
         Fill the freshly copied config templates
@@ -53,8 +53,8 @@ class UNETRAlgo(BundleAlgo):
 
             input_channels = data_stats["stats_summary#image_stats#channels#max"]
             output_classes = len(data_stats["stats_summary#label_stats#labels"])
-
-            hyper_parameters.update({"pretrained_path": os.path.join(os.path.dirname(os.path.abspath(data_src_cfg["dataroot"])), 'DNN_models','algorithm_trained','UNETR_128_DiceCE_0')})
+            
+            hyper_parameters.update({"pretrained_path": os.path.join(os.path.dirname(os.path.abspath(data_src_cfg["dataroot"])), 'DNN_models','algorithm_trained','DynUnet_128_DiceCE_4')})
 
 
             hyper_parameters.update({"patch_size": patch_size})
@@ -143,4 +143,4 @@ if __name__ == "__main__":
     from monai.utils import optional_import
 
     fire, _ = optional_import("fire")
-    fire.Fire({"UNETRAlgo": UNETRAlgo})
+    fire.Fire({"Dynunet128diceceAlgo": Dynunet128diceceAlgo})

@@ -249,6 +249,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     logger.debug(f"World_size: {world_size}")
 
     # Data loading
+    # TODO: include own data loading to also include reference labels
     train_files, val_files = datafold_read(datalist=data_list_file_path, basedir=data_file_base_dir, fold=fold)
 
     random.shuffle(train_files)

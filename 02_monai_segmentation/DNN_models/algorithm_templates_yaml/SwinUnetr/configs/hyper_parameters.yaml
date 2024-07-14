@@ -7,7 +7,7 @@ data_file_base_dir: null                    # location of the dataset
 data_list_file_path: null                   # location of the file with a list of files image/label in the dataset
 
 modality: mri                               # main image modality, must be one of mri, ct, pet
-fold: 0
+fold: 0                                     # fold number
 
 class_names: null                           # names of the classes for a classification task -> null for segmentation
 class_index: null                           # indices of the classes for a classification task -> null for segmentation

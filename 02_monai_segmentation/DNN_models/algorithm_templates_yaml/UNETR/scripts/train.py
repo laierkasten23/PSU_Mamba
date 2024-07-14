@@ -91,6 +91,10 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
     datalist = ConfigParser.load_config_file(data_list_file_path)
 
+    # Get reference label path if available
+    data_benchmark_base_dir = datalist["benchmark_base_dir"] if "benchmark_base_dir" in datalist else None
+
+
     print("-------------------------------------- creating list train and list valid --------------------------------------")
 
 

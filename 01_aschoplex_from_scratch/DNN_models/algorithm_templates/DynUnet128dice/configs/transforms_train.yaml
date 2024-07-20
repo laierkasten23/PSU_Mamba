@@ -25,6 +25,7 @@ transforms_train:
     align_corners:
     - true
     - true
+    - true
     keys:
     - '@image_key'
     - '@label_key'
@@ -104,6 +105,7 @@ transforms_train:
   - _target_: CastToTyped
     dtype:
     - $torch.float32
+    - $torch.uint8
     - $torch.uint8
     keys:
     - '@image_key'

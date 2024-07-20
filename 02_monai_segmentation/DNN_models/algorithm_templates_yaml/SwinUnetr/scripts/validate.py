@@ -58,9 +58,9 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     validate_transforms = transforms.Compose(
         [
             infer_transforms,
-            transforms.LoadImaged(keys="label"),
-            transforms.EnsureChannelFirstd(keys="label"),
-            transforms.EnsureTyped(keys="label"),
+            transforms.LoadImaged(keys=["label", "ref_label"]),
+            transforms.EnsureChannelFirstd(keys=["label", "ref_label"]),
+            transforms.EnsureTyped(keys=["label", "ref_label"]),
         ]
     )
 

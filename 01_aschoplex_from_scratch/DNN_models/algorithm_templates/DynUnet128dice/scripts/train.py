@@ -275,7 +275,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                 with autocast():
                     outputs = model(inputs)
                     loss = loss_function(outputs.float(), labels)
-                    ref_loss = loss_function(outputs.float(), ref_labels)
+                    ref_loss = loss_function(outputs.float(), ref_labels).detach()
 
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)

@@ -1,5 +1,6 @@
 image_key: image
 label_key: label
+ref_label_key: ref_label
 transforms_validate:
   _target_: Compose
   transforms:
@@ -7,24 +8,30 @@ transforms_validate:
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'
   - _target_: EnsureChannelFirstd
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'
   - _target_: Orientationd
     axcodes: RAS
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'
   - _target_: Spacingd
     align_corners:
+    - true
     - true
     - true
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'
     mode:
     - bilinear
+    - nearest
     - nearest
     pixdim:
     - 1.0
@@ -38,6 +45,8 @@ transforms_validate:
     dtype:
     - $torch.float32
     - $torch.uint8
+    - $torch.uint8
     keys:
     - '@image_key'
     - '@label_key'
+    - '@ref_label_key'

@@ -43,7 +43,7 @@ class InferClass:
         self.patch_size_valid = parser.get_parsed_content("training#patch_size_valid")
         softmax = parser.get_parsed_content("training#softmax")
 
-        ckpt_name = parser.get_parsed_content("infer")["ckpt_name"]
+        ckpt_name = parser.get_parsed_content("ckpt_path")
         data_list_key = parser.get_parsed_content("infer")["data_list_key"]
         output_path = parser.get_parsed_content("infer")["output_path"]
 
@@ -60,7 +60,7 @@ class InferClass:
 
         files = []
         for _i in range(len(list_data)):
-            str_img = os.path.join(data_file_base_dir, list_data[_i]["image"])
+            str_img = os.path.join(data_file_base_dir, 'image_Ts', list_data[_i]["image"])
 
             if not os.path.exists(str_img):
                 continue

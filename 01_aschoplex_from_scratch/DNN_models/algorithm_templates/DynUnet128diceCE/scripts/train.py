@@ -91,6 +91,27 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     # Get reference label path if available
     data_benchmark_base_dir = datalist["benchmark_base_dir"] if "benchmark_base_dir" in datalist else None
 
+    # Added this instead:
+    tr_files, val_files = datafold_read(datalist=data_list_file_path, basedir=data_file_base_dir, fold=fold)
+ 
+    
+    # get list of all image paths of the tr_files list 
+    str_imgs_train = [os.path.join(data_file_base_dir, item['image']) for item in tr_files]
+    str_lab_train = [os.path.join(data_file_base_dir, item['label']) for item in tr_files]
+    str_imgs_val = [os.path.join(data_file_base_dir, item['image']) for item in val_files]
+    str_lab_val = [os.path.join(data_file_base_dir, item['label']) for item in val_files]
+    
+    # T1xFLAIR img-seg comparison
+    str_ref_seg_tr = get_reference_label_paths(str_imgs_train, data_benchmark_base_dir)
+    str_ref_seg_val = get_reference_label_paths(str_imgs_val, data_benchmark_base_dir)
+    
+    # Create dataset dictionary with the training image, the corresponding label and the reference label
+    train_files = [{"image": str_imgs_train[i], "label": str_lab_train[i], "ref_label": str_ref_seg_tr[i]} for i in range(len(tr_files))]
+    validation_files = [{"image": str_imgs_val[i], "label": str_lab_val[i], "ref_label": str_ref_seg_val[i]} for i in range(len(val_files))]    
+    
+    # This was it before: From here.....
+    """
+    
     list_train = []
     list_valid = []
     for item in datalist["training"]:
@@ -145,13 +166,21 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             dist.get_rank()
         ]
     print("val_files:", len(val_files))
-
+    """ 
     if torch.cuda.device_count() >= 4:
         train_ds = monai.data.CacheDataset(
-            data=train_files, transform=train_transforms, cache_rate=1.0, num_workers=num_workers, progress=False
+            data=train_files, 
+            transform=train_transforms, 
+            cache_rate=1.0, 
+            num_workers=num_workers, 
+            progress=False
         )
         val_ds = monai.data.CacheDataset(
-            data=val_files, transform=val_transforms, cache_rate=1.0, num_workers=2, progress=False
+            data=validation_files, 
+            transform=val_transforms, 
+            cache_rate=1.0, 
+            num_workers=2, 
+            progress=False
         )
     else:
         train_ds = monai.data.CacheDataset(
@@ -162,7 +191,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             progress=False,
         )
         val_ds = monai.data.CacheDataset(
-            data=val_files,
+            data=validation_files,
             transform=val_transforms,
             cache_rate=float(torch.cuda.device_count()) / 4.0,
             num_workers=2,
@@ -264,7 +293,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                 with autocast():
                     outputs = model(inputs)
                     loss = loss_function(outputs.float(), labels)
-                    ref_loss = loss_function(outputs.float(), ref_labels)
+                    ref_loss = loss_function(outputs.float(), ref_labels).detach()
 
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
@@ -368,6 +397,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     ref_metric_sum += ref_value.sum().item()
                     metric_vals = value.cpu().numpy()
                     ref_metric_vals = ref_value.cpu().numpy()
+
                     if len(metric_mat) == 0:
                         metric_mat = metric_vals
                     else:
@@ -389,7 +419,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         val1 = 1.0 - torch.isnan(ref_value[0, 0]).float()
                         ref_metric[2 * _c] += val0 * val1
                         ref_metric[2 * _c + 1] += val1
-
 
                     _index += 1
 

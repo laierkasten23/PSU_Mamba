@@ -60,7 +60,7 @@ class InferClass:
 
         files = []
         for _i in range(len(list_data)):
-            str_img = os.path.join(data_file_base_dir, list_data[_i]["image"])
+            str_img = os.path.join(data_file_base_dir, 'image_Ts', list_data[_i]["image"])
 
             if not os.path.exists(str_img):
                 continue

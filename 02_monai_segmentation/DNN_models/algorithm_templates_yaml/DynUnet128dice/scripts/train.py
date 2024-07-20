@@ -65,10 +65,17 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     num_iterations = parser.get_parsed_content("training#num_iterations")
     num_iterations_per_validation = parser.get_parsed_content("training#num_iterations_per_validation")
     num_sw_batch_size = parser.get_parsed_content("training#num_sw_batch_size")
+    #num_patches_per_iter = parser.get_parsed_content("training#num_patches_per_iter")
     output_classes = parser.get_parsed_content("training#output_classes")
     overlap_ratio = parser.get_parsed_content("training#overlap_ratio")
     patch_size_valid = parser.get_parsed_content("training#patch_size_valid")
+    #random_seed = parser.get_parsed_content("random_seed")
     softmax = parser.get_parsed_content("training#softmax")
+    #pin_memory = parser.get_parsed_content("training#pin_memory")
+    num_workers = parser.get_parsed_content("training#num_workers")
+    num_workers_val = parser.get_parsed_content("training#num_workers_val")
+
+
 
     train_transforms = parser.get_parsed_content("transforms_train")
     val_transforms = parser.get_parsed_content("transforms_validate")
@@ -93,93 +100,81 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     data_benchmark_base_dir = datalist["data_benchmark_base_dir"] if "data_benchmark_base_dir" in datalist else None
 
     # Data loading
-    # TODO: include own data loading to also include reference labels
-    #train_files, val_files = datafold_read(datalist=data_list_file_path, basedir=data_file_base_dir, fold=fold)
-
+    # Added this instead:
+    tr_files, val_files = datafold_read(datalist=data_list_file_path, basedir=data_file_base_dir, fold=fold)
+ 
     
-
-    list_train = []
-    list_valid = []
-    for item in datalist["training"]:
-        item.pop("fold", None)
-        list_train.append(item)
-
-    for item in datalist["validation"]:
-        item.pop("fold", None)
-        list_valid.append(item)
-
-    files = []
-    for _i in range(len(list_train)):
-        str_img = os.path.join(data_file_base_dir, list_train[_i]["image"])
-        str_seg = os.path.join(data_file_base_dir, list_train[_i]["label"])
-
-        # T1xFLAIR img-seg comparison
-        str_ref_seg = get_reference_label_path(str_img, data_benchmark_base_dir)
+    # get list of all image paths of the tr_files list 
+    str_imgs_train = [os.path.join(data_file_base_dir, item['image']) for item in tr_files]
+    str_lab_train = [os.path.join(data_file_base_dir, item['label']) for item in tr_files]
+    str_imgs_val = [os.path.join(data_file_base_dir, item['image']) for item in val_files]
+    str_lab_val = [os.path.join(data_file_base_dir, item['label']) for item in val_files]
+    
+    # T1xFLAIR img-seg comparison
+    str_ref_seg_tr = get_reference_label_paths(str_imgs_train, data_benchmark_base_dir)
+    str_ref_seg_val = get_reference_label_paths(str_imgs_val, data_benchmark_base_dir)
+    
+    # Create dataset dictionary with the training image, the corresponding label and the reference label
+    train_files = [{"image": str_imgs_train[i], "label": str_lab_train[i], "ref_label": str_ref_seg_tr[i]} for i in range(len(tr_files))]
+    validation_files = [{"image": str_imgs_val[i], "label": str_lab_val[i], "ref_label": str_ref_seg_val[i]} for i in range(len(val_files))]    
 
 
-        if (not os.path.exists(str_img)) or (not os.path.exists(str_seg)):
-            continue
-
-        files.append({"image": str_img, "label": str_seg, "ref_label": str_ref_seg})
-
-    train_files = files
-    random.shuffle(train_files)
+    random.shuffle(train_files) # TODO: check if this is necessary
 
     if torch.cuda.device_count() > 1:
-        train_files = partition_dataset(data=train_files, shuffle=True, num_partitions=world_size, even_divisible=True)[
+        train_files = partition_dataset(data=train_files, 
+                                        shuffle=True, 
+                                        num_partitions=world_size, 
+                                        even_divisible=True)[
             dist.get_rank()
         ]
     print("train_files:", len(train_files))
-
-    files = []
-    for _i in range(len(list_valid)):
-        str_img = os.path.join(data_file_base_dir, list_valid[_i]["image"])
-        str_seg = os.path.join(data_file_base_dir, list_valid[_i]["label"])
-
-        # T1xFLAIR img-seg comparison
-        str_ref_seg = get_reference_label_path(str_img, data_benchmark_base_dir)
-
-
-        if (not os.path.exists(str_img)) or (not os.path.exists(str_seg)):
-            continue
-
-        files.append({"image": str_img, "label": str_seg, "ref_label": str_ref_seg})
-
-    val_files = files
 
     if torch.cuda.device_count() > 1:
         if len(val_files) < world_size:
             val_files = val_files * math.ceil(float(world_size) / float(len(val_files)))
 
-        val_files = partition_dataset(data=val_files, shuffle=False, num_partitions=world_size, even_divisible=False)[
+        val_files = partition_dataset(data=val_files, 
+                                      shuffle=False, 
+                                      num_partitions=world_size, 
+                                      even_divisible=False)[
             dist.get_rank()
         ]
     print("val_files:", len(val_files))
+    
 
     if torch.cuda.device_count() >= 4:
         train_ds = monai.data.CacheDataset(
-            data=train_files, transform=train_transforms, cache_rate=1.0, num_workers=8, progress=False
+            data=train_files,
+            transform=train_transforms, 
+            cache_rate=1.0, 
+            num_workers=num_workers, 
+            progress=False
         )
         val_ds = monai.data.CacheDataset(
-            data=val_files, transform=val_transforms, cache_rate=1.0, num_workers=2, progress=False
+            data=validation_files, 
+            transform=val_transforms, 
+            cache_rate=1.0, 
+            num_workers=num_workers_val, 
+            progress=False
         )
     else:
         train_ds = monai.data.CacheDataset(
             data=train_files,
             transform=train_transforms,
             cache_rate=float(torch.cuda.device_count()) / 4.0,
-            num_workers=8,
+            num_workers=num_workers,
             progress=False,
         )
         val_ds = monai.data.CacheDataset(
-            data=val_files,
+            data=validation_files,
             transform=val_transforms,
             cache_rate=float(torch.cuda.device_count()) / 4.0,
-            num_workers=2,
+            num_workers=num_workers_val,
             progress=False,
         )
 
-    train_loader = DataLoader(train_ds, num_workers=2, batch_size=num_images_per_batch, shuffle=True)
+    train_loader = DataLoader(train_ds, num_workers=2, batch_size=num_images_per_batch, shuffle=True) # TODO: check if num_workers is correct
     val_loader = DataLoader(val_ds, num_workers=2, batch_size=1, shuffle=False)
 
     device = torch.device(f"cuda:{dist.get_rank()}") if torch.cuda.device_count() > 1 else torch.device("cuda:0")
@@ -246,7 +241,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         writer = SummaryWriter(log_dir=os.path.join(ckpt_path, "Events"))
 
         with open(os.path.join(ckpt_path, "accuracy_history.csv"), "a") as f:
-            f.write("epoch\tmetric\tloss\tlr\ttime\titer\n")
+            f.write("epoch\tmetric\tmetric_ref\tloss\tloss_ref\tlr\ttime\titer\n")
 
     start_time = time.time()
     for epoch in range(num_epochs):
@@ -258,12 +253,14 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
         model.train()
         epoch_loss = 0
+        epoch_loss_t1xflair = 0 # also track loss for T1xFLAIR, not used for backpropagation
         loss_torch = torch.zeros(2, dtype=torch.float, device=device)
-        step = 0
+        loss_torch_t1xflair = torch.zeros(2, dtype=torch.float, device=device)
+        step = 0    # number of iterations
 
         for batch_data in train_loader:
             step += 1
-            inputs, labels = batch_data["image"].to(device), batch_data["label"].to(device)
+            inputs, labels, ref_labels = batch_data["image"].to(device), batch_data["label"].to(device), batch_data["ref_label"].to(device)
 
             for param in model.parameters():
                 param.grad = None
@@ -272,6 +269,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                 with autocast():
                     outputs = model(inputs)
                     loss = loss_function(outputs.float(), labels)
+                    ref_loss = loss_function(outputs.float(), ref_labels).detach()
+
 
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
@@ -281,20 +280,25 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             else:
                 outputs = model(inputs)
                 loss = loss_function(outputs.float(), labels)
+                ref_loss = loss_function(outputs.float(), ref_labels).detach()
 
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)
                 optimizer.step()
 
             epoch_loss += loss.item()
+            epoch_loss_t1xflair += ref_loss.item()
             loss_torch[0] += loss.item()
             loss_torch[1] += 1.0
+            loss_torch_t1xflair[0] += ref_loss.item()   # T1xFLAIR loss
+            loss_torch_t1xflair[1] += 1.0
             epoch_len = len(train_loader)
             idx_iter += 1
 
             if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
-                print(f"[{str(datetime.now())[:19]}] " + f"{step}/{epoch_len}, train_loss: {loss.item():.4f}")
+                print(f"[{str(datetime.now())[:19]}] " + f"{step}/{epoch_len}, train_loss: {loss.item():.4f}, train_loss_T1xFLAIR: {ref_loss.item():.4f}")
                 writer.add_scalar("Loss/train", loss.item(), epoch_len * epoch + step)
+                writer.add_scalar("Loss/train_T1xFLAIR", ref_loss.item(), epoch_len * epoch + step)
 
             lr_scheduler.step()
 
@@ -303,12 +307,16 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             dist.all_reduce(loss_torch, op=torch.distributed.ReduceOp.SUM)
 
         loss_torch = loss_torch.tolist()
+        loss_torch_t1xflair = loss_torch_t1xflair.tolist()
         if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
             loss_torch_epoch = loss_torch[0] / loss_torch[1]
+            loss_torch_epoch_t1xflair = loss_torch_t1xflair[0] / loss_torch_t1xflair[1]
             print(
-                f"epoch {epoch + 1} average loss: {loss_torch_epoch:.4f}, "
+                f"epoch {epoch + 1} average loss: {loss_torch_epoch:.4f}, average loss_T1xFLAIR: {loss_torch_epoch_t1xflair:.4f}"
                 f"best mean dice: {best_metric:.4f} at epoch {best_metric_epoch}"
             )
+        
+        del inputs, labels, ref_labels, outputs     # free up memory
 
         if (epoch + 1) % val_interval == 0 or (epoch + 1) == num_epochs:
             torch.cuda.empty_cache()
@@ -318,14 +326,22 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                 metric_sum = 0.0
                 metric_count = 0
                 metric_mat = []
+                ref_metric = torch.zeros(metric_dim * 2, dtype=torch.float, device=device)
+                ref_metric_sum = 0.0
+                ref_metric_count = 0
+                ref_metric_mat = []
                 val_images = None
                 val_labels = None
+                val_ref_labels = None
                 val_outputs = None
 
+
                 _index = 0
+                print(" [info]: ---------------- Validation: computing dice scores --------------")
                 for val_data in val_loader:
                     val_images = val_data["image"].to(device)
                     val_labels = val_data["label"].to(device)
+                    val_ref_labels = val_data["ref_label"].to(device)
 
                     with torch.cuda.amp.autocast(enabled=amp):
                         val_outputs = sliding_window_inference(
@@ -344,23 +360,43 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         val_labels = post_label(val_labels[0, ...])
                         val_labels = val_labels[None, ...]
 
+                        val_ref_labels = post_label(val_ref_labels[0, ...])
+                        val_ref_labels = val_ref_labels[None, ...]
+
+
                     value = compute_dice(y_pred=val_outputs, y=val_labels, include_background=False)
+                    ref_value = compute_dice(y_pred=val_outputs, y=val_ref_labels, include_background=False)
 
-                    print(_index + 1, "/", len(val_loader), value)
-
+                    print("Dice Scores:", _index + 1, "/", len(val_loader), value, "Reference Dice Scores:", ref_value)
+                    
                     metric_count += len(value)
+                    ref_metric_count += len(ref_value)
                     metric_sum += value.sum().item()
+                    ref_metric_sum += ref_value.sum().item()
                     metric_vals = value.cpu().numpy()
+                    ref_metric_vals = ref_value.cpu().numpy()
+
                     if len(metric_mat) == 0:
                         metric_mat = metric_vals
                     else:
                         metric_mat = np.concatenate((metric_mat, metric_vals), axis=0)
+                    if len(ref_metric_mat) == 0:
+                        ref_metric_mat = ref_metric_vals
+                    else:
+                        ref_metric_mat = np.concatenate((ref_metric_mat, ref_metric_vals), axis=0)
+
 
                     for _c in range(metric_dim):
                         val0 = torch.nan_to_num(value[0, _c], nan=0.0)
                         val1 = 1.0 - torch.isnan(value[0, 0]).float()
                         metric[2 * _c] += val0 * val1
                         metric[2 * _c + 1] += val1
+                    # Do the same for the reference labels
+                    for _c in range(metric_dim):
+                        val0 = torch.nan_to_num(ref_value[0, _c], nan=0.0)
+                        val1 = 1.0 - torch.isnan(ref_value[0, 0]).float()
+                        ref_metric[2 * _c] += val0 * val1
+                        ref_metric[2 * _c + 1] += val1
 
                     _index += 1
 
@@ -369,16 +405,22 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     dist.all_reduce(metric, op=torch.distributed.ReduceOp.SUM)
 
                 metric = metric.tolist()
+                ref_metric = ref_metric.tolist()
                 if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
                     for _c in range(metric_dim):
-                        print(f"evaluation metric - class {_c + 1:d}:", metric[2 * _c] / metric[2 * _c + 1])
+                        print(f"evaluation metric - class {_c + 1:d}:", metric[2 * _c] / metric[2 * _c + 1], "Reference metric:", ref_metric[2 * _c] / ref_metric[2 * _c + 1])
+                        
                     avg_metric = 0
+                    avg_metric_ref = 0
                     for _c in range(metric_dim):
                         avg_metric += metric[2 * _c] / metric[2 * _c + 1]
+                        avg_metric_ref += ref_metric[2 * _c] / ref_metric[2 * _c + 1]
                     avg_metric = avg_metric / float(metric_dim)
-                    print("avg_metric", avg_metric)
+                    avg_metric_ref = avg_metric_ref / float(metric_dim)
+                    print("avg_metric: ", avg_metric, " , avg_metric_ref: ", avg_metric_ref)
 
                     writer.add_scalar("Accuracy/validation", avg_metric, epoch)
+                    writer.add_scalar("Accuracy/validation_ref", avg_metric_ref, epoch)
 
                     if avg_metric > best_metric:
                         best_metric = avg_metric
@@ -397,8 +439,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                             yaml.dump([dict_file], stream=out_file)
 
                     print(
-                        "current epoch: {} current mean dice: {:.4f} best mean dice: {:.4f} at epoch {}".format(
-                            epoch + 1, avg_metric, best_metric, best_metric_epoch
+                        "current epoch: {} current mean dice: {:.4f}, current reference mean dice: {:.4f},  best mean dice: {:.4f} at epoch {}".format(
+                            epoch + 1, avg_metric, avg_metric_ref, best_metric, best_metric_epoch
                         )
                     )
 
@@ -406,8 +448,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     elapsed_time = (current_time - start_time) / 60.0
                     with open(os.path.join(ckpt_path, "accuracy_history.csv"), "a") as f:
                         f.write(
-                            "{:d}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.1f}\t{:d}\n".format(
-                                epoch + 1, avg_metric, loss_torch_epoch, lr, elapsed_time, idx_iter
+                            "{:d}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.1f}\t{:d}\n".format(
+                                epoch + 1, avg_metric, avg_metric_ref, loss_torch_epoch, loss_torch_epoch_t1xflair, lr, elapsed_time, idx_iter
                             )
                         )
 

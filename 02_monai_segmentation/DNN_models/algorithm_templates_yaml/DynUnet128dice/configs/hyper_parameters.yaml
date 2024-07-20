@@ -15,7 +15,7 @@ training:
   amp: true
   determ: false
   input_channels: 1
-  learning_rate: 0.2
+  learning_rate: 0.0002
   num_images_per_batch: 1
   num_iterations: 20000         # TODO: was 40000 before
   num_iterations_per_validation: 100                        # number of iterations between each validation step during training
@@ -83,7 +83,7 @@ validate:
 
 # inference
 infer:
-  ckpt_name: $@bundle_root + '/model_fold' + str(@fold) + '/best_metric_model.pt'
+  ckpt_name: $@bundle_root + '/model/best_metric_model.pt' 
   data_list_key: testing
   fast: false
   ouptut_path: $@bundle_root + '/prediction_' + @infer#data_list_key

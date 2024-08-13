@@ -33,6 +33,7 @@ transforms_train:
     mode:
     - bilinear
     - nearest
+    - nearest
     pixdim:
     - 1.0
     - 1.0
@@ -53,6 +54,7 @@ transforms_train:
     - '@ref_label_key'
     mode:
     - reflect
+    - constant
     - constant
     spatial_size: '@patch_size'
   # data augmentation transformations
@@ -93,6 +95,7 @@ transforms_train:
     - '@ref_label_key'
     mode:
     - bilinear
+    - nearest
     - nearest
     prob: 0.15
     range_x: 0.3

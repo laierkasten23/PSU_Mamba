@@ -1,0 +1,502 @@
+{
+    "channel_names": {
+        "0": "T1"
+    },
+    "data_benchmark_base_dir": "/home/linuxlia/Lia_Masterthesis/data/reference_labels",
+    "dataset_type": "UMAMBA",
+    "description": "Dataset for Choroid Plexus segmentation",
+    "file_ending": ".nii",
+    "labels": {
+        "Choroid Plexus": "1",
+        "background": "0"
+    },
+    "name": "MRI Dataset - Choroid Plexus Segmentation",
+    "numTest": 27,
+    "numTraining": 62,
+    "numValidation": 15,
+    "tensorImageSize": "3D",
+    "testing": [
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/004_image0001.nii",
+            "subject_id": "004"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/005_image0001.nii",
+            "subject_id": "005"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/008_image0001.nii",
+            "subject_id": "008"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/016_image0001.nii",
+            "subject_id": "016"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/026_image0001.nii",
+            "subject_id": "026"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/027_image0001.nii",
+            "subject_id": "027"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/029_image0001.nii",
+            "subject_id": "029"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/032_image0001.nii",
+            "subject_id": "032"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/034_image0001.nii",
+            "subject_id": "034"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/035_image0001.nii",
+            "subject_id": "035"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/038_image0001.nii",
+            "subject_id": "038"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/044_image0001.nii",
+            "subject_id": "044"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/055_image0001.nii",
+            "subject_id": "055"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/068_image0001.nii",
+            "subject_id": "068"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/069_image0001.nii",
+            "subject_id": "069"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/072_image0001.nii",
+            "subject_id": "072"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/075_image0001.nii",
+            "subject_id": "075"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/076_image0001.nii",
+            "subject_id": "076"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/079_image0001.nii",
+            "subject_id": "079"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/081_image0001.nii",
+            "subject_id": "081"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/090_image0001.nii",
+            "subject_id": "090"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/091_image0001.nii",
+            "subject_id": "091"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/092_image0001.nii",
+            "subject_id": "092"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/094_image0001.nii",
+            "subject_id": "094"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/099_image0001.nii",
+            "subject_id": "099"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/103_image0001.nii",
+            "subject_id": "103"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/104_image0001.nii",
+            "subject_id": "104"
+        }
+    ],
+    "training": [
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/002_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/002seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/003_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/003seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/006_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/006seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/007_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/007seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/009_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/009seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/010_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/010seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/011_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/011seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/012_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/012seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/013_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/013seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/015_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/015seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/019_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/019seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/020_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/020seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/021_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/021seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/022_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/022seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/023_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/023seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/024_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/024seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/025_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/025seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/028_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/028seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/030_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/030seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/031_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/031seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/033_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/033seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/036_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/036seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/040_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/040seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/041_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/041seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/042_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/042seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/043_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/043seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/045_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/045seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/047_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/047seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/048_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/048seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/049_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/049seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/050_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/050seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/051_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/051seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/053_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/053seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/054_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/054seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/056_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/056seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/057_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/057seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/058_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/058seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/059_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/059seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/060_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/060seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/062_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/062seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/063_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/063seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/064_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/064seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/065_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/065seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/066_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/066seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/067_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/067seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/070_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/070seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/071_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/071seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/073_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/073seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/074_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/074seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/077_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/077seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/080_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/080seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/082_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/082seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/083_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/083seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/084_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/084seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/085_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/085seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/088_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/088seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/089_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/089seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/093_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/093seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/095_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/095seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/098_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/098seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/100_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/100seg.nii"
+        },
+        {
+            "fold": 0,
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesTr/102_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsTr/102seg.nii"
+        }
+    ],
+    "validation": [
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesVal/001_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsVal/001seg.nii"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesVal/014_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsVal/014seg.nii"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesVal/017_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsVal/017seg.nii"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesVal/018_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsVal/018seg.nii"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesVal/037_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsVal/037seg.nii"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesVal/039_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsVal/039seg.nii"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesVal/046_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsVal/046seg.nii"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesVal/052_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsVal/052seg.nii"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesVal/061_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsVal/061seg.nii"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesVal/078_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsVal/078seg.nii"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesVal/086_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsVal/086seg.nii"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesVal/087_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsVal/087seg.nii"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesVal/096_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsVal/096seg.nii"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesVal/097_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsVal/097seg.nii"
+        },
+        {
+            "image": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/imagesVal/101_image0001.nii",
+            "label": "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA/labelsVal/101seg.nii"
+        }
+    ]
+}

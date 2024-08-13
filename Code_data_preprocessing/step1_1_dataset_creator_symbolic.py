@@ -20,16 +20,18 @@ def folderstructure_changer_symbolic(path,
                             datasettype:str ='ASCHOPLEX', 
                             modality:str ='T1', 
                             add_id_img:str = 'image', 
-                            add_id_lab:str = 'seg'):
+                            add_id_lab:str = 'seg', 
+                            fileending:str = '.nii',
+                            use_single_label_for_bichannel:bool = False):
     """
     This function changes the folder structure of the datasets
     from the following structure:
     DATASET
         -MRI_IDsj
-            -T1.nii / FLAIR.nii / T2.nii / T1gd.nii / image.nii
+            -T1.nii / FLAIR.nii / T1xFLAIR.nii / T2.nii / T1gd.nii / image.nii
             -mask.nii / seg.nii
         -MRI_IDsj
-            -T1.nii / FLAIR.nii / T2.nii / T1gd.nii / image.nii
+            -T1.nii / FLAIR.nii / T1xFLAIR.nii / T2.nii / T1gd.nii / image.nii
             -mask.nii / seg.nii
         ...
     where MRI_IDsj is the subject ID from 000 to N 
@@ -90,7 +92,7 @@ def folderstructure_changer_symbolic(path,
        and images_Ts /imagesTs is the folder containing the test images 
     from which amount_test_subjects are randomly chosen from the original dataset.
     In case of datasettype = NNUNETV2, the images are named MRI_IDsj_{XXXX}.nii and the labels are named MRI_IDsj.nii, where XXXX is the 4-digit modality/channel identifier 
-    - FLAIR (0000), T1w (0001), T1gd (0002) and T2w (0003).
+    - FLAIR (0000), T1 (0001), T1gd (0002), T2 (0003), T1xFLAIR (0004).
     - One id can have multiple modalities, e.g. MRI_IDsj_{XXXX}.nii, MRI_IDsj_{XXXY}.nii, MRI_IDsj_{XXYZ}.nii,...}.nii
 
     :param path: path to the dataset
@@ -99,9 +101,10 @@ def folderstructure_changer_symbolic(path,
     :param test_data_only: if True, only the test data is created and masks do not exist
     :param amount_train_subjects: amount of subjects to be used for training 
     :param datasettype: type of the dataset, either ASCHOPLEX or NNUNETV2 or UMAMBA
-    :param modality: modality of the images, either T1, T2, FLAIR, T1gd. Can be a list of modalities.
+    :param modality: modality of the images, either T1, T2, FLAIR, T1gd, T1xFLAIR. Can be a list of modalities.
     :param add_id_img: additional identifier for the image files, default is 'image'. Could be ''. 
     :param add_id_lab: additional identifier for the label files, default is 'seg'. Could be ''.
+    :param use_single_label_for_bichannel: if True, only one label (T1xFLAIR) is used for the bichannel images, otherwise the corresponding labels for each channel are used
     
     :return:
     
@@ -163,6 +166,8 @@ def folderstructure_changer_symbolic(path,
             identifier = '0002'
         elif modality == 'T2':
             identifier = '0003'
+        elif modality == 'T1xFLAIR':
+            identifier = '0004'
         else:
             raise ValueError('Modality not supported')
 
@@ -198,7 +203,7 @@ def folderstructure_changer_symbolic(path,
         else:    
             train_subjects = [subjects[int(i)-1] for i in train_test_index_list]
             test_subjects = [subject for subject in subjects if subject not in train_subjects]
-        print('Train subjects LOL: %s' % train_subjects)
+        print('Train subjects: %s' % train_subjects)
         print('Test subjects: %s' % test_subjects)
     else:
         # no train subjects
@@ -206,7 +211,7 @@ def folderstructure_changer_symbolic(path,
         test_subjects = subjects
         print('Test subjects: %s' % test_subjects)
 
-    # subsample also validation subjects
+    # randomly subsample also validation subjects or use the given list of folds for train and validation # TODO: include and generate the lists
     if datasettype == 'UMAMBA':
         val_subjects = random.sample(train_subjects, int((1-train_val_split)*len(train_subjects)))
         train_subjects = [subject for subject in train_subjects if subject not in val_subjects]
@@ -222,7 +227,7 @@ def folderstructure_changer_symbolic(path,
         # TODO: adjust train and test folder s
         if train_test_index_list is not None:
             for subject in train_subjects:
-                src_lab_path = os.path.join(path, subject, file_pattern.format(subject))
+                src_lab_path = os.path.join(path, subject, file_pattern.format(subject)) # source label path
                 path_to_save_lab = os.path.join(new_dataset_path, train_ref_dir, file_pattern.format(subject))
                 os.symlink(src_lab_path, path_to_save_lab)
                 print("Train: created symbolic link from %s to %s" % (src_lab_path, path_to_save_lab)) 
@@ -238,7 +243,7 @@ def folderstructure_changer_symbolic(path,
             subject_dir_list = sorted(os.listdir(os.path.join(path, subject)), key=str.lower)
             if '.DS_Store' in subject_dir_list:
                 subject_dir_list.remove('.DS_Store')
-            #print(subject_dir_list)
+           
             if not test_data_only:
                 image_name = next((s for s in subject_dir_list if modality in s and 'mask' not in s), None)
                 mask_name = next((s for s in subject_dir_list if 'mask' in s and modality in s), None)
@@ -246,34 +251,41 @@ def folderstructure_changer_symbolic(path,
                 image_name = next((s for s in subject_dir_list if modality in s and 'mask' not in s), None)
             print("Image_name = ", image_name, "and mask_name = ", mask_name)
 
-        # If one of 'T1', 'T2', 'FLAIR', 'T1gd' is in the image_name, check whether it is the same as the argument modality and throw an error if they differ. 
+        # If one of 'T1', 'T2', 'FLAIR', 'T1gd', 'T1xFLAIR' is in the image_name, check whether it is the same as the argument modality and throw an error if they differ. 
         # If it is not in the image_name, continue with the next subject
-            mod_checker = any(mod in image_name for mod in ['T1', 'T2', 'FLAIR', 'T1gd'])
+            mod_checker = any(mod in image_name for mod in ['T1', 'T2', 'FLAIR', 'T1gd', 'T1xFLAIR'])
             if modality not in image_name and mod_checker:
                 print("Modality = %s" % modality, "Image_name = %s" % image_name)
                 raise ValueError('Modality of the image does not match the modality argument')
+            
+            
+            identifier_lab = '0004' if use_single_label_for_bichannel else identifier # Only use 0004 for the label if the single label for the bichannel images is used
 
             # Create the symbolic links
             if subject in train_subjects:
-                path_to_save_img_train = os.path.join(new_dataset_path, train_folder_name, subject + '_' + add_id_img + identifier + args.fileending)
+                path_to_save_img_train = os.path.join(new_dataset_path, train_folder_name, subject + '_' + add_id_img + identifier + fileending)
                 src_img_path = os.path.join(path, subject, image_name)
                 os.symlink(src_img_path, path_to_save_img_train)
             
                 src_lab_path = os.path.join(path, subject, mask_name)
-                path_to_save_lab = os.path.join(new_dataset_path, label_folder_name, subject + add_id_lab + args.fileending)
-                os.symlink(src_lab_path, path_to_save_lab)
+                path_to_save_lab = os.path.join(new_dataset_path, label_folder_name, subject + add_id_lab + identifier_lab + fileending)
+                # skip if symlink already exists
+                if not os.path.exists(path_to_save_lab):
+                    os.symlink(src_lab_path, path_to_save_lab)
 
             elif datasettype == 'UMAMBA' and subject in val_subjects:
-                path_to_save_img_val = os.path.join(new_dataset_path, val_folder_name, subject + '_' + add_id_img + identifier + args.fileending)
+                path_to_save_img_val = os.path.join(new_dataset_path, val_folder_name, subject + '_' + add_id_img + identifier + fileending)
                 src_img_path = os.path.join(path, subject, image_name)
                 os.symlink(src_img_path, path_to_save_img_val)
             
                 src_lab_path = os.path.join(path, subject, mask_name)
-                path_to_save_lab = os.path.join(new_dataset_path, label_val_folder_name, subject + add_id_lab + args.fileending)
-                os.symlink(src_lab_path, path_to_save_lab)
+                path_to_save_lab = os.path.join(new_dataset_path, label_val_folder_name, subject + add_id_lab + identifier_lab + fileending)
+                if not os.path.exists(path_to_save_lab):
+                    os.symlink(src_lab_path, path_to_save_lab)
+    
             else:
                 # (just for test subjects)
-                path_to_save_img_test = os.path.join(new_dataset_path, test_folder_name, subject + '_' + add_id_img + identifier + args.fileending)
+                path_to_save_img_test = os.path.join(new_dataset_path, test_folder_name, subject + '_' + add_id_img + identifier + fileending)
                 src_img_path = os.path.join(path, subject, image_name)
                 os.symlink(src_img_path, path_to_save_img_test)
         
@@ -283,7 +295,7 @@ def folderstructure_changer_symbolic(path,
 if __name__ == '__main__':
     print('Starting reorganizing Dataset')
     parser = argparse.ArgumentParser()
-    parser.add_argument('--path', type=str, default='/Users/liaschmid/Documents/Uni Heidelberg/7_Semester_Thesis/ASCHOPLEX/ANON_DATA_01_labels')
+    parser.add_argument('--path', type=str, default='/home/linuxlia/Lia_Masterthesis/data/pazienti', help='Path to the dataset')
     parser.add_argument('--task_id', type=int, default=53)
     parser.add_argument('--task_name', type=str, default='Choroid_Plexus')
     parser.add_argument('--test_data_only', type=bool, default=False, help='If True, only the test data is created and masks do not exist')
@@ -291,19 +303,34 @@ if __name__ == '__main__':
     parser.add_argument('--train_val_split', type=float, default=0.8)
     parser.add_argument('--train_test_index_list', type=str, default=None)
     parser.add_argument('--datasettype', type=str, default='ASCHOPLEX', choices=['ASCHOPLEX', 'NNUNETV2', 'UMAMBA', 'reference'])
-    parser.add_argument('--modality', type=str, default='T1')
+    parser.add_argument('--modality', type=str, nargs='+', default='T1')
     parser.add_argument('--add_id_img', type=str, default='image')
     parser.add_argument('--add_id_lab', type=str, default='seg')
     parser.add_argument('--fileending', type=str, default='.nii')
+    parser.add_argument('--use_single_label_for_bichannel', type=bool, default=False, help='If True, only one label (T1xFLAIR) is used for the bichannel images, otherwise the corresponding labels for each channel are used')
     args = parser.parse_args()
 
     # Convert the string back to a list
     train_test_index_list = args.train_test_index_list.split(',')
 
-    folderstructure_changer_symbolic(args.path, args.task_id, args.task_name,
+    # if modality is not a list, convert it to a list of one element, else, ierate over the list and create the symbolic links for each modality
+    if not isinstance(args.modality, list):
+        modality = [args.modality]
+    else:
+        print("NO")
+    for mod in args.modality:
+        print(f"modality = {mod}, type = {type(mod)}")
+        folderstructure_changer_symbolic(args.path, args.task_id, args.task_name,
                             args.test_data_only, args.amount_train_subjects,
                             args.train_val_split, train_test_index_list,
-                            args.datasettype, args.modality, args.add_id_img, args.add_id_lab)
+                            args.datasettype, mod, args.add_id_img, args.add_id_lab, 
+                            args.fileending, args.use_single_label_for_bichannel)
+
+
+    #folderstructure_changer_symbolic(args.path, args.task_id, args.task_name,
+    #                        args.test_data_only, args.amount_train_subjects,
+    #                        args.train_val_split, train_test_index_list,
+    #                        args.datasettype, args.modality, args.add_id_img, args.add_id_lab)
     print('Reorganizing Dataset finished')
     
 
@@ -324,9 +351,32 @@ if __name__ == '__main__':
     python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 9 --task_name 'ChoroidPlexus_FLAIR_sym_UMAMBA' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'UMAMBA' --modality 'FLAIR' 
     python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 8 --task_name 'ChoroidPlexus_FLAIR_sym_REFERENCETEST' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'reference' --modality 'FLAIR' 
     python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'reference' 
+    
     python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 1 --task_name 'ChoroidPlexus_T1_sym_AP' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'T1'
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 1 --task_name 'ChoroidPlexus_FLAIR_sym_AP' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'FLAIR'
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 1 --task_name 'ChoroidPlexus_T1xFLAIR_sym_AP' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'T1xFLAIR'
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 1 --task_name 'ChoroidPlexus_T1_FLAIR_sym_AP' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'T1' 'FLAIR'
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 1 --task_name 'ChoroidPlexus_T1_FLAIR_T1xFLAIRmask_sym_AP' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'T1' 'FLAIR' --use_single_label_for_bichannel True
+    
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 2 --task_name 'ChoroidPlexus_T1_sym_PHU' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'T1'
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 2 --task_name 'ChoroidPlexus_FLAIR_sym_PHU' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'FLAIR'
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 2 --task_name 'ChoroidPlexus_T1xFLAIR_sym_PHU' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'T1xFLAIR'
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 2 --task_name 'ChoroidPlexus_T1_FLAIR_sym_PHU' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'T1' 'FLAIR'
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 2 --task_name 'ChoroidPlexus_T1_FLAIR_T1xFLAIRmask_sym_PHU' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'T1' 'FLAIR' --use_single_label_for_bichannel True
+    
+
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 3 --task_name 'ChoroidPlexus_T1_sym_UMAMBA' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'T1'
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 3 --task_name 'ChoroidPlexus_FLAIR_sym_UMAMBA' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'FLAIR'
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 3 --task_name 'ChoroidPlexus_T1xFLAIR_sym_UMAMBA' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'T1xFLAIR'
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 3 --task_name 'ChoroidPlexus_T1_FLAIR_sym_UMAMBA' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'T1' 'FLAIR'
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 3 --task_name 'ChoroidPlexus_T1_FLAIR_T1xFLAIRmask_sym_UMAMBA' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'T1' 'FLAIR' --use_single_label_for_bichannel True
+    
     python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 3 --task_name 'ChoroidPlexus_T1_sym_UMAMBA' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'UMAMBA' --modality 'T1'
-                                                                                                                            
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 390 --task_name 'ChoroidPlexus_T1xFLAIR_sym_AP' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'T1xFLAIR'
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 391 --task_name 'ChoroidPlexus_T1andFLAIR_sym_AP' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality T1 FLAIR
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 111 --task_name 'ChoroidPlexus_T1_sym_AP' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'T1'
+    python3 step1_1_dataset_creator_symbolic.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 111 --task_name 'ChoroidPlexus_T1_FLAIR_T1xFLAIRmask_sym_AP' --train_test_index_list "056,063,006,052,003,024,100,019,025,071,045,067,102,101,083,011,049,033,061,042,020,097,088,047,028,053,018,073,015,066,050,030,085,048,098,037,070,010,064,036,039,054,057,041,077,013,040,017,007,078,059,096,082,062,087,058,084,095,012,051,043,074,001,080,002,086,093,031,023,089,046,021,022,014,065,060,009" --datasettype 'ASCHOPLEX' --modality 'T1' 'FLAIR' --use_single_label_for_bichannel True
+                                                                                                                     
     
     /Users/liaschmid/Documents/Uni Heidelberg/7_Semester_Thesis/ASCHOPLEX/launching_tool.py
     --path /Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/ASCHOPLEX/ANON_DATA

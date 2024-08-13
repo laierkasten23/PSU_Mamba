@@ -38,14 +38,14 @@ class InferClass:
         data_file_base_dir = parser.get_parsed_content("data_file_base_dir")
         data_list_file_path = parser.get_parsed_content("data_list_file_path")
         self.fast = parser.get_parsed_content("infer")["fast"]
-        self.num_sw_batch_size = parser.get_parsed_content("num_sw_batch_size")
-        self.overlap_ratio = parser.get_parsed_content("overlap_ratio")
+        self.num_sw_batch_size = parser.get_parsed_content("training#num_sw_batch_size")
+        self.overlap_ratio = parser.get_parsed_content("training#overlap_ratio")
         self.patch_size_valid = parser.get_parsed_content("patch_size_valid")
-        softmax = parser.get_parsed_content("softmax")
+        softmax = parser.get_parsed_content("training#softmax")
 
         ckpt_name = parser.get_parsed_content("infer")["ckpt_name"]
         data_list_key = parser.get_parsed_content("infer")["data_list_key"]
-        output_path = parser.get_parsed_content("infer")["ouptut_path"]
+        output_path = parser.get_parsed_content("infer")["output_path"]
 
         if not os.path.exists(output_path):
             os.makedirs(output_path, exist_ok=True)

@@ -27,23 +27,49 @@ from torch.utils.tensorboard import SummaryWriter
 
 import monai
 from monai import transforms
+from monai.apps.utils import DEFAULT_FMT
+from monai.apps.auto3dseg.auto_runner import logger
 from monai.auto3dseg.utils import datafold_read
 from monai.bundle import ConfigParser
 from monai.bundle.scripts import _pop_args, _update_args
 from monai.data import DataLoader, partition_dataset
 from monai.inferers import sliding_window_inference
 from monai.metrics import compute_dice
-from monai.utils import set_determinism
+from monai.utils import RankFilter, set_determinism
 from torch.nn.modules.loss import _Loss 
 
 from Code_general_functions.extract_reference_label import get_reference_label_path, get_reference_label_paths    
 
 
+CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {"monai_default": {"format": DEFAULT_FMT}},
+    "loggers": {
+        "monai.apps.auto3dseg.auto_runner": {"handlers": ["file", "console"], "level": "DEBUG", "propagate": False}
+    },
+    "filters": {"rank_filter": {"()": RankFilter}},
+    "handlers": {
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "runner.log",
+            "mode": "a",  # append or overwrite
+            "level": "DEBUG",
+            "formatter": "monai_default",
+            "filters": ["rank_filter"],
+        },
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "INFO",
+            "formatter": "monai_default",
+            "filters": ["rank_filter"],
+        },
+    },
+}
 
 
 def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
-    print("-------------------------------------- starting run --------------------------------------")
-
+    
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     print("-------------------------------------- starting run --------------------------------------")
 
@@ -75,9 +101,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     train_transforms = parser.get_parsed_content("transforms_train")
     val_transforms = parser.get_parsed_content("transforms_validate")
 
-    print("-------------------------------------- parsed all stuff --------------------------------------")
-
-
+    
     if not os.path.exists(ckpt_path):
         os.makedirs(ckpt_path, exist_ok=True)
 
@@ -92,30 +116,42 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         world_size = 1
     print("[info] world_size:", world_size)
 
+    CONFIG["handlers"]["file"]["filename"] = parser.get_parsed_content("log_output_file")
+    print("log_output_file: ", parser.get_parsed_content("log_output_file"))
+    logging.config.dictConfig(CONFIG)
+    print("CONFIG: ", CONFIG)
+    logging.getLogger("torch.distributed.distributed_c10d").setLevel(logging.WARNING)
+    logger.debug(f"Number of GPUs: {torch.cuda.device_count()}")
+    logger.debug(f"World_size: {world_size}")
+
     datalist = ConfigParser.load_config_file(data_list_file_path)
 
-    # Get reference label path if available
-    data_benchmark_base_dir = datalist["benchmark_base_dir"] if "benchmark_base_dir" in datalist else None
+    # Get reference label path if available, else throw error message
+    if "data_benchmark_base_dir" in datalist:
+        data_benchmark_base_dir = datalist["data_benchmark_base_dir"]
+    else:
+        raise ValueError("data_benchmark_base_dir not found in data_list_file_path")
 
 
     print("-------------------------------------- creating list train and list valid --------------------------------------")
 
     # Data loading
-    tr_files, val_files = datafold_read(datalist=data_list_file_path, basedir=data_file_base_dir, fold=fold)
+    train_files, val_files = datafold_read(datalist=data_list_file_path, basedir=data_file_base_dir, fold=fold)
 
-    # get list of all image paths of the tr_files list 
-    str_imgs_train = [os.path.join(data_file_base_dir, item['image']) for item in tr_files]
-    str_lab_train = [os.path.join(data_file_base_dir, item['label']) for item in tr_files]
+    # get list of all image paths of the train_files list 
+    str_imgs_train = [os.path.join(data_file_base_dir, item['image']) for item in train_files]
     str_imgs_val = [os.path.join(data_file_base_dir, item['image']) for item in val_files]
-    str_lab_val = [os.path.join(data_file_base_dir, item['label']) for item in val_files]
     
     # T1xFLAIR img-seg comparison
     str_ref_seg_tr = get_reference_label_paths(str_imgs_train, data_benchmark_base_dir)
     str_ref_seg_val = get_reference_label_paths(str_imgs_val, data_benchmark_base_dir)
     
-    # Create dataset dictionary with the training image, the corresponding label and the reference label
-    train_files = [{"image": str_imgs_train[i], "label": str_lab_train[i], "ref_label": str_ref_seg_tr[i]} for i in range(len(tr_files))]
-    validation_files = [{"image": str_imgs_val[i], "label": str_lab_val[i], "ref_label": str_ref_seg_val[i]} for i in range(len(val_files))]    
+    # Add reference label to train_files and val_files
+    for item, str_ref_t in zip(train_files, str_ref_seg_tr):
+        item["ref_label"] = str_ref_t
+
+    for item, str_ref_v in zip(val_files, str_ref_seg_val):
+        item["ref_label"] = str_ref_v
     
     
     random.shuffle(train_files)
@@ -127,7 +163,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                                         even_divisible=True)[
             dist.get_rank()
         ]
-    print("train_files:", len(train_files))
+   
+    logger.debug(f"Train_files: {len(train_files)}")
     print("-------------------------------------- listing files --------------------------------------")
 
 
@@ -142,6 +179,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             dist.get_rank()
         ]
     print("val_files:", len(val_files))
+    logger.debug(f"validation_files: {len(val_files)}")
 
     if torch.cuda.device_count() >= 4:
         train_ds = monai.data.CacheDataset(
@@ -206,8 +244,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     num_epochs = num_epochs_per_validation * (num_iterations // num_iterations_per_validation)
 
     if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
-        print("num_epochs", num_epochs)
-        print("num_epochs_per_validation", num_epochs_per_validation)
+        logger.debug(f"num_epochs: {num_epochs}")
+        logger.debug(f"num_epochs_per_validation: {num_epochs_per_validation}")
 
     lr_scheduler_part = parser.get_parsed_content("training#lr_scheduler", instantiate=False)
     lr_scheduler = lr_scheduler_part.instantiate(optimizer=optimizer)
@@ -216,20 +254,21 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         model = DistributedDataParallel(model, device_ids=[device], find_unused_parameters=False)
 
     if finetune["activate"] and os.path.isfile(finetune["pretrained_ckpt_name"]):
-        print("[info] fine-tuning pre-trained checkpoint {:s}".format(finetune["pretrained_ckpt_name"]))
+        logger.debug("Fine-tuning pre-trained checkpoint {:s}".format(finetune["pretrained_ckpt_name"]))
+        
         if torch.cuda.device_count() > 1:
             model.module.load_state_dict(torch.load(finetune["pretrained_ckpt_name"], map_location=device))
         else:
             model.load_state_dict(torch.load(finetune["pretrained_ckpt_name"], map_location=device))
     else:
-        print("[info] training from scratch")
+        logger.debug("Training from scratch")
 
     if amp:
         from torch.cuda.amp import GradScaler, autocast
 
         scaler = GradScaler()
         if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
-            print("[info] amp enabled")
+            logger.debug("Amp enabled")
 
     val_interval = num_epochs_per_validation
     best_metric = -1
@@ -247,9 +286,9 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     for epoch in range(num_epochs):
         lr = lr_scheduler.get_last_lr()[0]
         if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
-            print("-" * 10)
-            print(f"epoch {epoch + 1}/{num_epochs}")
-            print(f"learning rate is set to {lr}")
+            logger.debug("----------")
+            logger.debug(f"epoch {epoch + 1}/{num_epochs}")
+            logger.debug(f"Learning rate is set to {lr}")
 
         model.train()
         epoch_loss = 0
@@ -295,11 +334,14 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             idx_iter += 1
 
             if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
-                print(f"[{str(datetime.now())[:19]}] " + f"{step}/{epoch_len}, train_loss: {loss.item():.4f}")
+                print(f"[{str(datetime.now())[:19]}] " + f"{step}/{epoch_len}, train_loss: {loss.item():.4f}, train_loss_ref: {ref_loss.item():.4f}")
+                logger.debug(
+                    f"[{str(datetime.now())[:19]}] " + f"{step}/{epoch_len}, train_loss: {loss.item():.4f}, train_loss_ref: {ref_loss.item():.4f}"
+                )
                 writer.add_scalar("Loss/train", loss.item(), epoch_len * epoch + step)
                 writer.add_scalar("Loss/train_T1xFLAIR", ref_loss.item(), epoch_len * epoch + step)
 
-            lr_scheduler.step()
+        lr_scheduler.step()
 
         if torch.cuda.device_count() > 1:
             dist.barrier()
@@ -311,7 +353,11 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             loss_torch_epoch = loss_torch[0] / loss_torch[1]
             loss_torch_epoch_t1xflair = loss_torch_t1xflair[0] / loss_torch_t1xflair[1]
             print(
-                f"epoch {epoch + 1} average loss: {loss_torch_epoch:.4f}, average loss_T1xFLAIR: {loss_torch_epoch_t1xflair:.4f}"
+                f"epoch {epoch + 1} average loss: {loss_torch_epoch:.4f}, average loss_T1xFLAIR: {loss_torch_epoch_t1xflair:.4f}, "
+                f"best mean dice: {best_metric:.4f} at epoch {best_metric_epoch}"
+            )
+            logger.debug(
+                f"Epoch {epoch + 1} average loss: {loss_torch_epoch:.4f}, average loss_T1xFLAIR: {loss_torch_epoch_t1xflair:.4f}, "
                 f"best mean dice: {best_metric:.4f} at epoch {best_metric_epoch}"
             )
 
@@ -365,8 +411,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     value = compute_dice(y_pred=val_outputs, y=val_labels, include_background=False)
                     ref_value = compute_dice(y_pred=val_outputs, y=val_ref_labels, include_background=False)
 
-
-                    print(_index + 1, "/", len(val_loader), value)
+                    print("Dice Scores:", _index + 1, "/", len(val_loader), value, "Reference Dice Scores:", ref_value)
+                    logger.debug(f"{_index + 1} / {len(val_loader)}/ {value}: {value}, 'reference value': {ref_value}") # TODO: check if this is correct
 
                     metric_count += len(value)
                     ref_metric_count += len(ref_value)
@@ -374,6 +420,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     ref_metric_sum += ref_value.sum().item()
                     metric_vals = value.cpu().numpy()
                     ref_metric_vals = ref_value.cpu().numpy()
+
                     if len(metric_mat) == 0:
                         metric_mat = metric_vals
                     else:
@@ -407,7 +454,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                 if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
                     for _c in range(metric_dim):
                         print(f"evaluation metric - class {_c + 1:d}:", metric[2 * _c] / metric[2 * _c + 1], "Reference metric:", ref_metric[2 * _c] / ref_metric[2 * _c + 1])
-                        
+                        logger.debug(f"Evaluation metric - class {_c + 1}: {metric[2 * _c] / metric[2 * _c + 1]} Reference metric - class {_c + 1}: {ref_metric[2 * _c] / ref_metric[2 * _c + 1]}")
+                            
                     avg_metric = 0
                     avg_metric_ref = 0
                     for _c in range(metric_dim):
@@ -416,6 +464,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     avg_metric = avg_metric / float(metric_dim)
                     avg_metric_ref = avg_metric_ref / float(metric_dim)
                     print("avg_metric: ", avg_metric, " , avg_metric_ref: ", avg_metric_ref)
+                    logger.debug(f"Avg_metric: {avg_metric} Avg_metric_ref: {avg_metric_ref}")
 
                     writer.add_scalar("Accuracy/validation", avg_metric, epoch)
                     writer.add_scalar("Accuracy/validation_ref", avg_metric_ref, epoch)
@@ -427,7 +476,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                             torch.save(model.module.state_dict(), os.path.join(ckpt_path, "best_metric_model.pt"))
                         else:
                             torch.save(model.state_dict(), os.path.join(ckpt_path, "best_metric_model.pt"))
-                        print("saved new best metric model")
+                        logger.debug("Saved new best metric model")
 
                         dict_file = {}
                         dict_file["best_avg_dice_score"] = float(best_metric)
@@ -436,9 +485,9 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         with open(os.path.join(ckpt_path, "progress.yaml"), "a") as out_file:
                             yaml.dump([dict_file], stream=out_file)
 
-                    print(
-                        "current epoch: {} current mean dice: {:.4f} best mean dice: {:.4f} at epoch {}".format(
-                            epoch + 1, avg_metric, best_metric, best_metric_epoch
+                    logger.debug(
+                        "Current epoch: {} current mean dice: {:.4f}, current reference mean dice: {:.4f},  best mean dice: {:.4f} at epoch {}".format(
+                        epoch + 1, avg_metric, avg_metric_ref, best_metric, best_metric_epoch
                         )
                     )
 
@@ -457,8 +506,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             torch.cuda.empty_cache()
 
     if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
-        print(f"train completed, best_metric: {best_metric:.4f} at epoch: {best_metric_epoch}")
-
+        logger.debug(f"Training completed, best_metric: {best_metric:.4f} at epoch: {best_metric_epoch}.")
+    
         writer.flush()
         writer.close()
 

@@ -40,7 +40,7 @@ def generate_json(args):
         benchmark_dataroot (str, optional): The root directory of the benchmark dataset. Default is None.
         description (str, optional): Description of the dataset. Default is None.
         mode (str): One of: 'train', 'finetune', 'test', 'train_predict', 'finetune_predict'. Which operation mode is used. 
-        work_dir (str): The working directory. Default is ".".
+        work_dir (str): The working directory. Default is args.dataroot.
         train_val_ratio (float): The ratio of training data to validation data. Default is 0.5.
         num_folds (int): The number of folds to split the training data into. Default is 5.
         pretrained_model_path (str): The path to the pretrained model. Default is None.
@@ -118,7 +118,10 @@ def generate_json(args):
 
         where a, b, c, d, i, j are subject identifiers.  
         """
-
+    
+    # If no working directory is given, save json file in the dataroot directory
+    if args.work_dir is None:
+        args.work_dir = args.dataroot
 
     # Set path to output file
     if args.json_dir is not None:
@@ -144,7 +147,7 @@ def generate_json(args):
 
     # If UMAMBA, then Training and Validation is already seperated. Assure that train_val_ratio is 1.0
     if args.datasettype == 'UMAMBA':
-        args.train_val_ratio = 1.0
+        args.train_val_ratio = 1.0  # TODO: right validation data, should be the same as the 4-fold cross-validation for ASCHOPLEX and MONAI 
 
 
     # create json file - manually set: general information
@@ -155,14 +158,14 @@ def generate_json(args):
     json_dict['data_benchmark_base_dir'] = args.benchmark_dataroot if args.benchmark_dataroot is not None else "/home/linuxlia/Lia_Masterthesis/data/reference_labels" # TODO: Generalize when setting overall projectdirectory for later distribution 
     json_dict['tensorImageSize'] = "3D"
 
-    # add channel_names or modality to json file depending on the datasettype
+    # add channel_names or modality to json file depending on the datasettype (only for NNUNETV2 and UMAMBA and ASCHOPLEX)
     if args.datasettype == 'NNUNETV2':
         json_dict['dataset_type'] = 'NNUNETV2'
     elif args.datasettype == 'UMAMBA':
         json_dict['dataset_type'] = 'UMAMBA'
         
     if args.datasettype == 'NNUNETV2' or args.datasettype == 'UMAMBA':
-        # Assume args.modality is a list of modalities e.g. ["T2", "ADC"]
+        # Assume args.modality is a list of modalities e.g. ["T1", "FLAIR"]
         print("args.modality", args.modality)
         channel_names = {str(i): modality for i, modality in enumerate(args.modality)}
         print("channel_names", channel_names)
@@ -189,7 +192,7 @@ def generate_json(args):
 
     print("json_dict", json_dict)
 
-    # training and validation are needed when one of the following modes is selected
+    # training and validation are needed when one of the following modes is selected. Testing is handled separately.
     #------------------------------------------------------------------------------------------
     if args.mode in ['train', 'finetune', 'train_predict', 'finetune_predict']:
         print(args.datasettype == 'ASCHOPLEX')
@@ -219,7 +222,7 @@ def generate_json(args):
 
         
 
-        # Check if the label directory is in filenames_image and remove it from the list of filenames
+        # Check if the label directory is in filenames_image and remove it from the list of filenames (needed for MONAI label)
         if 'labels' in filenames_image:
             filenames_image.remove('labels')
         
@@ -270,7 +273,7 @@ def generate_json(args):
             json_dict['validation'] = [{"image": '%s' %i, "label": '%s' %j} for i,j in zip(image_paths_val, label_paths_val)]
         else:
             # Split data into training and validation based on randomly sample jj indices 
-            jj=math.ceil(len(filenames_image) * args.train_val_ratio) 
+            jj=math.ceil(len(filenames_image) * args.train_val_ratio)   # TODO: reconsider randomness and seed
             random.seed(42) 
             indices = random.sample(range(len(filenames_image)), jj)
 
@@ -284,7 +287,7 @@ def generate_json(args):
             json_dict['training'] = [{"fold": 0, "image": '%s' %i , "label": '%s' %j} for i, j in zip(train_ids, label_train_ids)]
             json_dict['validation'] = [{"image": '%s' %i, "label": '%s' %j} for i,j in zip(validation_ids, label_valid_ids)]
 
-        random.seed(42)
+        random.seed(42)     # TODO: reconsider randomness and seed
         random.shuffle(json_dict["training"])
 
         # Split training data into N random folds
@@ -336,7 +339,7 @@ def generate_json(args):
                 raise ValueError("Data are not in the correct format. Please, provide images in .nii or .nii.gz Nifti format")
             
         json_dict['numTest'] = len(test_image_paths)
-        json_dict['testing'] = [{"image": '%s' %i} for i in filenames_test_image] # TODO: maybe there will be an error here
+        json_dict['testing'] = [{"image": '%s' %i} for i in test_image_paths] # TODO: maybe there will be an error here
 
             
     # create json file - manually set path to pretrained model
@@ -347,7 +350,7 @@ def generate_json(args):
         else: 
             json_dict['pretrained_model'] = {'path': args.pretrained_model_path}
 
-    # if datasettype is NNUNETV2,add channel_names to the json file. 
+    # if datasettype is NNUNETV2, add channel_names to the json file. 
 
     with open(os.path.join(output_folder, json_filename), 'w') as f: # opens file for writing and automatically close the file after block of code.
             json.dump(json_dict, f, indent=4, sort_keys=True) # writes json_dict dictionary to the file f in JSON format.
@@ -365,11 +368,11 @@ def setup_argparse():
     parser.add_argument("--mode", type=str, required=True, choices=['train', 'finetune', 'test', 'train_predict', 'finetune_predict'], default='train', help="Operation mode")
     parser.add_argument("--dataroot", type=str, required=True, help="Base path to the dataset directory")
     parser.add_argument("--benchmark_dataroot", type=str, required=False, help="Base path to the benchmark dataset directory")
-    parser.add_argument("--work_dir", required=True, help="working directory")
+    parser.add_argument("--work_dir", required=False, help="working directory. Default is the same as dataroot")
     parser.add_argument("--pretrained_model_path", type=str, help="Path to pretrained model")
     parser.add_argument("--train_val_ratio", type=float, default=0.5 ,help="Ratio of training to validation data")
     parser.add_argument("--num_folds", type=int, required=False, default=5, help="The number of folds to split the training data into. Default is 5.")
-    parser.add_argument('--datasettype', type=str, default='ASCHOPLEX', required=False, choices=['ASCHOPLEX', 'NNUNETV2', 'UMAMBA'], help='Type of dataset (ASCHOPLEX or NNUNETV2)')
+    parser.add_argument('--datasettype', type=str, default='ASCHOPLEX', required=False, choices=['ASCHOPLEX', 'NNUNETV2', 'UMAMBA'], help='Type of dataset (ASCHOPLEX, NNUNETV2 or UMAMBA)')
     parser.add_argument('--modality', type=ast.literal_eval, default='MR', required=False, help='Modality of the dataset')
     parser.add_argument('--json_dir', type=str, default=None, required=False, help='Name of the directory where the json files are stored. If nothing is specified, json will be stored in data folder, otherwise a new folder will be created where it will be created.')
     parser.add_argument('--fileending', type=str, default='.nii', required=False, help='File ending of the images')

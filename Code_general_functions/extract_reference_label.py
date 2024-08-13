@@ -20,12 +20,12 @@ def get_reference_label_path(image_path, reference_labels_base_path):
     # Extract the index from the image filename
     # Assuming filenames are in the format "index_description.ext" or similar
     index_match = re.search(r'(\d+)', os.path.basename(image_path))
-    print(index_match)
+    #print(index_match)
     if not index_match:
         raise ValueError("Could not extract index from image path.")
     
     index = index_match.group(1)
-    print(index)
+    #print(index)
     
     # Construct the pathname for the reference label
     # Assuming reference labels have a specific naming pattern you can adjust below

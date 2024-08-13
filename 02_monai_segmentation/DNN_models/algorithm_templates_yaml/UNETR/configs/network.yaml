@@ -5,7 +5,6 @@ network:
   img_size: 128
   in_channels: $@training#input_channels
   out_channels: '@training#output_classes'
-  # spatial_dims: 3
   hidden_size: 768                    # size of the hidden layers in the network
   mlp_dim: 3072                       # dimension of the multilayer perceptron (MLP) in the network
   num_heads: 12                       # number of heads in the multi-head attention mechanism of the network

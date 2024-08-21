@@ -44,7 +44,7 @@ from monai.bundle import ConfigParser
 from monai.bundle.scripts import _pop_args, _update_args
 from monai.data import DataLoader, partition_dataset
 from monai.inferers import sliding_window_inference
-from monai.metrics import compute_dice
+from monai.metrics import compute_dice, HausdorffDistanceMetric
 from monai.utils import RankFilter, set_determinism
 
 from Code_general_functions.extract_reference_label import get_reference_label_path, get_reference_label_paths    
@@ -163,8 +163,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     mlflow_tracking_uri = parser.get_parsed_content("mlflow_tracking_uri")
     mlflow_experiment_name = parser.get_parsed_content("mlflow_experiment_name")
     num_images_per_batch = parser.get_parsed_content("training#num_images_per_batch")
-    num_epochs = parser.get_parsed_content("training#num_iterations")
-    num_epochs_per_validation = parser.get_parsed_content("num_epochs_per_validation")
+    num_iterations = parser.get_parsed_content("training#num_iterations")
+    num_iterations_per_validation = parser.get_parsed_content("num_epochs_per_validation")
     num_sw_batch_size = parser.get_parsed_content("training#num_sw_batch_size")
     num_patches_per_iter = parser.get_parsed_content("training#num_patches_per_iter")
     output_classes = parser.get_parsed_content("training#output_classes")
@@ -190,7 +190,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             [
                 infer_transforms,
                 transforms.LoadImaged(keys=["label", "ref_label"], image_only=False),
-                # TODO: add ref_label to the data list file
                 transforms.EnsureChannelFirstd(keys=["label", "ref_label"]),
                 transforms.EnsureTyped(keys=["label", "ref_label"]),
             ]
@@ -202,7 +201,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             infer_transforms = transforms.Compose(
                 [
                     infer_transforms,
-                    # TODO: add ref_label to the data list file
                     transforms.Lambdad(
                         keys=["label", "ref_label"],
                         func=lambda x: torch.cat([sum([x == i for i in c]) for c in class_index], dim=0).to(
@@ -249,6 +247,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     logging.getLogger("torch.distributed.distributed_c10d").setLevel(logging.WARNING)
     logger.debug(f"Number of GPUs: {torch.cuda.device_count()}")
     logger.debug(f"World_size: {world_size}")
+    logger.debug(f"Batch size: {num_images_per_batch}")
 
     datalist = ConfigParser.load_config_file(data_list_file_path)
 
@@ -308,7 +307,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         # Cache the training and validation datasets
         if not valid_at_orig_resolution_only:
             train_ds = monai.data.CacheDataset(
-                data=train_files * num_epochs_per_validation,
+                data=train_files * num_iterations_per_validation,
                 transform=train_transforms,
                 cache_rate=train_cache_rate,
                 hash_as_key=True,
@@ -429,10 +428,16 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     optimizer_part = parser.get_parsed_content("training#optimizer", instantiate=False)
     optimizer = optimizer_part.instantiate(params=model.parameters())
 
-    
+    num_epochs_per_validation = num_iterations_per_validation // len(train_loader)
+    num_epochs_per_validation = max(num_epochs_per_validation, 1)
+    num_epochs = num_epochs_per_validation * (num_iterations // num_iterations_per_validation)
+
+
     if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
         logger.debug(f"num_epochs: {num_epochs}")
         logger.debug(f"num_epochs_per_validation: {num_epochs_per_validation}")
+        logger.debug(f"num_iterations: {num_iterations}")
+        logger.debug(f"num_iterations_per_validation: {num_iterations_per_validation}")
 
     lr_scheduler_part = parser.get_parsed_content("training#lr_scheduler", instantiate=False)
     lr_scheduler = lr_scheduler_part.instantiate(optimizer=optimizer)
@@ -461,10 +466,14 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             logger.debug("Amp enabled")
 
     # Initialize the best metric and the best metric epoch
-    best_metric = -1
-    best_metric_epoch = -1
+    best_metric = -1; best_hd_metric = -1
+    best_metric_epoch = -1; best_hd_metric_epoch = -1
     idx_iter = 0
     metric_dim = output_classes - 1 if softmax else output_classes
+
+    # Initialize the Hausdorff distance metric
+    compute_hausdorff_distance_95 = HausdorffDistanceMetric(include_background=False, percentile=95)
+
     val_devices_input = {}
     val_devices_output = {}
 
@@ -481,7 +490,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         # Start the run
         mlflow.start_run(run_name=f"swinunetr - fold{fold} - train")
         with open(os.path.join(ckpt_path, "accuracy_history.csv"), "a") as f:
-            f.write("epoch\tmetric\tmetric_ref\tloss\tloss_ref\tlr\ttime\titer\n")
+            f.write("epoch\tmetric\tmetric_ref\thd_metric\thd_metric_ref\tloss\tloss_ref\tlr\ttime\titer\n")
 
         if es:
             # instantiate the early stopping object
@@ -651,8 +660,10 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                 with torch.no_grad():
                     # for metric, index 2*c is the dice for class c, and 2*c + 1 is the not-nan counts for class c
                     metric = torch.zeros(metric_dim * 2, dtype=torch.float, device=device)
+                    hd_metric = torch.zeros(metric_dim * 2, dtype=torch.float, device=device)
                     ref_metric = torch.zeros(metric_dim * 2, dtype=torch.float, device=device)
-
+                    ref_hd_metric = torch.zeros(metric_dim * 2, dtype=torch.float, device=device)
+                
                     _index = 0
                     for val_data in val_loader:
                         try:
@@ -713,64 +724,110 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                                 include_background=not softmax,
                                 num_classes=output_classes,
                             ).to(device)
+                            hausdorff_value = compute_hausdorff_distance_95(
+                                y_pred=val_outputs,
+                                y=val_data["label"].to(val_outputs.device),
+                                include_background=not softmax,
+                                num_classes=output_classes,
+                            ).to(device)
+                            ref_hausdorff_value = compute_hausdorff_distance_95(
+                                y_pred=val_outputs,
+                                y=val_data["ref_label"].to(val_outputs.device),
+                                include_background=not softmax,
+                                num_classes=output_classes,
+                            ).to(device)
                         else:
                             # During training, allow validation OOM for some big data to avoid crush.
                             logger.debug(f"{val_filename} is skipped due to OOM, using NaN dice values")
                             value = torch.full((1, metric_dim), float("nan")).to(device)
                             ref_value = torch.full((1, metric_dim), float("nan")).to(device)
-
-                        logger.debug(f"{_index + 1} / {len(val_loader)}/ {val_filename}: {value}, 'reference value': {ref_value}") # TODO: check if this is correct
+                            hausdorff_value = torch.full((1, metric_dim), float("nan")).to(device)
+                            ref_hausdorff_value = torch.full((1, metric_dim), float("nan")).to(device)
+                        logger.debug(f"{_index + 1} / {len(val_loader)}/ {val_filename}: {value}, 'reference value': {ref_value}") 
+                        logger.debug(f"{_index + 1} / {len(val_loader)}/ {val_filename}: {hd_value}, 'reference hd value': {ref_hd_value}")
 
                         for _c in range(metric_dim):
                             val0 = torch.nan_to_num(value[0, _c], nan=0.0)
                             val1 = 1.0 - torch.isnan(value[0, _c]).float()
                             metric[2 * _c] += val0
                             metric[2 * _c + 1] += val1
-
                         # Do the same for the reference label
                         for _c in range(metric_dim):
                             val0 = torch.nan_to_num(ref_value[0, _c], nan=0.0)
                             val1 = 1.0 - torch.isnan(ref_value[0, _c]).float()
                             ref_metric[2 * _c] += val0
                             ref_metric[2 * _c + 1] += val1
+                        for _c in range(metric_dim):
+                            val0 = torch.nan_to_num(hausdorff_value[0, _c], nan=0.0)
+                            val1 = 1.0 - torch.isnan(hausdorff_value[0, 0]).float()
+                            hd_metric[2 * _c] += val0 * val1
+                            hd_metric[2 * _c + 1] += val1
+                        for _c in range(metric_dim):
+                            val0 = torch.nan_to_num(ref_hausdorff_value[0, _c], nan=0.0)
+                            val1 = 1.0 - torch.isnan(ref_hausdorff_value[0, 0]).float()
+                            ref_hd_metric[2 * _c] += val0 * val1   # access every even element in the tensor (starting from 0)
+                            ref_hd_metric[2 * _c + 1] += val1      # access every odd element in the tensor (starting from 1)
 
                         _index += 1
 
                     if torch.cuda.device_count() > 1:
                         dist.barrier()
                         dist.all_reduce(metric, op=torch.distributed.ReduceOp.SUM)
+                        dist.all_reduce(ref_metric, op=torch.distributed.ReduceOp.SUM)
+                        dist.all_reduce(hd_metric, op=torch.distributed.ReduceOp.SUM)
+                        dist.all_reduce(ref_hd_metric, op=torch.distributed.ReduceOp.SUM)
 
-                    metric = metric.tolist()
-                    ref_metric = ref_metric.tolist()
+                    metric = metric.tolist(); hd_metric = hd_metric.tolist()
+                    ref_metric = ref_metric.tolist(); ref_hd_metric = ref_hd_metric.tolist()
                     if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
                         for _c in range(metric_dim):
                             logger.debug(f"Evaluation metric - class {_c + 1}: {metric[2 * _c] / metric[2 * _c + 1]} Reference metric - class {_c + 1}: {ref_metric[2 * _c] / ref_metric[2 * _c + 1]}")
+                            logger.debug(f"HD Evaluation metric - class {_c + 1}: {hd_metric[2 * _c] / hd_metric[2 * _c + 1]} HD Reference metric - class {_c + 1}: {ref_hd_metric[2 * _c] / ref_hd_metric[2 * _c + 1]}")
                             try:
                                 writer.add_scalar(
                                     f"val_class/acc_{class_names[_c]}", metric[2 * _c] / metric[2 * _c + 1], epoch
                                 )
+                                writer.add_scalar(
+                                    f"hd val_class/acc_{class_names[_c]}", hd_metric[2 * _c] / hd_metric[2 * _c + 1], epoch 
+                                )
                                 mlflow.log_metric(
                                     f"val_class/acc_{class_names[_c]}", metric[2 * _c] / metric[2 * _c + 1], step=epoch
                                 )
+                                mlflow.log_metric(
+                                    f"hd val_class/acc_{class_names[_c]}", hd_metric[2 * _c] / hd_metric[2 * _c + 1], step=epoch
+                                )
                             except BaseException:
                                 writer.add_scalar(f"val_class/acc_{_c}", metric[2 * _c] / metric[2 * _c + 1], epoch)
+                                writer.add_scalar(f"hd val_class/acc_{_c}", hd_metric[2 * _c] / hd_metric[2 * _c + 1], epoch)
                                 mlflow.log_metric(
                                     f"val_class/acc_{_c}", metric[2 * _c] / metric[2 * _c + 1], step=epoch
                                 )
+                                mlflow.log_metric(
+                                    f"hd val_class/acc_{_c}", hd_metric[2 * _c] / hd_metric[2 * _c + 1], step=epoch
+                                )
 
-                        avg_metric = 0
-                        avg_metric_ref = 0
+                        avg_metric = 0; avg_hd_metric = 0
+                        avg_metric_ref = 0; avg_hd_metric_ref = 0
                         for _c in range(metric_dim):
                             avg_metric += metric[2 * _c] / metric[2 * _c + 1]
                             avg_metric_ref += ref_metric[2 * _c] / ref_metric[2 * _c + 1]
+                            avg_hd_metric += hd_metric[2 * _c] / hd_metric[2 * _c + 1]
+                            avg_hd_metric_ref += ref_hd_metric[2 * _c] / ref_hd_metric[2 * _c + 1]
                         avg_metric = avg_metric / float(metric_dim)
                         avg_metric_ref = avg_metric_ref / float(metric_dim)
+                        avg_hd_metric = avg_hd_metric / float(metric_dim)
+                        avg_hd_metric_ref = avg_hd_metric_ref / float(metric_dim)
                         logger.debug(f"Avg_metric: {avg_metric} Avg_metric_ref: {avg_metric_ref}")
-
+                        logger.debug(f"Avg_hd_metric: {avg_hd_metric} Avg_hd_metric_ref: {avg_hd_metric_ref}")
+                        
                         writer.add_scalar("val/acc", avg_metric, epoch)
                         mlflow.log_metric("val/acc", avg_metric, step=epoch)
                         writer.add_scalar("val/acc_ref", avg_metric_ref, epoch)
                         mlflow.log_metric("val/acc_ref", avg_metric_ref, step=epoch)
+                        writer.add_scalar("hd val/acc", avg_hd_metric, epoch)
+                        mlflow.log_metric("hd val/acc", avg_hd_metric, step=epoch)
+                        writer.add_scalar("hd val/acc_ref", avg_hd_metric_ref, epoch)
+                        mlflow.log_metric("hd val/acc_ref", avg_hd_metric_ref, step=epoch)
 
                         if avg_metric > best_metric:
                             best_metric = avg_metric
@@ -788,9 +845,31 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                             with open(os.path.join(ckpt_path, "progress.yaml"), "a") as out_file:
                                 yaml.dump([dict_file], stream=out_file)
 
+                        if avg_hd_metric < best_hd_metric:
+                            best_hd_metric = avg_hd_metric
+                            best_hd_metric_epoch = epoch + 1
+                            if torch.cuda.device_count() > 1:
+                                torch.save(model.module.state_dict(), os.path.join(ckpt_path, "best_hd_metric_model.pt"))
+                            else:
+                                torch.save(model.state_dict(), os.path.join(ckpt_path, "best_hd_metric_model.pt"))
+                            print("saved new best hausdorff metric model")
+                            logger.debug("Saved new best hausdorff metric model")
+
+                            dict_file = {}
+                            dict_file["best_avg_hd_score"] = float(best_hd_metric)
+                            dict_file["best_avg_hd_score_epoch"] = int(best_hd_metric_epoch)
+                            dict_file["best_avg_hd_score_iteration"] = int(idx_iter)
+                            with open(os.path.join(ckpt_path, "hd_progress.yaml"), "a") as out_file:
+                                yaml.dump([dict_file], stream=out_file)
+
                         logger.debug(
                             "Current epoch: {} current mean dice: {:.4f}, current reference mean dice: {:.4f},  best mean dice: {:.4f} at epoch {}".format(
                                 epoch + 1, avg_metric, avg_metric_ref, best_metric, best_metric_epoch
+                            )
+                        )
+                        logger.debug(
+                            "Current epoch: {} current mean hausdorff: {:.4f}, current reference mean hausdorff: {:.4f},  best mean hausdorff: {:.4f} at epoch {}".format(
+                                epoch + 1, avg_hd_metric, avg_hd_metric_ref, best_hd_metric, best_hd_metric_epoch
                             )
                         )
 
@@ -798,8 +877,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         elapsed_time = (current_time - start_time) / 60.0
                         with open(os.path.join(ckpt_path, "accuracy_history.csv"), "a") as f:
                             f.write(
-                                "{:d}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.1f}\t{:d}\n".format(
-                                epoch + 1, avg_metric, avg_metric_ref, loss_torch_epoch, loss_torch_epoch_t1xflair, lr, elapsed_time, idx_iter
+                                "{:d}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.1f}\t{:d}\n".format(
+                                epoch + 1, avg_metric, avg_metric_ref, avg_hd_metric, avg_hd_metric_ref, loss_torch_epoch, loss_torch_epoch_t1xflair, lr, elapsed_time, idx_iter
                                 )
                             )
 
@@ -835,6 +914,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             with torch.no_grad():
                 metric = torch.zeros(metric_dim * 2, dtype=torch.float, device=device)
                 ref_metric = torch.zeros(metric_dim * 2, dtype=torch.float, device=device)
+                hd_metric = torch.zeros(metric_dim * 2, dtype=torch.float, device=device)
+                ref_hd_metric = torch.zeros(metric_dim * 2, dtype=torch.float, device=device)
 
                 _index = 0
                 for val_data in orig_val_loader:
@@ -895,14 +976,32 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                             include_background=not softmax,
                             num_classes=output_classes,
                         ).to(device)
+                        hausdorff_value = compute_hausdorff_distance_95(
+                            y_pred=val_outputs,
+                            y=val_data[0]["label"][None, ...].to(val_outputs.device),
+                            include_background=not softmax,
+                            num_classes=output_classes,
+                        ).to(device)
+                        ref_hausdorff_value = compute_hausdorff_distance_95(
+                            y_pred=val_outputs,
+                            y=val_data[0]["ref_label"][None, ...].to(val_outputs.device),
+                            include_background=not softmax,
+                            num_classes=output_classes,
+                        ).to(device)
                     else:
                         logger.debug(f"{val_filename} is skipped due to OOM, using NaN dice values")
                         value = torch.full((1, metric_dim), float("nan")).to(device)
                         ref_value = torch.full((1, metric_dim), float("nan")).to(device)
+                        hausdorff_value = torch.full((1, metric_dim), float("nan")).to(device)
+                        ref_hausdorff_value = torch.full((1, metric_dim), float("nan")).to(device)
 
                     logger.debug(
                         f"Validation Dice score at original resolution: {_index + 1} / {len(orig_val_loader)}/ {val_filename}: {value}" + f"Reference Dice score at original resolution: {_index + 1} / {len(orig_val_loader)}/ {val_filename}: {ref_value}"
                     )
+                    logger.debug(
+                        f"Validation HD score at original resolution: {_index + 1} / {len(orig_val_loader)}/ {val_filename}: {hausdorff_value}" + f"Reference HD score at original resolution: {_index + 1} / {len(orig_val_loader)}/ {val_filename}: {ref_hausdorff_value}"
+                    )
+
 
                     for _c in range(metric_dim):
                         val0 = torch.nan_to_num(value[0, _c], nan=0.0)
@@ -916,12 +1015,25 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         val1 = 1.0 - torch.isnan(ref_value[0, _c]).float()
                         ref_metric[2 * _c] += val0
                         ref_metric[2 * _c + 1] += val1
+                    for _c in range(metric_dim):
+                        val0 = torch.nan_to_num(hausdorff_value[0, _c], nan=0.0)
+                        val1 = 1.0 - torch.isnan(hausdorff_value[0, 0]).float()
+                        hd_metric[2 * _c] += val0 * val1
+                        hd_metric[2 * _c + 1] += val1
+                    for _c in range(metric_dim):
+                        val0 = torch.nan_to_num(ref_hausdorff_value[0, _c], nan=0.0)
+                        val1 = 1.0 - torch.isnan(ref_hausdorff_value[0, 0]).float()
+                        ref_hd_metric[2 * _c] += val0 * val1
+                        ref_hd_metric[2 * _c + 1] += val1
 
                     _index += 1
 
                 if torch.cuda.device_count() > 1:
                     dist.barrier()
                     dist.all_reduce(metric, op=torch.distributed.ReduceOp.SUM)
+                    dist.all_reduce(ref_metric, op=torch.distributed.ReduceOp.SUM)
+                    dist.all_reduce(hd_metric, op=torch.distributed.ReduceOp.SUM)
+                    dist.all_reduce(ref_hd_metric, op=torch.distributed.ReduceOp.SUM)
 
                 metric = metric.tolist()
                 if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
@@ -929,15 +1041,32 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         logger.debug(
                             f"Evaluation metric at original resolution - class {_c + 1}: {metric[2 * _c] / metric[2 * _c + 1]}"
                         )
+                        logger.debug(
+                            f"HD Evaluation metric at original resolution - class {_c + 1}: {hd_metric[2 * _c] / hd_metric[2 * _c + 1]}"
+                        )
 
-                    avg_metric = 0
-                    avg_metric_ref = 0
+                    avg_metric = 0; avg_hd_metric = 0
+                    avg_metric_ref = 0; avg_hd_metric_ref = 0
                     for _c in range(metric_dim):
                         avg_metric += metric[2 * _c] / metric[2 * _c + 1]
                         avg_metric_ref += ref_metric[2 * _c] / ref_metric[2 * _c + 1]
+                        avg_hd_metric += hd_metric[2 * _c] / hd_metric[2 * _c + 1]
+                        avg_hd_metric_ref += ref_hd_metric[2 * _c] / ref_hd_metric[2 * _c + 1]
                     avg_metric = avg_metric / float(metric_dim)
                     avg_metric_ref = avg_metric_ref / float(metric_dim)
+                    avg_hd_metric = avg_hd_metric / float(metric_dim)
+                    avg_hd_metric_ref = avg_hd_metric_ref / float(metric_dim)
+
                     logger.debug(f"Avg_metric at original resolution: {avg_metric}" + f"Avg_metric_ref at original resolution: {avg_metric_ref}")
+                    logger.debug(f"Avg_hd_metric at original resolution: {avg_hd_metric}" + f"Avg_hd_metric_ref at original resolution: {avg_hd_metric_ref}")
+                    writer.add_scalar("val/acc_orig_res", avg_metric, epoch)
+                    mlflow.log_metric("val/acc_orig_res", avg_metric, step=epoch)
+                    writer.add_scalar("val/acc_ref_orig_res", avg_metric_ref, epoch)
+                    mlflow.log_metric("val/acc_ref_orig_res", avg_metric_ref, step=epoch)
+                    writer.add_scalar("hd val/acc_orig_res", avg_hd_metric, epoch)
+                    mlflow.log_metric("hd val/acc_orig_res", avg_hd_metric, step=epoch)
+                    writer.add_scalar("hd val/acc_ref_orig_res", avg_hd_metric_ref, epoch)
+                    mlflow.log_metric("hd val/acc_ref_orig_res", avg_hd_metric_ref, step=epoch)
 
                     with open(os.path.join(ckpt_path, "progress.yaml"), "r") as out_file:
                         progress = yaml.safe_load(out_file)
@@ -947,8 +1076,10 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     dict_file["best_avg_dice_score_epoch"] = int(progress[-1]["best_avg_dice_score_epoch"])
                     dict_file["best_avg_dice_score_iteration"] = int(progress[-1]["best_avg_dice_score_iteration"])
                     dict_file["inverted_best_validation"] = True
+
                     with open(os.path.join(ckpt_path, "progress.yaml"), "a") as out_file:
                         yaml.dump([dict_file], stream=out_file)
+
 
                 if torch.cuda.device_count() > 1:
                     dist.barrier()

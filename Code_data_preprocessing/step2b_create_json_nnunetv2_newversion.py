@@ -174,6 +174,7 @@ def generate_json(args):
         datasettype (str): The type of dataset. Default is 'ASCHOPLEX'. Other option is 'NNUNETV2' and 'UMAMBA.
         modality (str): The modality of the dataset. Default is 'MR'. List or String. 
         fileending (str): The file ending of the images. Default is '.nii'.
+        skip_validation (bool): Skip the validation data. Default is False.
 
         Writes the .json file based on the provided parameters.
             
@@ -223,27 +224,27 @@ def generate_json(args):
         --------------------------------
         or 
         imagesTr
-            a_image.nii
-            b_image.nii
+            a_{XXXX}.nii
+            b_{XXXX}.nii
             ...
-        imagesVal
-            c_image.nii
-            d_image.nii
+        (imagesVal)
+            c_{XXXX}.nii
+            d_{XXXX}.nii
             ...
         imagesTs
-            i_image.nii
-            j_image.nii
+            i_{XXXX}.nii
+            j_{XXXX}.nii
             ...
         labelsTr
-            a_seg.nii
-            b_seg.nii
+            a.nii
+            b.nii
             ...
-        labelsVal
-            c_seg.nii
-            d_seg.nii
+        (labelsVal)
+            c.nii
+            d.nii
             ...
 
-        where a, b, c, d, i, j are subject identifiers.  
+        where a, b, c, d, i, j are subject identifiers and {XXXX} the modality.  
         """
     
     # If no working directory is given, save json file in the dataroot directory
@@ -274,8 +275,7 @@ def generate_json(args):
 
     # If UMAMBA, then Training and Validation is already seperated. Assure that train_val_ratio is 1.0
     if args.datasettype == 'UMAMBA':
-        args.train_val_ratio = 1.0  # TODO: right validation data, should be the same as the 4-fold cross-validation for ASCHOPLEX and MONAI 
-
+        args.train_val_ratio = 1.0  
 
     # create json file - manually set: general information
     #------------------------------------------------------------------------------------------
@@ -341,8 +341,9 @@ def generate_json(args):
         elif args.datasettype == 'UMAMBA' and os.path.exists(os.path.join(args.dataroot, 'imagesTr')):
             image_dir = os.path.join(args.dataroot, 'imagesTr')
             label_dir = os.path.join(args.dataroot, 'labelsTr')
-            val_dir = os.path.join(args.dataroot, 'imagesVal')
-            val_label_dir = os.path.join(args.dataroot, 'labelsVal')
+            if not args.skip_validation:
+                val_dir = os.path.join(args.dataroot, 'imagesVal')
+                val_label_dir = os.path.join(args.dataroot, 'labelsVal')
         else:
             raise ValueError("The folder structure is not correct. Please, provide the data in the correct format.")
         print("image_dir", image_dir)
@@ -363,9 +364,7 @@ def generate_json(args):
         filenames_image = [f for f in filenames_image if not f.startswith('.')]
         filenames_label = [f for f in filenames_label if not f.startswith('.')]
         print("len(filenames_image)", len(filenames_image), "len(filenames_label)", len(filenames_label))
-        print("THESE ARE THE FILES", filenames_image, filenames_label)
         
-        print("len(args.modality)", len(args.modality))
         if len(args.modality) == 1 and len(filenames_image)!=len(filenames_label):
             raise ValueError("The number of images and the number of labels is different. Please, check image_Tr and label_Tr folders.")
         if len(args.modality) == 2 and (len(filenames_image)!=2*len(filenames_label) and len(filenames_image)!=len(filenames_label)):    
@@ -391,28 +390,38 @@ def generate_json(args):
 
         # If UMAMBA, get validation data
         if args.datasettype == 'UMAMBA':
-            # image paths
-            filenames_image_val = os.listdir(val_dir)
-            filenames_image_val.sort()
-            filenames_image_val = [f for f in filenames_image_val if not f.startswith('.')]
-            image_paths_val = [os.path.join(val_dir, filename) for filename in filenames_image_val]
-            # corresponding label paths
-            filenames_label_val = os.listdir(val_label_dir)
-            filenames_label_val.sort()
-            filenames_label_val = [f for f in filenames_label_val if not f.startswith('.')]
-            label_paths_val = [os.path.join(val_label_dir, filename) for filename in filenames_label_val]
-
-            for i in range(len(filenames_image_val)):
-                if not(filenames_image_val[i].endswith('.nii') | filenames_image_val[i].endswith('.nii.gz')):
-                    raise ValueError("Data are not in the correct format. Please, provide images in .nii or .nii.gz Nifti format")
-                if not(filenames_label_val[i].endswith('.nii') | filenames_label_val[i].endswith('.nii.gz')):
-                    raise ValueError("Data are not in the correct format. Please, provide images in .nii or .nii.gz Nifti format")
 
             json_dict['numTraining'] = len(image_paths)
-            json_dict['numValidation'] = len(image_paths_val)
-            json_dict['training'] = [{"fold": 0, "image": '%s' %i , "label": '%s' %j} for i, j in zip(image_paths, label_paths)]
-            json_dict['validation'] = [{"image": '%s' %i, "label": '%s' %j} for i,j in zip(image_paths_val, label_paths_val)]
+
+            if args.modality == ['T1', 'FLAIR']:
+                image_paths2 = [path.replace('0000', '0001') for path in image_paths]
+                label_paths2 = [path.replace('0000', '0001') for path in label_paths]
+                json_dict['training'] = [{"fold": 0, "image": '%s' %i , "label": '%s' %j, "image2": '%s' %k, "label2": '%s' %l} for i, j, k, l in zip(image_paths, label_paths, image_paths2, label_paths2)]
+            else:
+                json_dict['training'] = [{"fold": 0, "image": '%s' %i , "label": '%s' %j} for i, j in zip(image_paths, label_paths)]
+            
+            if not args.skip_validation:
+                # image paths
+                filenames_image_val = os.listdir(val_dir)
+                filenames_image_val.sort()
+                filenames_image_val = [f for f in filenames_image_val if not f.startswith('.')]
+                image_paths_val = [os.path.join(val_dir, filename) for filename in filenames_image_val]
+                # corresponding label paths
+                filenames_label_val = os.listdir(val_label_dir)
+                filenames_label_val.sort()
+                filenames_label_val = [f for f in filenames_label_val if not f.startswith('.')]
+                label_paths_val = [os.path.join(val_label_dir, filename) for filename in filenames_label_val]
+
+                for i in range(len(filenames_image_val)):
+                    if not(filenames_image_val[i].endswith('.nii') | filenames_image_val[i].endswith('.nii.gz')):
+                        raise ValueError("Data are not in the correct format. Please, provide images in .nii or .nii.gz Nifti format")
+                    if not(filenames_label_val[i].endswith('.nii') | filenames_label_val[i].endswith('.nii.gz')):
+                        raise ValueError("Data are not in the correct format. Please, provide images in .nii or .nii.gz Nifti format")
+                    
+                json_dict['numValidation'] = len(image_paths_val)
+                json_dict['validation'] = [{"image": '%s' %i, "label": '%s' %j} for i,j in zip(image_paths_val, label_paths_val)]
         
+            
         else:   # ASCHOPLEX and NNUNETV2
             ###
             # If groups are provided (not None), filter the groups and calculate the group distribution
@@ -449,8 +458,7 @@ def generate_json(args):
                 
 
                 # Split data into training and validation based on the formatted indices
-                train_ids = []
-                train_ids2 = []
+                train_ids = []; train_ids2 = [] # for second modality
                 for i in sorted(formatted_indices_tr_val[0]):
                     for path in image_paths:
                         if f"{i}_" in path:
@@ -460,8 +468,7 @@ def generate_json(args):
                             break
                 
 
-                validation_ids = []
-                validation_ids2 = []
+                validation_ids = []; validation_ids2 = []
                 for i in sorted(formatted_indices_tr_val[1]):
                     for path in image_paths:
                         if f"{i}_" in path:
@@ -470,8 +477,7 @@ def generate_json(args):
                                 validation_ids2.append(path.replace('0000', '0001'))
                             break
 
-                label_train_ids = []
-                label_train_ids2 = []
+                label_train_ids = []; label_train_ids2 = []
                 for i in sorted(formatted_indices_tr_val[0]):
                     for path in label_paths:
                         if f"{i}seg" in path:
@@ -480,8 +486,7 @@ def generate_json(args):
                                 label_train_ids2.append(path.replace('0000', '0001'))
                             break
 
-                label_valid_ids = [] 
-                label_valid_ids2 = []
+                label_valid_ids = []; label_valid_ids2 = []
                 for i in sorted(formatted_indices_tr_val[1]):
                     for path in label_paths:
                         if f"{i}seg" in path:
@@ -649,7 +654,17 @@ def generate_json(args):
     return os.path.join(output_folder, json_filename)
 
 
-
+def parse_modality(value):
+    try:
+        # Try to parse the value as a list using literal_eval
+        parsed_value = ast.literal_eval(value)
+        if isinstance(parsed_value, list):
+            return parsed_value
+        else:
+            raise ValueError
+    except (ValueError, SyntaxError):
+        # If parsing fails, return the value as a string
+        return value
 
 
 def setup_argparse():
@@ -663,12 +678,13 @@ def setup_argparse():
     parser.add_argument("--include_groups", type=ast.literal_eval, required=False, help="List of groups to include in the experiment")    # TODO: check, maybe  type=str, nargs='+',
     parser.add_argument("--indices", type=ast.literal_eval, required=False, help="List of indices to use for training and validation")    # TODO: check, maybe  type=str, nargs='+',
     parser.add_argument('--json_dir', type=str, default=None, required=False, help='Name of the directory where the json files are stored. If nothing is specified, json will be stored in data folder, otherwise a new folder will be created where it will be created.')
-    parser.add_argument('--modality', type=ast.literal_eval, default='MR', required=False, help='Modality of the dataset', choices=['T1', 'FLAIR', 'T1xFLAIR',  ['T1', 'FLAIR'], 'MR'])
+    parser.add_argument('--modality', type=parse_modality, default='MR', required=False, help='Modality of the dataset', choices=['T1', 'FLAIR', 'T1xFLAIR',  ['T1', 'FLAIR'], 'MR', ['T1'], ['FLAIR']])
     parser.add_argument("--mode", type=str, required=True, choices=['train', 'finetune', 'test', 'train_predict', 'finetune_predict'], default='train', help="Operation mode")
     parser.add_argument("--num_folds", type=int, required=False, default=5, help="The number of folds to split the training data into. Default is 5.")
     parser.add_argument("--pretrained_model_path", type=str, help="Path to pretrained model")
     parser.add_argument("--train_val_ratio", type=float, default=0.5 ,help="Ratio of training to validation data")
     parser.add_argument("--work_dir", required=False, help="working directory. Default is the same as dataroot")
+    parser.add_argument("--skip_validation", required=False, default=True, action='store_true', help="Skip the validation data")
     return parser.parse_args()
 
 

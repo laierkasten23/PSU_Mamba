@@ -1,0 +1,80 @@
+_meta_: {}
+image_key: image
+label_key: label
+ref_label_key: ref_label
+transforms_train:
+  _target_: Compose
+  transforms:
+  - _target_: LoadImaged
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+  - _target_: EnsureChannelFirstd
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+  - _target_: Orientationd
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+    axcodes: RAS
+  #- PLACEHOLDER_INTENSITY_NORMALIZATION
+  - _target_: Spacingd
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+    align_corners: [true, true, true]
+    mode: [bilinear, nearest, nearest]
+    pixdim: "$@training#resample_resolution"
+  - _target_: CastToTyped
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+    dtype: ["$torch.float32", "$torch.uint8", "$torch.uint8"]
+
+  - {_target_: NormalizeIntensityd, channel_wise: true, keys: '@image_key', nonzero: true}
+  - _target_: EnsureTyped
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+    track_meta: true
+  - _target_: SpatialPadd
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+    mode: [constant, constant, constant]
+    spatial_size: '@training#patch_size'
+
+  - _target_: IdentityD  # make the label uptodate (the next transform requires label_key input)
+    keys: ["@label_key"] # TODO: maybe also add here the ref_label_key
+
+  # data augmentation  
+  - _target_: RandCropByLabelClassesd
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+    label_key: '@label_key'
+    num_classes: '@training#output_classes'
+    num_samples: '@training#num_patches_per_image' # maybe change to "@training#num_crops_per_image"
+    spatial_size: '@training#patch_size' # maybe change to '@training#roi_size'
+    warn: false
+
+  - _target_: IdentityD   # make image up-to-date, before this line the cropping hasn't been applied
+    keys: ["@image_key"]
+
+  - _target_: RandFlipd
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+    prob: 0.2
+    spatial_axis: 0
+  - _target_: RandFlipd
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+    prob: 0.2
+    spatial_axis: 1
+  - _target_: RandFlipd
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+    prob: 0.2
+    spatial_axis: 2
+  - _target_: RandRotate90d
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+    prob: 0.2
+    max_k: 3
+  - _target_: RandScaleIntensityd
+    keys: ['@image_key']
+    prob: 0.1
+    factors: 0.1
+  - _target_: RandRotated
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+    mode: [bilinear, nearest, nearest]
+    prob: 0.15
+    range_x: 0.3
+    range_y: 0.3
+    range_z: 0.0
+  - _target_: RandShiftIntensityd 
+    keys: '@image_key'
+    offsets: 0.1
+    prob: 0.1
+

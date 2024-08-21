@@ -11,6 +11,7 @@ if dividedbysubject:
     dest_dir = '/home/linuxlia/Lia_Masterthesis/data/pazienti_tobecontrolled_T1xFLAIR'
 else:
     source_dir = '/home/linuxlia/Lia_Masterthesis/data/T1xFLAIR_mask_ref'
+    source_dir = '/home/linuxlia/Lia_Masterthesis/data/FLAIR_e_FLAIRmask_OK_1'
     dest_dir = '/home/linuxlia/Lia_Masterthesis/data/pazienti'
 
 
@@ -42,6 +43,13 @@ else:
         # Extract the patient directory name from the filename
         patient_dir = filename.split('_')[0]  # Assuming the filename format is "xxx_ChP_mask_T1xFLAIR_manual_seg.nii"
         
+        # Handle the special case for files named rXXX_FLAIR.nii
+        if filename.startswith('r') and filename.endswith('_FLAIR.nii'):
+            patient_dir = patient_dir[1:]  # Remove the leading 'r'
+            dest_filename = filename[1:]  # Remove the leading 'r' from the filename
+        else:
+            dest_filename = filename
+
         # Construct the path to the destination subdirectory
         dest_subdir = os.path.join(dest_dir, patient_dir)
         
@@ -49,7 +57,8 @@ else:
         os.makedirs(dest_subdir, exist_ok=True)
         
         # Construct the full path to the destination file
-        dest_file = os.path.join(dest_subdir, filename)
+        dest_file = os.path.join(dest_subdir, dest_filename)
         
         # Copy the source file to the destination file
+        print(f"Copying {source_file} to {dest_file}")
         shutil.copy2(source_file, dest_file)

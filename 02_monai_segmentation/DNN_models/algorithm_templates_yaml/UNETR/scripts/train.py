@@ -34,7 +34,7 @@ from monai.bundle import ConfigParser
 from monai.bundle.scripts import _pop_args, _update_args
 from monai.data import DataLoader, partition_dataset
 from monai.inferers import sliding_window_inference
-from monai.metrics import compute_dice
+from monai.metrics import compute_dice, HausdorffDistanceMetric
 from monai.utils import RankFilter, set_determinism
 from torch.nn.modules.loss import _Loss 
 
@@ -108,13 +108,12 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     if determ:
         set_determinism(seed=0)
 
-    print("[info] number of GPUs:", torch.cuda.device_count())
     if torch.cuda.device_count() > 1:
         dist.init_process_group(backend="nccl", init_method="env://")
         world_size = dist.get_world_size()
     else:
         world_size = 1
-    print("[info] world_size:", world_size)
+    
 
     CONFIG["handlers"]["file"]["filename"] = parser.get_parsed_content("log_output_file")
     print("log_output_file: ", parser.get_parsed_content("log_output_file"))
@@ -123,6 +122,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     logging.getLogger("torch.distributed.distributed_c10d").setLevel(logging.WARNING)
     logger.debug(f"Number of GPUs: {torch.cuda.device_count()}")
     logger.debug(f"World_size: {world_size}")
+    logger.debug(f"Batch size: {num_images_per_batch}")
 
     datalist = ConfigParser.load_config_file(data_list_file_path)
 
@@ -271,16 +271,19 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             logger.debug("Amp enabled")
 
     val_interval = num_epochs_per_validation
-    best_metric = -1
-    best_metric_epoch = -1
+    best_metric = -1; best_hd_metric = 3000
+    best_metric_epoch = -1; best_hd_metric_epoch = -1
     idx_iter = 0
     metric_dim = output_classes - 1 if softmax else output_classes
+
+    # Initialize the Hausdorff distance metric
+    compute_hausdorff_distance_95 = HausdorffDistanceMetric(include_background=False, percentile=95)
 
     if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
         writer = SummaryWriter(log_dir=os.path.join(ckpt_path, "Events"))
 
         with open(os.path.join(ckpt_path, "accuracy_history.csv"), "a") as f:
-            f.write("epoch\tmetric\tmetric_ref\tloss\tloss_ref\tlr\ttime\titer\n")
+            f.write("epoch\tmetric\tmetric_ref\thd_metric\thd_metric_ref\tloss\tloss_ref\tlr\ttime\titer\n")
 
     start_time = time.time()
     for epoch in range(num_epochs):
@@ -300,6 +303,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         for batch_data in train_loader:
             step += 1
             inputs, labels, ref_labels = batch_data["image"].to(device), batch_data["label"].to(device), batch_data["ref_label"].to(device)
+            # Extract the index of the image from the batch_data
+            image_index = batch_data["subject_id"]
 
             for param in model.parameters():
                 param.grad = None
@@ -369,13 +374,15 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             model.eval()
             with torch.no_grad():
                 metric = torch.zeros(metric_dim * 2, dtype=torch.float, device=device)
-                metric_sum = 0.0
-                metric_count = 0
-                metric_mat = []
+                hd_metric = torch.zeros(2, dtype=torch.float, device=device)
+                metric_sum = 0.0; hd_metric_sum = 0.0
+                metric_count = 0; hd_metric_count = 0
+                metric_mat = []; hd_metric_mat = []
                 ref_metric = torch.zeros(metric_dim * 2, dtype=torch.float, device=device)
-                ref_metric_sum = 0.0
-                ref_metric_count = 0
-                ref_metric_mat = []
+                ref_hd_metric = torch.zeros(2, dtype=torch.float, device=device)
+                ref_metric_sum = 0.0; ref_hd_metric_sum = 0.0
+                ref_metric_count = 0; ref_hd_metric_count = 0
+                ref_metric_mat = []; ref_hd_metric_mat = []
                 val_images = None
                 val_labels = None
                 val_ref_labels = None
@@ -408,18 +415,22 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         val_ref_labels = val_ref_labels[None, ...]
 
 
-                    value = compute_dice(y_pred=val_outputs, y=val_labels, include_background=False)
-                    ref_value = compute_dice(y_pred=val_outputs, y=val_ref_labels, include_background=False)
+                    dice_value = compute_dice(y_pred=val_outputs, y=val_labels, include_background=False)
+                    ref_dice_value = compute_dice(y_pred=val_outputs, y=val_ref_labels, include_background=False)
 
-                    print("Dice Scores:", _index + 1, "/", len(val_loader), value, "Reference Dice Scores:", ref_value)
-                    logger.debug(f"{_index + 1} / {len(val_loader)}/ {value}: {value}, 'reference value': {ref_value}") # TODO: check if this is correct
+                    hausdorff_value = compute_hausdorff_distance_95(y_pred=val_outputs, y=val_labels)
+                    ref_hausdorff_value = compute_hausdorff_distance_95(y_pred=val_outputs, y=val_ref_labels)
 
-                    metric_count += len(value)
-                    ref_metric_count += len(ref_value)
-                    metric_sum += value.sum().item()
-                    ref_metric_sum += ref_value.sum().item()
-                    metric_vals = value.cpu().numpy()
-                    ref_metric_vals = ref_value.cpu().numpy()
+                    print(_index + 1, "/", len(val_loader),"Dice Scores:",  dice_value, "Reference Dice Scores:", ref_dice_value)
+                    logger.debug(f"{_index + 1} / {len(val_loader)} {dice_value}: {dice_value}, 'reference dice_value': {ref_dice_value}") 
+                    logger.debug(f"{_index + 1} / {len(val_loader)} {hausdorff_value}: {hausdorff_value}, 'reference hausdorff_value': {ref_hausdorff_value}")
+
+                    metric_count += len(dice_value); ref_metric_count += len(ref_dice_value)
+                    metric_sum += dice_value.sum().item(); ref_metric_sum += ref_dice_value.sum().item()
+                    metric_vals = dice_value.cpu().numpy(); ref_metric_vals = ref_dice_value.cpu().numpy()
+                    hd_metric_count += len(hausdorff_value); ref_hd_metric_count += len(ref_hausdorff_value)
+                    hd_metric_sum += hausdorff_value.sum().item(); ref_hd_metric_sum += ref_hausdorff_value.sum().item()
+                    hd_metric_vals = hausdorff_value.cpu().numpy(); ref_hd_metric_vals = ref_hausdorff_value.cpu().numpy()
 
                     if len(metric_mat) == 0:
                         metric_mat = metric_vals
@@ -429,45 +440,77 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         ref_metric_mat = ref_metric_vals
                     else:
                         ref_metric_mat = np.concatenate((ref_metric_mat, ref_metric_vals), axis=0)
+                    if len(hd_metric_mat) == 0:
+                        hd_metric_mat = hd_metric_vals
+                    else:
+                        hd_metric_mat = np.concatenate((hd_metric_mat, hd_metric_vals), axis=0)
+                    if len(ref_hd_metric_mat) == 0:
+                        ref_hd_metric_mat = ref_hd_metric_vals
+                    else:
+                        ref_hd_metric_mat = np.concatenate((ref_hd_metric_mat, ref_hd_metric_vals), axis=0)
 
 
                     for _c in range(metric_dim):
-                        val0 = torch.nan_to_num(value[0, _c], nan=0.0)
-                        val1 = 1.0 - torch.isnan(value[0, 0]).float()
+                        val0 = torch.nan_to_num(dice_value[0, _c], nan=0.0)
+                        val1 = 1.0 - torch.isnan(dice_value[0, 0]).float()
                         metric[2 * _c] += val0 * val1
                         metric[2 * _c + 1] += val1
                     # Do the same for the reference labels
                     for _c in range(metric_dim):
-                        val0 = torch.nan_to_num(ref_value[0, _c], nan=0.0)
-                        val1 = 1.0 - torch.isnan(ref_value[0, 0]).float()
+                        val0 = torch.nan_to_num(ref_dice_value[0, _c], nan=0.0)
+                        val1 = 1.0 - torch.isnan(ref_dice_value[0, 0]).float()
                         ref_metric[2 * _c] += val0 * val1
                         ref_metric[2 * _c + 1] += val1
+                    for _c in range(metric_dim):
+                        val0 = torch.nan_to_num(hausdorff_value[0, _c], nan=0.0)
+                        val1 = 1.0 - torch.isnan(hausdorff_value[0, 0]).float()
+                        hd_metric[2 * _c] += val0 * val1
+                        hd_metric[2 * _c + 1] += val1
+                    for _c in range(metric_dim):
+                        val0 = torch.nan_to_num(ref_hausdorff_value[0, _c], nan=0.0)
+                        val1 = 1.0 - torch.isnan(ref_hausdorff_value[0, 0]).float()
+                        ref_hd_metric[2 * _c] += val0 * val1   # access every even element in the tensor (starting from 0)
+                        ref_hd_metric[2 * _c + 1] += val1      # access every odd element in the tensor (starting from 1)
+
 
                     _index += 1
 
                 if torch.cuda.device_count() > 1:
                     dist.barrier()
                     dist.all_reduce(metric, op=torch.distributed.ReduceOp.SUM)
+                    dist.all_reduce(ref_metric, op=torch.distributed.ReduceOp.SUM)
+                    dist.all_reduce(hd_metric, op=torch.distributed.ReduceOp.SUM)
+                    dist.all_reduce(ref_hd_metric, op=torch.distributed.ReduceOp.SUM)
 
-                metric = metric.tolist()
-                ref_metric = ref_metric.tolist()
+                metric = metric.tolist(); hd_metric = hd_metric.tolist()
+                ref_metric = ref_metric.tolist(); ref_hd_metric = ref_hd_metric.tolist()
                 if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
                     for _c in range(metric_dim):
                         print(f"evaluation metric - class {_c + 1:d}:", metric[2 * _c] / metric[2 * _c + 1], "Reference metric:", ref_metric[2 * _c] / ref_metric[2 * _c + 1])
-                        logger.debug(f"Evaluation metric - class {_c + 1}: {metric[2 * _c] / metric[2 * _c + 1]} Reference metric - class {_c + 1}: {ref_metric[2 * _c] / ref_metric[2 * _c + 1]}")
-                            
-                    avg_metric = 0
-                    avg_metric_ref = 0
+                        logger.debug(f"Dice Evaluation metric - class {_c + 1}: {metric[2 * _c] / metric[2 * _c + 1]} Dice Reference metric - class {_c + 1}: {ref_metric[2 * _c] / ref_metric[2 * _c + 1]}")
+                        logger.debug(f"HD Evaluation metric - class {_c + 1}: {hd_metric[2 * _c] / hd_metric[2 * _c + 1]} HD Reference metric - class {_c + 1}: {ref_hd_metric[2 * _c] / ref_hd_metric[2 * _c + 1]}")
+    
+                    avg_metric = 0; avg_hd_metric = 0
+                    avg_metric_ref = 0; avg_hd_metric_ref = 0
                     for _c in range(metric_dim):
                         avg_metric += metric[2 * _c] / metric[2 * _c + 1]
                         avg_metric_ref += ref_metric[2 * _c] / ref_metric[2 * _c + 1]
+                        avg_hd_metric += hd_metric[2 * _c] / hd_metric[2 * _c + 1]
+                        avg_hd_metric_ref += ref_hd_metric[2 * _c] / ref_hd_metric[2 * _c + 1]
                     avg_metric = avg_metric / float(metric_dim)
                     avg_metric_ref = avg_metric_ref / float(metric_dim)
+                    avg_hd_metric = avg_hd_metric / float(metric_dim)
+                    avg_hd_metric_ref = avg_hd_metric_ref / float(metric_dim)
+                    
                     print("avg_metric: ", avg_metric, " , avg_metric_ref: ", avg_metric_ref)
-                    logger.debug(f"Avg_metric: {avg_metric} Avg_metric_ref: {avg_metric_ref}")
+                    print("avg_hd_metric: ", avg_hd_metric, " , avg_hd_metric_ref: ", avg_hd_metric_ref)
+                    logger.debug(f"Dice: Avg_metric: {avg_metric} Avg_metric_ref: {avg_metric_ref}")
+                    logger.debug(f"Hausdorff: Avg_metric: {avg_hd_metric} Avg_metric_ref: {avg_hd_metric_ref}")
 
-                    writer.add_scalar("Accuracy/validation", avg_metric, epoch)
-                    writer.add_scalar("Accuracy/validation_ref", avg_metric_ref, epoch)
+                    writer.add_scalar("Dice Accuracy/validation", avg_metric, epoch)
+                    writer.add_scalar("Dice Accuracy/validation_ref", avg_metric_ref, epoch)
+                    writer.add_scalar("Hausdorff/validation", avg_hd_metric, epoch)
+                    writer.add_scalar("Hausdorff/validation_ref", avg_hd_metric_ref, epoch)
 
                     if avg_metric > best_metric:
                         best_metric = avg_metric
@@ -485,9 +528,32 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         with open(os.path.join(ckpt_path, "progress.yaml"), "a") as out_file:
                             yaml.dump([dict_file], stream=out_file)
 
+                    if avg_hd_metric < best_hd_metric:
+                        best_hd_metric = avg_hd_metric
+                        best_hd_metric_epoch = epoch + 1
+                        if torch.cuda.device_count() > 1:
+                            torch.save(model.module.state_dict(), os.path.join(ckpt_path, "best_hd_metric_model.pt"))
+                        else:
+                            torch.save(model.state_dict(), os.path.join(ckpt_path, "best_hd_metric_model.pt"))
+                        print("saved new best hausdorff metric model")
+                        logger.debug("Saved new best hausdorff metric model")
+
+                        dict_file = {}
+                        dict_file["best_avg_hd_score"] = float(best_hd_metric)
+                        dict_file["best_avg_hd_score_epoch"] = int(best_hd_metric_epoch)
+                        dict_file["best_avg_hd_score_iteration"] = int(idx_iter)
+                        with open(os.path.join(ckpt_path, "hd_progress.yaml"), "a") as out_file:
+                            yaml.dump([dict_file], stream=out_file)
+
+
                     logger.debug(
                         "Current epoch: {} current mean dice: {:.4f}, current reference mean dice: {:.4f},  best mean dice: {:.4f} at epoch {}".format(
                         epoch + 1, avg_metric, avg_metric_ref, best_metric, best_metric_epoch
+                        )
+                    )
+                    logger.debug(
+                        "Current epoch: {} current mean hausdorff: {:.4f}, current reference mean hausdorff: {:.4f},  best mean hausdorff: {:.4f} at epoch {}".format(
+                            epoch + 1, avg_hd_metric, avg_hd_metric_ref, best_hd_metric, best_hd_metric_epoch
                         )
                     )
 
@@ -495,8 +561,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     elapsed_time = (current_time - start_time) / 60.0
                     with open(os.path.join(ckpt_path, "accuracy_history.csv"), "a") as f:
                         f.write(
-                            "{:d}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.1f}\t{:d}\n".format(
-                                epoch + 1, avg_metric, avg_metric_ref, loss_torch_epoch, loss_torch_epoch_t1xflair, lr, elapsed_time, idx_iter
+                            "{:d}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.1f}\t{:d}\n".format(
+                                epoch + 1, avg_metric, avg_metric_ref, avg_hd_metric, avg_hd_metric_ref, loss_torch_epoch, loss_torch_epoch_t1xflair, lr, elapsed_time, idx_iter
                             )
                         )
 

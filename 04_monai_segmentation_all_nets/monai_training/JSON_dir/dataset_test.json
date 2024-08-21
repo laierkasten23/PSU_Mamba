@@ -1,0 +1,45 @@
+{
+    "description": "Dataset for Choroid Plexus segmentation",
+    "labels": {
+        "0": "background",
+        "1": "Choroid Plexus"
+    },
+    "modality": {
+        "0": "MR"
+    },
+    "name": "MRI Dataset - Choroid Plexus Segmentation",
+    "numTest": 10,
+    "tensorImageSize": "3D",
+    "testing": [
+        {
+            "image": "12_image.nii"
+        },
+        {
+            "image": "13_image.nii"
+        },
+        {
+            "image": "16_image.nii"
+        },
+        {
+            "image": "17_image.nii"
+        },
+        {
+            "image": "1_image.nii"
+        },
+        {
+            "image": "3_image.nii"
+        },
+        {
+            "image": "4_image.nii"
+        },
+        {
+            "image": "7_image.nii"
+        },
+        {
+            "image": "8_image.nii"
+        },
+        {
+            "image": "9_image.nii"
+        }
+    ]
+}

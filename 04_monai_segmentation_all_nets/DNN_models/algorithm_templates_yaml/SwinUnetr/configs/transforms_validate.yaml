@@ -1,0 +1,27 @@
+image_key: image
+label_key: label
+ref_label_key: ref_label
+transforms_validate:
+  _target_: Compose
+  transforms:
+  - _target_: LoadImaged
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+    image_only: true
+  - _target_: EnsureChannelFirstd
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+  #- PLACEHOLDER_INTENSITY_NORMALIZATION
+  - _target_: Orientationd
+    axcodes: RAS
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+  - _target_: Spacingd
+    align_corners: [true, true, true]
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+    mode: [bilinear, nearest, nearest]
+    pixdim: "$@training#resample_resolution"
+  - {_target_: NormalizeIntensityd, channel_wise: true, keys: '@image_key', nonzero: true}
+  - _target_: CastToTyped
+    dtype: [$torch.float32, $torch.uint8, $torch.uint8]
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+  - _target_: EnsureTyped
+    keys: ['@image_key', '@label_key', '@ref_label_key']
+    track_meta: true

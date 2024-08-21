@@ -21,7 +21,7 @@ def get_directory_names(path):
 
 def run_autorunner(work_dir: str="/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/monai_segmentation/monai_training/working_directory_0606", 
                    dataroot: str="/home/linuxlia/Lia_Masterthesis/data/pazienti", 
-                   json_path: str="/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training/JSON_dir/train_val.json",
+                   json_path: str="/home/linuxlia/Lia_Masterthesis/data/pazienti/train_val.json",
                    algos: list = ["UNETR", "SwinUnetr"],
                    templates_path_or_url: str = "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/monai_segmentation/DNN_models/algorithm_templates_yaml/"):
     """
@@ -76,6 +76,7 @@ if __name__ == '__main__':
         algos_to_use = default_algos
     else:
         algos_to_use = args.algos
+    print(f"Using algos: {algos_to_use}")
 
 
     run_autorunner(args.work_dir, args.dataroot, args.json_path, algos=args.algos, templates_path_or_url=args.templates_path_or_url)
@@ -88,4 +89,6 @@ if __name__ == '__main__':
     # python step3_run_AutoRunner.py --work_dir /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/02_monai_segmentation/monai_training/working_directory_2407 --dataroot /home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP --json_path /home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP/dataset_train_val_pred.json --algos DynUnet128dice SwinUnetr --templates_path_or_url /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/02_monai_segmentation/DNN_models/algorithm_templates_yaml/
     # python step3_run_AutoRunner.py --work_dir /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/02_monai_segmentation/monai_training/working_directory_0808 --dataroot /home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP --json_path /home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP/dataset_train_val_pred.json --algos DynUnet128dice --templates_path_or_url /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/02_monai_segmentation/DNN_models/algorithm_templates_yaml/
     # python step3_run_AutoRunner.py --work_dir /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/02_monai_segmentation/monai_training/working_directory_0808 --dataroot /home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP --json_path /home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP/dataset_train_val_pred.json --algos UNETR --templates_path_or_url /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/02_monai_segmentation/DNN_models/algorithm_templates_yaml/
-    # python step3_run_AutoRunner.py --work_dir /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/01_aschoplex_from_scratch/monai_training/working_directory_1308_AP --dataroot /home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP --json_path /home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP/dataset_train_val_pred.json --algos UNETR128diceCE --templates_path_or_url /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/01_aschoplex_from_scratch/DNN_models/algorithm_templates/
+    # python step3_run_AutoRunner.py --work_dir /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/02_monai_segmentation/monai_training/working_directory_0808 --dataroot /home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP --json_path /home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP/dataset_train_val_pred.json --algos DynUnet128dice --templates_path_or_url /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/01_aschoplex_from_scratch/DNN_models/algorithm_templates_yaml/
+    # python step3_run_AutoRunner.py --work_dir /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/01_aschoplex_from_scratch/monai_training/working_directory_1708_AP --dataroot /home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP --json_path /home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP/dataset_train_val_pred.json --algos DynUnet128dice --templates_path_or_url /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/01_aschoplex_from_scratch/DNN_models/algorithm_templates/
+    # python step3_run_AutoRunner.py --work_dir /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/01_aschoplex_from_scratch/monai_training/working_directory_2008_DynUnet128dice_AP --dataroot /home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP --json_path /home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP/dataset_train_val_pred.json --algos DynUnet128dice --templates_path_or_url /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/01_aschoplex_from_scratch/DNN_models/algorithm_templates/

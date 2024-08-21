@@ -17,8 +17,8 @@ training:
   input_channels: 1
   learning_rate: 0.0002
   num_images_per_batch: 1
-  num_iterations: 20000         # TODO: was 40000 before
-  num_iterations_per_validation: 100                        # number of iterations between each validation step during training
+  num_iterations: 1500         # TODO: was 40000 before
+  num_iterations_per_validation: 5                        # number of iterations between each validation step during training
   num_patches_per_image: 1
   num_sw_batch_size: 1                                      # batch size for the sliding window during training
   num_workers: 4

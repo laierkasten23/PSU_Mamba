@@ -180,7 +180,7 @@ class nnUNetTrainer(object):
         # self.configure_rotation_dummyDA_mirroring_and_inital_patch_size and will be saved in checkpoints
 
         ### checkpoint saving stuff
-        self.save_every = 50
+        self.save_every = 20
         self.disable_checkpointing = False
 
         ## DDP batch size and oversampling can differ between workers and needs adaptation
@@ -534,10 +534,10 @@ class nnUNetTrainer(object):
                                     folder_with_segs_from_previous_stage=self.folder_with_segs_from_previous_stage)
             # if the split file does not exist we need to create it
             if not isfile(splits_file):
-                self.print_to_log_file("Creating new 5-fold cross-validation split...")
+                self.print_to_log_file("Creating new 4-fold cross-validation split...") # Changed by Lia 
                 splits = []
                 all_keys_sorted = np.sort(list(dataset.keys()))
-                kfold = KFold(n_splits=5, shuffle=True, random_state=12345)
+                kfold = KFold(n_splits=4, shuffle=True, random_state=12345) # now only 4 folds
                 for i, (train_idx, test_idx) in enumerate(kfold.split(all_keys_sorted)):
                     train_keys = np.array(all_keys_sorted)[train_idx]
                     test_keys = np.array(all_keys_sorted)[test_idx]

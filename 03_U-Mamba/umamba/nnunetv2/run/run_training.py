@@ -2,6 +2,8 @@ import os
 import socket
 from typing import Union, Optional
 
+print("PYTHONPATH:", os.environ.get('PYTHONPATH'))
+
 import nnunetv2
 import torch.cuda
 import torch.distributed as dist

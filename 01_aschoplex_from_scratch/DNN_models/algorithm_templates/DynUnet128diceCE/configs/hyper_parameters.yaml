@@ -21,7 +21,7 @@ infer:
   ouptut_path: $@bundle_root + '/prediction_' + @infer#data_list_key
 
 input_channels: 1
-learning_rate: 0.0002
+learning_rate: 0.001
 
 loss:
   _target_: DiceCELoss
@@ -40,13 +40,13 @@ lr_scheduler:
   optimizer: $@optimizer
   step_size: $@num_iterations // 5
 
-num_images_per_batch: 1 # before 1
-num_iterations: 20000
-num_iterations_per_validation: 100
-num_patches_per_image: 1
+num_images_per_batch: 2 # before 1
+num_iterations: 1500
+num_iterations_per_validation: 5
+num_patches_per_image: 2 # before 1
 num_sw_batch_size: 8 # before 1
-num_workers: 8 # before 8
-num_workers_val: 2
+num_workers: 12 # before 8
+num_workers_val: 4
 
 log_output_file: "$@bundle_root + '/model/training.log'"
 

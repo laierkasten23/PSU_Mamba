@@ -50,16 +50,16 @@ training:
   amp: true                                     # automatic mixed precision is used for training -° speed up training, reduce GPU memory usage
   determ: false
   early_stopping_fraction: 0.001
-  early_stop_mode: true
+  early_stop_mode: false                        # early stopping is not used to make it comparable 
   early_stop_delta: 0
   early_stop_patience: 5
   input_channels: null
-  learning_rate: 0.0002
+  learning_rate: 0.0004
   num_images_per_batch: 1
-  num_iterations: 20000
-  num_iterations_per_validation: 500
+  num_iterations: 1500
+  num_iterations_per_validation: 5
   num_patches_per_image: 1
-  num_patches_per_iter: 1     # maybe see how this should be set
+  num_patches_per_iter: 1     # maybe see how this should be set  
   num_sw_batch_size: "$@training#num_patches_per_iter"
   output_classes: null
   n_cases: null

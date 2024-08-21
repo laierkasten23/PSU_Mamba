@@ -129,22 +129,14 @@ def generate_json(args):
     Usage: 
         python step2_create_json_nnunetv2.py --mode "train" --dataroot "/var/data/MONAI_Choroid_Plexus/dataset_monai_train_from_scratch" --work_dir "/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training" --train_val_ratio 0.5 --num_folds 5   
         python step2_create_json_nnunetv2.py --mode "test" --dataroot "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex" --work_dir "/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training" --train_val_ratio 0.5 --num_folds 5   
-        python step2_create_json_nnunetv2.py --mode "train" --dataroot "C:/Users/lia/Documents/Lia_Masterthesis/data/dataset_aschoplex" --work_dir "C:/Users/lia/Documents/Lia_Masterthesis/phuse_thesis_2024/monai_segmentation/monai_training/run_240426" --train_val_ratio 0.5 --num_folds 5   
         python step2_create_json_nnunetv2.py --mode "train" --dataroot "/home/linuxlia/Lia_Masterthesis/data/dataset_aschoplex" --work_dir "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/monai_segmentation/monai_training/working_directory_0509" --train_val_ratio 0.8 --num_folds 5   
         python step2_create_json_nnunetv2.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset059_ChoroidPlexus_FLAIR" --work_dir "/home/linuxlia/Lia_Masterthesis/data/Dataset059_ChoroidPlexus_FLAIR" --train_val_ratio 0.8 --num_folds 1  
         python step2_create_json_nnunetv2.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset059_ChoroidPlexus_FLAIR" --work_dir "/home/linuxlia/Lia_Masterthesis/data/Dataset059_ChoroidPlexus_FLAIR" --train_val_ratio 0.8 --num_folds 1 --datasettype "NNUNETV2" --modality "['FLAIR']"
-        python step2_create_json_nnunetv2.py --mode "train" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset059_ChoroidPlexus_FLAIR" --work_dir "/home/linuxlia/Lia_Masterthesis/data/Dataset059_ChoroidPlexus_FLAIR" --train_val_ratio 1.0 --num_folds 1 --datasettype "UMAMBA" --modality "['FLAIR']"
-        python step2_create_json_nnunetv2.py --mode "train" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset059_ChoroidPlexus_FLAIR" --work_dir "/home/linuxlia/Lia_Masterthesis/data/Dataset059_ChoroidPlexus_FLAIR" --train_val_ratio 1.0 --num_folds 1 --datasettype "UMAMBA" --modality "['FLAIR']"
         python step2_create_json_nnunetv2.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP" --work_dir "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1']"
         python step2_create_json_nnunetv2.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA" --work_dir "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA" --train_val_ratio 1.0 --num_folds 4 --datasettype "UMAMBA" --modality "['T1']"
         python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1']"
         python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_FLAIR_sym_AP" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' --include_groups "['AD', 'Psy']" --json_dir "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/JSON_file_experiments" (successful :) ) 
-
-        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' 
-        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_FLAIR_sym_AP" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['FLAIR']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' 
-        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1xFLAIR_sym_AP" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1xFLAIR']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' 
-        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_FLAIR_sym_AP" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1', 'FLAIR']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' 
-        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_FLAIR_T1xFLAIRmask_sym_AP" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1', 'FLAIR']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' 
+ 
         
         python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset002_ChoroidPlexus_T1_sym_PHU" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' 
         python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset002_ChoroidPlexus_FLAIR_sym_PHU" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['FLAIR']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' 
@@ -391,13 +383,13 @@ def generate_json(args):
         # If UMAMBA, get validation data
         if args.datasettype == 'UMAMBA':
 
-            json_dict['numTraining'] = len(image_paths)
-
             if args.modality == ['T1', 'FLAIR']:
+                json_dict['numTraining'] = len(image_paths)/2
                 image_paths2 = [path.replace('0000', '0001') for path in image_paths]
                 label_paths2 = [path.replace('0000', '0001') for path in label_paths]
                 json_dict['training'] = [{"fold": 0, "image": '%s' %i , "label": '%s' %j, "image2": '%s' %k, "label2": '%s' %l} for i, j, k, l in zip(image_paths, label_paths, image_paths2, label_paths2)]
             else:
+                json_dict['numTraining'] = len(image_paths)
                 json_dict['training'] = [{"fold": 0, "image": '%s' %i , "label": '%s' %j} for i, j in zip(image_paths, label_paths)]
             
             if not args.skip_validation:
@@ -678,7 +670,7 @@ def setup_argparse():
     parser.add_argument("--include_groups", type=ast.literal_eval, required=False, help="List of groups to include in the experiment")    # TODO: check, maybe  type=str, nargs='+',
     parser.add_argument("--indices", type=ast.literal_eval, required=False, help="List of indices to use for training and validation")    # TODO: check, maybe  type=str, nargs='+',
     parser.add_argument('--json_dir', type=str, default=None, required=False, help='Name of the directory where the json files are stored. If nothing is specified, json will be stored in data folder, otherwise a new folder will be created where it will be created.')
-    parser.add_argument('--modality', type=parse_modality, default='MR', required=False, help='Modality of the dataset', choices=['T1', 'FLAIR', 'T1xFLAIR',  ['T1', 'FLAIR'], 'MR', ['T1'], ['FLAIR']])
+    parser.add_argument('--modality', type=parse_modality, default='MR', required=False, help='Modality of the dataset', choices=['T1', 'FLAIR', 'T1xFLAIR',  ['T1', 'FLAIR'], 'MR', ['T1'], ['FLAIR'], ['T1xFLAIR']])
     parser.add_argument("--mode", type=str, required=True, choices=['train', 'finetune', 'test', 'train_predict', 'finetune_predict'], default='train', help="Operation mode")
     parser.add_argument("--num_folds", type=int, required=False, default=5, help="The number of folds to split the training data into. Default is 5.")
     parser.add_argument("--pretrained_model_path", type=str, help="Path to pretrained model")

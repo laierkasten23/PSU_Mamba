@@ -1,0 +1,9 @@
+network:
+  _target_: SwinUNETR
+  feature_size: 48                 # embedded space dimension
+  img_size: 96
+  in_channels: "@training#input_channels"
+  out_channels: "@training#output_classes"
+  spatial_dims: 3
+  use_checkpoint: false
+  use_v2: false

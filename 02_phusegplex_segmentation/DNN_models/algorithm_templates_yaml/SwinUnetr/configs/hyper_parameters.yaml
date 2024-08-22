@@ -79,16 +79,17 @@ training:
     resample_resolution: "$@training#resample_resolution"
     lazy_resampling: false
 
+
   loss:
-    _target_: DiceCELoss
-    include_background: true
-    squared_pred: true
-    smooth_nr: 0
-    smooth_dr: 1.0e-05
-    softmax: $@training#softmax
+    _target_: GeneralizedDiceLoss
+    batch: true
+    include_background: false
     sigmoid: $not @training#softmax
+    smooth_dr: 1.0e-06
+    smooth_nr: 0
+    softmax: $@training#softmax
+    squared_pred: true
     to_onehot_y: $@training#softmax
-    #batch: true
 
   optimizer:
     _target_: torch.optim.AdamW

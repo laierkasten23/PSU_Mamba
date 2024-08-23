@@ -274,7 +274,7 @@ def generate_json(args):
     json_dict = OrderedDict()
     json_dict['name'] = "MRI Dataset - Choroid Plexus Segmentation" 
     json_dict['description'] = args.description if args.description is not None else "Dataset for Choroid Plexus segmentation"
-    json_dict['data_benchmark_base_dir'] = args.benchmark_dataroot if args.benchmark_dataroot is not None else "/home/linuxlia/Lia_Masterthesis/data/reference_labels" # TODO: Generalize when setting overall projectdirectory for later distribution 
+    json_dict['data_benchmark_base_dir'] = args.benchmark_dataroot if args.benchmark_dataroot is not None else None # TODO: Generalize when setting overall projectdirectory for later distribution 
     json_dict['tensorImageSize'] = "3D"
     
 

@@ -4,7 +4,6 @@
 BASE_DIR="/home/linuxlia/Lia_Masterthesis"
 
 
-task_id=32
 datasettype=UMAMBA
 path="$BASE_DIR/data/pazienti"
 output_dir="$BASE_DIR/data/Umamba_data/nnUNet_raw/"
@@ -14,7 +13,7 @@ train_test_index_list="056,063,006,052,003,024,100,019,025,071,045,067,102,101,0
 
 python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_creator_symbolic.py" \
 --path "$path" \
---task_id "$task_id" \
+--task_id 331 \
 --task_name 'ChoroidPlexus_T1_sym_UMAMBA' \
 --datasettype "$datasettype" \
 --output_dir "$output_dir" \
@@ -24,7 +23,7 @@ python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_cre
 
 python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_creator_symbolic.py" \
 --path "$path" \
---task_id "$task_id" \
+--task_id 332 \
 --task_name 'ChoroidPlexus_FLAIR_sym_UMAMBA' \
 --datasettype "$datasettype" \
 --output_dir "$output_dir" \
@@ -35,7 +34,7 @@ python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_cre
     
 python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_creator_symbolic.py" \
 --path "$path" \
---task_id "$task_id" \
+--task_id 333 \
 --task_name 'ChoroidPlexus_T1xFLAIR_sym_UMAMBA' \
 --datasettype "$datasettype" \
 --output_dir "$output_dir" \
@@ -45,7 +44,7 @@ python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_cre
 
 python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_creator_symbolic.py" \
 --path "$path" \
---task_id "$task_id" \
+--task_id 334 \
 --task_name 'ChoroidPlexus_T1_FLAIR_sym_UMAMBA' \
 --datasettype "$datasettype" \
 --output_dir "$output_dir" \
@@ -55,7 +54,7 @@ python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_cre
     
 python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_creator_symbolic.py" \
 --path "$path" \
---task_id "$task_id" \
+--task_id 335 \
 --task_name 'ChoroidPlexus_T1_FLAIR_T1xFLAIRmask_sym_UMAMBA' \
 --datasettype "$datasettype" \
 --output_dir "$output_dir" \

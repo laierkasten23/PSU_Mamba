@@ -67,7 +67,7 @@ def auto_scale(output_classes, n_cases, max_epoch=1000):
 
 
 
-class SwinunetrceAlgo(BundleAlgo):
+class Swinunetr128diceceAlgo(BundleAlgo):
     def fill_template_config(self, data_stats_file, output_path, **kwargs):
         """
         Fill the freshly copied config templates
@@ -201,4 +201,4 @@ if __name__ == "__main__":
     from monai.utils import optional_import
 
     fire, _ = optional_import("fire")
-    fire.Fire({"SwinunetrceAlgo": SwinunetrceAlgo}) 
+    fire.Fire({"Swinunetr128diceceAlgo": Swinunetr128diceceAlgo}) 

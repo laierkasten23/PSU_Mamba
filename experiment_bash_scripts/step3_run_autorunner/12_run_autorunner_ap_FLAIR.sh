@@ -7,7 +7,7 @@ datasetname="Dataset011_ChoroidPlexus_FLAIR_sym_AP"
 
 
 python3 "$BASE_DIR/phuse_thesis_2024/Code_general_functions/step3_run_AutoRunner.py" \
---work_dir "$BASE_DIR/phuse_thesis_2024/thesis_experiments/01_aschoplex_from_scratch/working_directory_FLAIR_240822" \
+--work_dir "$BASE_DIR/phuse_thesis_2024/thesis_experiments/01_aschoplex_from_scratch/working_directory_FLAIR_240823" \
 --dataroot "$BASE_DATA_DIR/$datasetname" \
 --json_path "$BASE_DATA_DIR/$datasetname/dataset_train_val_pred.json" \
 --algos DynUnet128dice DynUnet128diceCE UNETR128diceCE \

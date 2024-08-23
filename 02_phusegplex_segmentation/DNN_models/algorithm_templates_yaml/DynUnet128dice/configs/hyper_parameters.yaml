@@ -16,13 +16,13 @@ training:
   determ: true
   input_channels: 1
   learning_rate: 0.0002
-  num_images_per_batch: 1
+  num_images_per_batch: 2                               # number of images per batch (before 1)
   num_iterations: 1500         # TODO: was 40000 before
   num_iterations_per_validation: 5                        # number of iterations between each validation step during training
-  num_patches_per_image: 1
-  num_sw_batch_size: 1                                      # batch size for the sliding window during training
-  num_workers: 4
-  num_workers_val: 2
+  num_patches_per_image: 2
+  num_sw_batch_size: 8                                      # batch size for the sliding window during training
+  num_workers: 12
+  num_workers_val: 4
   output_classes: 2
   overlap_ratio: 0.5
   patch_size: 

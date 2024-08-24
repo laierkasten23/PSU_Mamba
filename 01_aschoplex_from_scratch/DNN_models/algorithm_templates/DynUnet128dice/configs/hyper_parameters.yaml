@@ -31,7 +31,7 @@ loss:
   smooth_dr: 1.0e-06
   smooth_nr: 0
   softmax: $@softmax
-  # squared_pred: true
+  squared_pred: true
   to_onehot_y: $@softmax
 
 lr_scheduler:
@@ -43,7 +43,6 @@ lr_scheduler:
 num_images_per_batch: 2 # before 1
 num_iterations: 1500
 num_iterations_per_validation: 5
-
 num_patches_per_image: 2 # before 1
 num_sw_batch_size: 8 # before 1
 num_workers: 12 # before 8 (CPU has 12 workers)

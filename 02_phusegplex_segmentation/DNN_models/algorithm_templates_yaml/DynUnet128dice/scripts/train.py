@@ -157,7 +157,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
     if torch.cuda.device_count() > 1:
         train_files = partition_dataset(data=train_files, 
-                                        shuffle=True, 
+                                        shuffle=False, 
                                         num_partitions=world_size, 
                                         even_divisible=True)[
             dist.get_rank()
@@ -261,7 +261,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             model.load_state_dict(torch.load(finetune["pretrained_ckpt_name"], map_location=device))
             logger.debug(f"Model loaded from {finetune['pretrained_ckpt_name']}")
     else:
-        print("[info] training from scratch")
         logger.debug("Training from scratch")
 
     if amp:
@@ -318,7 +317,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     loss = loss_function(outputs.float(), labels)
                     ref_loss = loss_function(outputs.float(), ref_labels).detach()
 
-
                 scaler.scale(loss).backward()
                 scaler.unscale_(optimizer)
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 0.5)
@@ -350,7 +348,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                 writer.add_scalar("Loss/train", loss.item(), epoch_len * epoch + step)
                 writer.add_scalar("Loss/train_T1xFLAIR", ref_loss.item(), epoch_len * epoch + step)
 
-        lr_scheduler.step() # TODO: check
+        lr_scheduler.step() 
 
         if torch.cuda.device_count() > 1:
             dist.barrier()
@@ -436,7 +434,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     hd_metric_count += len(hausdorff_value); ref_hd_metric_count += len(ref_hausdorff_value)
                     hd_metric_sum += hausdorff_value.sum().item(); ref_hd_metric_sum += ref_hausdorff_value.sum().item()
                     hd_metric_vals = hausdorff_value.cpu().numpy(); ref_hd_metric_vals = ref_hausdorff_value.cpu().numpy()
-
 
                     if len(metric_mat) == 0:
                         metric_mat = metric_vals
@@ -552,8 +549,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         with open(os.path.join(ckpt_path, "hd_progress.yaml"), "a") as out_file:
                             yaml.dump([dict_file], stream=out_file)
 
-
-
                     print(
                         "current epoch: {} current mean dice: {:.4f}, current reference mean dice: {:.4f},  best mean dice: {:.4f} at epoch {}".format(
                             epoch + 1, avg_metric, avg_metric_ref, best_metric, best_metric_epoch
@@ -575,7 +570,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     with open(os.path.join(ckpt_path, "accuracy_history.csv"), "a") as f:
                         f.write(
                             "{:d}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.5f}\t{:.1f}\t{:d}\n".format(
-                                epoch + 1, avg_metric, avg_metric_ref, loss_torch_epoch, loss_torch_epoch_t1xflair, lr, elapsed_time, idx_iter
+                                epoch + 1, avg_metric, avg_metric_ref, avg_hd_metric, avg_hd_metric_ref, loss_torch_epoch, loss_torch_epoch_t1xflair, lr, elapsed_time, idx_iter
                             )
                         )
 

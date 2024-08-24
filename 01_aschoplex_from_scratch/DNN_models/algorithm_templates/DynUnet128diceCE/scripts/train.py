@@ -500,8 +500,8 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     logger.debug(f"Dice: Avg_metric: {avg_metric} Avg_metric_ref: {avg_metric_ref}")
                     logger.debug(f"Hausdorff: Avg_metric: {avg_hd_metric} Avg_metric_ref: {avg_hd_metric_ref}")
 
-                    writer.add_scalar("Accuracy/validation", avg_metric, epoch)
-                    writer.add_scalar("Accuracy/validation_ref", avg_metric_ref, epoch)
+                    writer.add_scalar("Dice Accuracy/validation", avg_metric, epoch)
+                    writer.add_scalar("Dice Accuracy/validation_ref", avg_metric_ref, epoch)
                     writer.add_scalar("Hausdorff/validation", avg_hd_metric, epoch)
                     writer.add_scalar("Hausdorff/validation_ref", avg_hd_metric_ref, epoch)
 

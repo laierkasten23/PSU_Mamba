@@ -784,27 +784,23 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                             logger.debug(f"Evaluation metric - class {_c + 1}: {metric[2 * _c] / metric[2 * _c + 1]} Reference metric - class {_c + 1}: {ref_metric[2 * _c] / ref_metric[2 * _c + 1]}")
                             logger.debug(f"HD Evaluation metric - class {_c + 1}: {hd_metric[2 * _c] / hd_metric[2 * _c + 1]} HD Reference metric - class {_c + 1}: {ref_hd_metric[2 * _c] / ref_hd_metric[2 * _c + 1]}")
                             try:
-                                writer.add_scalar(
-                                    f"val_class/acc_{class_names[_c]}", metric[2 * _c] / metric[2 * _c + 1], epoch
-                                )
-                                writer.add_scalar(
-                                    f"hd val_class/acc_{class_names[_c]}", hd_metric[2 * _c] / hd_metric[2 * _c + 1], epoch 
-                                )
-                                mlflow.log_metric(
-                                    f"val_class/acc_{class_names[_c]}", metric[2 * _c] / metric[2 * _c + 1], step=epoch
-                                )
-                                mlflow.log_metric(
-                                    f"hd val_class/acc_{class_names[_c]}", hd_metric[2 * _c] / hd_metric[2 * _c + 1], step=epoch
-                                )
+                                writer.add_scalar(f"val_class/acc_{class_names[_c]}", metric[2 * _c] / metric[2 * _c + 1], epoch)
+                                writer.add_scalar(f"ref val_class/acc_{class_names[_c]}", ref_metric[2 * _c] / ref_metric[2 * _c + 1], epoch)
+                                writer.add_scalar(f"hd val_class/acc_{class_names[_c]}", hd_metric[2 * _c] / hd_metric[2 * _c + 1], epoch )
+                                writer.add_scalar(f"hd ref val_class/acc_{class_names[_c]}", ref_hd_metric[2 * _c] / ref_hd_metric[2 * _c + 1], epoch)
+                                mlflow.log_metric(f"val_class/acc_{class_names[_c]}", metric[2 * _c] / metric[2 * _c + 1], step=epoch)
+                                mlflow.log_metric(f"ref val_class/acc_{class_names[_c]}", ref_metric[2 * _c] / ref_metric[2 * _c + 1], step=epoch)
+                                mlflow.log_metric(f"hd val_class/acc_{class_names[_c]}", hd_metric[2 * _c] / hd_metric[2 * _c + 1], step=epoch)
+                                mlflow.log_metric(f"hd ref val_class/acc_{class_names[_c]}", ref_hd_metric[2 * _c] / ref_hd_metric[2 * _c + 1], step=epoch)
                             except BaseException:
                                 writer.add_scalar(f"val_class/acc_{_c}", metric[2 * _c] / metric[2 * _c + 1], epoch)
+                                writer.add_scalar(f"ref val_class/acc_{_c}", ref_metric[2 * _c] / ref_metric[2 * _c + 1], epoch)
                                 writer.add_scalar(f"hd val_class/acc_{_c}", hd_metric[2 * _c] / hd_metric[2 * _c + 1], epoch)
-                                mlflow.log_metric(
-                                    f"val_class/acc_{_c}", metric[2 * _c] / metric[2 * _c + 1], step=epoch
-                                )
-                                mlflow.log_metric(
-                                    f"hd val_class/acc_{_c}", hd_metric[2 * _c] / hd_metric[2 * _c + 1], step=epoch
-                                )
+                                writer.add_scalar(f"hd ref val_class/acc_{_c}", ref_hd_metric[2 * _c] / ref_hd_metric[2 * _c + 1], epoch)
+                                mlflow.log_metric(f"val_class/acc_{_c}", metric[2 * _c] / metric[2 * _c + 1], step=epoch)
+                                mlflow.log_metric(f"ref val_class/acc_{_c}", ref_metric[2 * _c] / ref_metric[2 * _c + 1], step=epoch)
+                                mlflow.log_metric(f"hd val_class/acc_{_c}", hd_metric[2 * _c] / hd_metric[2 * _c + 1], step=epoch)
+                                mlflow.log_metric(f"hd ref val_class/acc_{_c}", ref_hd_metric[2 * _c] / ref_hd_metric[2 * _c + 1], step=epoch)
 
                         avg_metric = 0; avg_hd_metric = 0
                         avg_metric_ref = 0; avg_hd_metric_ref = 0

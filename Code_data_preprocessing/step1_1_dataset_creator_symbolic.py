@@ -8,7 +8,7 @@ import nibabel as nib
 from typing import Union, List
 import json
 
-central_data_dir = "/home/linuxlia/Lia_Masterthesis/data/pazienti"
+
 
 
 def check_modality(image_name, modality):
@@ -251,6 +251,11 @@ def folderstructure_changer_symbolic(path,
     # Remove any other file that is not a folder with a number as name
     subjects = [subject for subject in subjects if subject.isdigit()]
 
+
+    print('Subjects: %s' % sorted(subjects))
+    print('Amount of subjects: %s' % len(subjects))
+
+
     # Randomly choose the train subjects and test subjects or use the given list of train subjects
     if test_data_only:
         # no train subjects
@@ -259,8 +264,11 @@ def folderstructure_changer_symbolic(path,
         print('Test subjects: %s' % test_subjects)
 
     elif train_test_index_list is not None:
-        print("train_test_index_list = ", train_test_index_list)
-        train_subjects = [subjects[int(i)-1] for i in train_test_index_list]
+        print("train_test_index_list = ", sorted(train_test_index_list))
+        #train_subjects = [subjects[int(i)-1] for i in train_test_index_list]
+        #test_subjects = [subject for subject in subjects if subject not in train_subjects]
+        # base train subjects on the string indices provided
+        train_subjects = [subject for subject in subjects if train_test_index_list]
         test_subjects = [subject for subject in subjects if subject not in train_subjects]
 
     else:  # No further information, sample randomly
@@ -300,6 +308,7 @@ def folderstructure_changer_symbolic(path,
     if datasettype == 'reference':
         
         if train_test_index_list is not None:
+            print("train_test_index_list = ", train_test_index_list)
             for subject in train_subjects:
                 src_lab_path = os.path.join(path, subject, file_pattern.format(subject)) # source label path
                 path_to_save_lab = os.path.join(new_dataset_path, train_ref_dir, file_pattern.format(subject))

@@ -88,7 +88,6 @@ training:
     smooth_dr: 1.0e-06
     smooth_nr: 0
     softmax: $@training#softmax
-    squared_pred: true
     to_onehot_y: $@training#softmax
 
   optimizer:
@@ -114,9 +113,9 @@ intensity_bounds: null
 
 num_epochs_per_validation: 5
 num_epochs_per_saving: 1
-num_workers: 12
-num_workers_validation: 4
-num_cache_workers: 4
+num_workers: 4
+num_workers_validation: 2
+num_cache_workers: 2
 num_steps_per_image: null
 num_crops_per_image: 1
 

@@ -21,8 +21,8 @@ training:
   num_iterations_per_validation: 5                        # number of iterations between each validation step during training
   num_patches_per_image: 2
   num_sw_batch_size: 8                                      # batch size for the sliding window during training
-  num_workers: 12
-  num_workers_val: 4
+  num_workers: 4
+  num_workers_val: 2
   output_classes: 2
   overlap_ratio: 0.5
   patch_size: 
@@ -43,7 +43,6 @@ training:
     smooth_dr: 1.0e-06    # TODO check this value
     smooth_nr: 0
     softmax: $@training#softmax
-    # squared_pred: true.       # TODO: decide what to do
     to_onehot_y: $@training#softmax
 
   optimizer:

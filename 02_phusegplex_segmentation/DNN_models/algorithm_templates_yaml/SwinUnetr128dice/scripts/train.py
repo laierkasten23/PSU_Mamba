@@ -560,8 +560,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     inputs_l = inputs_l[_idx]
                     labels_l = labels_l[_idx]
                     ref_labels_l = ref_labels_l[_idx]
-            
-                    print("num_patches_per_iter: ", num_patches_per_iter)
+        
                     for _k in range(inputs_l.shape[0] // num_patches_per_iter):
                         inputs = inputs_l[_k * num_patches_per_iter : (_k + 1) * num_patches_per_iter, ...]
                         labels = labels_l[_k * num_patches_per_iter : (_k + 1) * num_patches_per_iter, ...]

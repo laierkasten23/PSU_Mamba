@@ -171,4 +171,22 @@ for (flair_path, t1_path) in flair_to_t1.items():
     else:
         list_comparing_flair_vs_t1.append(" affine matrix NOT equal")
 
-print("list_comparing", list_comparing_flair_vs_t1)
+#print("list_comparing", list_comparing_flair_vs_t1)
+
+segmentations = sorted(glob.glob(os.path.join(root_dir, '*', '*_ChP_mask_T1xFLAIR_manual_seg.nii')) )
+t1_images = sorted(get_nifti_by_modality(root_dir, 'T1'))
+
+list_comparing_t1_vs_seg = []
+list_t1_affine = []
+list_seg_affine = []
+for i in range(len(t1_images)):
+    print(t1_images[i], segmentations[i])
+    checker_t1_vs_seg, affine_t1, affine_seg = compare_affine_matrices(t1_images[i], segmentations[i])
+    list_t1_affine.append(affine_t1)
+    list_seg_affine.append(affine_seg)
+    if checker_t1_vs_seg:
+        list_comparing_t1_vs_seg.append(str(i+1) + " check")
+    else:
+        list_comparing_t1_vs_seg.append(str(i+1) + " affine matrix NOT equal")
+
+print("list_comparing_t1_vs_seg", list_comparing_t1_vs_seg)

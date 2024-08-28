@@ -23,7 +23,7 @@ def check_modality(image_name, modality):
     if modality not in image_name and mod_checker:
         raise ValueError('Modality of the image does not match the modality argument')
     
-def get_image_and_mask_name(subject_dir_list, modality):
+def get_image_and_mask_name(subject_dir_list, modality, use_single_label_for_bichannel=False):
     '''
     Get the image and mask name from the list of the subject directory
     
@@ -32,7 +32,10 @@ def get_image_and_mask_name(subject_dir_list, modality):
     :return: image_name, mask_name
     '''
     image_name = next((s for s in subject_dir_list if modality in s and 'mask' not in s), None)
-    mask_name = next((s for s in subject_dir_list if 'mask' in s and modality in s), None)
+    if use_single_label_for_bichannel:
+        mask_name = next((s for s in subject_dir_list if 'mask' in s and 'T1xFLAIR' in s), None)
+    else:
+        mask_name = next((s for s in subject_dir_list if 'mask' in s and modality in s), None)
     return image_name, mask_name
 
 def folderstructure_changer_symbolic(path, 
@@ -265,11 +268,11 @@ def folderstructure_changer_symbolic(path,
 
     elif train_test_index_list is not None:
         print("train_test_index_list = ", sorted(train_test_index_list))
-        #train_subjects = [subjects[int(i)-1] for i in train_test_index_list]
-        #test_subjects = [subject for subject in subjects if subject not in train_subjects]
-        # base train subjects on the string indices provided
-        train_subjects = [subject for subject in subjects if train_test_index_list]
+        train_subjects = [subjects[int(i)-1] for i in train_test_index_list]
         test_subjects = [subject for subject in subjects if subject not in train_subjects]
+        # base train subjects on the string indices provided
+        #train_subjects = [subject for subject in subjects if train_test_index_list]
+        #test_subjects = [subject for subject in subjects if subject not in train_subjects]
 
     else:  # No further information, sample randomly
         print("--- info: Samling randomly")
@@ -308,7 +311,6 @@ def folderstructure_changer_symbolic(path,
     if datasettype == 'reference':
         
         if train_test_index_list is not None:
-            print("train_test_index_list = ", train_test_index_list)
             for subject in train_subjects:
                 src_lab_path = os.path.join(path, subject, file_pattern.format(subject)) # source label path
                 path_to_save_lab = os.path.join(new_dataset_path, train_ref_dir, file_pattern.format(subject))
@@ -349,7 +351,7 @@ def folderstructure_changer_symbolic(path,
                     subject_dir_list = sorted(os.listdir(os.path.join(path, subject)), key=str.lower)
                     if '.DS_Store' in subject_dir_list:
                         subject_dir_list.remove('.DS_Store')
-                    image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality)
+                    image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality, use_single_label_for_bichannel)
                     
                     # If one of 'T1', 'T2', 'FLAIR', 'T1gd', 'T1xFLAIR' is in the image_name, check whether it is the same as the argument modality and throw an error if they differ. 
                     # If it is not in the image_name, continue with the next subject
@@ -366,13 +368,14 @@ def folderstructure_changer_symbolic(path,
                     # skip if symlink already exists
                     if not os.path.exists(path_to_save_lab):
                         os.symlink(src_lab_path, path_to_save_lab)
+                        print("Train: created symbolic link from %s to %s" % (src_lab_path, path_to_save_lab))
 
                 for subject in val_subjects_fold:
                     # Create list containing all files for that subject
                     subject_dir_list = sorted(os.listdir(os.path.join(path, subject)), key=str.lower)
                     if '.DS_Store' in subject_dir_list:
                         subject_dir_list.remove('.DS_Store')
-                    image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality)
+                    image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality, use_single_label_for_bichannel)
                     
                     # If one of 'T1', 'T2', 'FLAIR', 'T1gd', 'T1xFLAIR' is in the image_name, check whether it is the same as the argument modality and throw an error if they differ. 
                     # If it is not in the image_name, continue with the next subject
@@ -394,7 +397,7 @@ def folderstructure_changer_symbolic(path,
                     subject_dir_list = sorted(os.listdir(os.path.join(path, subject)), key=str.lower)
                     if '.DS_Store' in subject_dir_list:
                         subject_dir_list.remove('.DS_Store')
-                    image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality)
+                    image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality, use_single_label_for_bichannel)
 
                     # If one of 'T1', 'T2', 'FLAIR', 'T1gd', 'T1xFLAIR' is in the image_name, check whether it is the same as the argument modality and throw an error if they differ. 
                     # If it is not in the image_name, continue with the next subject
@@ -412,7 +415,7 @@ def folderstructure_changer_symbolic(path,
                 subject_dir_list = sorted(os.listdir(os.path.join(path, subject)), key=str.lower)
                 if '.DS_Store' in subject_dir_list:
                     subject_dir_list.remove('.DS_Store')
-                image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality)
+                image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality, use_single_label_for_bichannel)
                     
                 # If one of 'T1', 'T2', 'FLAIR', 'T1gd', 'T1xFLAIR' is in the image_name, check whether it is the same as the argument modality and throw an error if they differ. 
                 # If it is not in the image_name, continue with the next subject
@@ -436,7 +439,7 @@ def folderstructure_changer_symbolic(path,
                 subject_dir_list = sorted(os.listdir(os.path.join(path, subject)), key=str.lower)
                 if '.DS_Store' in subject_dir_list:
                     subject_dir_list.remove('.DS_Store')
-                image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality)
+                image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality, use_single_label_for_bichannel)
                     
                 # If one of 'T1', 'T2', 'FLAIR', 'T1gd', 'T1xFLAIR' is in the image_name, check whether it is the same as the argument modality and throw an error if they differ. 
                 # If it is not in the image_name, continue with the next subject
@@ -457,7 +460,7 @@ def folderstructure_changer_symbolic(path,
                 subject_dir_list = sorted(os.listdir(os.path.join(path, subject)), key=str.lower)
                 if '.DS_Store' in subject_dir_list:
                     subject_dir_list.remove('.DS_Store')
-                image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality)
+                image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality, use_single_label_for_bichannel)
                     
                 # If one of 'T1', 'T2', 'FLAIR', 'T1gd', 'T1xFLAIR' is in the image_name, check whether it is the same as the argument modality and throw an error if they differ. 
                 # If it is not in the image_name, continue with the next subject
@@ -474,13 +477,14 @@ def folderstructure_changer_symbolic(path,
                 # skip if symlink already exists
                 if not os.path.exists(path_to_save_lab):
                     os.symlink(src_lab_path, path_to_save_lab)
+                    print("Train: created symbolic link from %s to %s" % (src_lab_path, path_to_save_lab))
 
             for subject in val_subjects:
                 # Create list containing all files for that subject
                 subject_dir_list = sorted(os.listdir(os.path.join(path, subject)), key=str.lower)
                 if '.DS_Store' in subject_dir_list:
                     subject_dir_list.remove('.DS_Store')
-                image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality)
+                image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality, use_single_label_for_bichannel)
                     
                 # If one of 'T1', 'T2', 'FLAIR', 'T1gd', 'T1xFLAIR' is in the image_name, check whether it is the same as the argument modality and throw an error if they differ. 
                 # If it is not in the image_name, continue with the next subject
@@ -496,13 +500,14 @@ def folderstructure_changer_symbolic(path,
                 path_to_save_lab = os.path.join(new_dataset_path, label_val_folder_name, subject + add_id_lab + identifier_lab + fileending)
                 if not os.path.exists(path_to_save_lab):
                     os.symlink(src_lab_path, path_to_save_lab)
+                    print("Validation: created symbolic link from %s to %s" % (src_lab_path, path_to_save_lab))
 
             for subject in test_subjects:
                 # Create list containing all files for that subject
                 subject_dir_list = sorted(os.listdir(os.path.join(path, subject)), key=str.lower)
                 if '.DS_Store' in subject_dir_list:
                     subject_dir_list.remove('.DS_Store')
-                image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality)
+                image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality, use_single_label_for_bichannel)
 
                 # If one of 'T1', 'T2', 'FLAIR', 'T1gd', 'T1xFLAIR' is in the image_name, check whether it is the same as the argument modality and throw an error if they differ. 
                 # If it is not in the image_name, continue with the next subject
@@ -522,9 +527,10 @@ def folderstructure_changer_symbolic(path,
                 subject_dir_list.remove('.DS_Store')
            
             if not test_data_only:
-                image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality)
+                image_name, mask_name = get_image_and_mask_name(subject_dir_list, modality, use_single_label_for_bichannel)
             else:
                 image_name = next((s for s in subject_dir_list if modality in s and 'mask' not in s), None)
+                # TODO: include use_single_label_for_bichannel also for test_data_only 
             print("Image_name = ", image_name, "and mask_name = ", mask_name)
 
             # If one of 'T1', 'T2', 'FLAIR', 'T1gd', 'T1xFLAIR' is in the image_name, check whether it is the same as the argument modality and throw an error if they differ. 
@@ -537,28 +543,33 @@ def folderstructure_changer_symbolic(path,
                 path_to_save_img_train = os.path.join(new_dataset_path, train_folder_name, subject + '_' + add_id_img + identifier + fileending)
                 src_img_path = os.path.join(path, subject, image_name)
                 os.symlink(src_img_path, path_to_save_img_train)
+                print("Train: created symbolic link from %s to %s" % (src_img_path, path_to_save_img_train))
             
                 src_lab_path = os.path.join(path, subject, mask_name)
                 path_to_save_lab = os.path.join(new_dataset_path, label_folder_name, subject + add_id_lab + identifier_lab + fileending)
                 # skip if symlink already exists
                 if not os.path.exists(path_to_save_lab):
                     os.symlink(src_lab_path, path_to_save_lab)
+                    print("Train: created symbolic link from %s to %s" % (src_lab_path, path_to_save_lab))
 
             elif datasettype == 'UMAMBA' and subject in val_subjects:
                 path_to_save_img_val = os.path.join(new_dataset_path, val_folder_name, subject + '_' + add_id_img + identifier + fileending)
                 src_img_path = os.path.join(path, subject, image_name)
                 os.symlink(src_img_path, path_to_save_img_val)
+                print("Validation: created symbolic link from %s to %s" % (src_img_path, path_to_save_img_val))
             
                 src_lab_path = os.path.join(path, subject, mask_name)
                 path_to_save_lab = os.path.join(new_dataset_path, label_val_folder_name, subject + add_id_lab + identifier_lab + fileending)
                 if not os.path.exists(path_to_save_lab):
                     os.symlink(src_lab_path, path_to_save_lab)
+                    print("Validation: created symbolic link from %s to %s" % (src_lab_path, path_to_save_lab))
     
             else:
                 # (just for test subjects)
                 path_to_save_img_test = os.path.join(new_dataset_path, test_folder_name, subject + '_' + add_id_img + identifier + fileending)
                 src_img_path = os.path.join(path, subject, image_name)
                 os.symlink(src_img_path, path_to_save_img_test)
+                print("Test: created symbolic link from %s to %s" % (src_img_path, path_to_save_img_test))
         
                 
 

@@ -363,8 +363,8 @@ def generate_json(args):
             raise ValueError("The number of images and the number of labels is different. Please, check image_Tr and label_Tr folders.")
 
         # List of image and label paths
-        image_paths = [os.path.join(image_dir, filename) for filename in filenames_image]
-        label_paths = [os.path.join(label_dir, filename) for filename in filenames_label]
+        image_paths = [os.path.join(image_dir, filename) for filename in sorted(filenames_image)]
+        label_paths = [os.path.join(label_dir, filename) for filename in sorted(filenames_label)]
         print("len(image_paths)", len(image_paths), "len(label_paths)", len(label_paths))
 
        
@@ -385,8 +385,8 @@ def generate_json(args):
 
             if args.modality == ['T1', 'FLAIR']:
                 json_dict['numTraining'] = len(image_paths)/2
-                image_paths2 = [path.replace('0000', '0001') for path in image_paths]
-                label_paths2 = [path.replace('0000', '0001') for path in label_paths]
+                image_paths2 = [path.replace('0000', '0001') for path in sorted(image_paths)]
+                label_paths2 = [path.replace('0000', '0001') for path in sorted(label_paths)]
                 json_dict['training'] = [{"fold": 0, "image": '%s' %i , "label": '%s' %j, "image2": '%s' %k, "label2": '%s' %l} for i, j, k, l in zip(image_paths, label_paths, image_paths2, label_paths2)]
             else:
                 json_dict['numTraining'] = len(image_paths)
@@ -444,8 +444,8 @@ def generate_json(args):
                 
                 # Format indices to be zero-padded to three digits and add 1 to match the filenames (ESSENTIAL)
                 formatted_indices_tr_val = [
-                    [f"{i+1:03}" for i in indices_tr_val[0]],
-                    [f"{i+1:03}" for i in indices_tr_val[1]]
+                    [f"{i+1:03}" for i in sorted(indices_tr_val[0])],
+                    [f"{i+1:03}" for i in sorted(indices_tr_val[1])]
                     ]
                 
 
@@ -661,7 +661,7 @@ def parse_modality(value):
 
 def setup_argparse():
     parser = argparse.ArgumentParser(description="Configure and initiate training, finetuning, or testing pipeline with unified dataset path.")
-    parser.add_argument("--benchmark_dataroot", type=str, required=False, help="Base path to the benchmark dataset directory")
+    parser.add_argument("--benchmark_dataroot", type=str, required=True, help="Base path to the benchmark dataset directory")
     parser.add_argument("--dataroot", type=str, required=True, help="Base path to the dataset directory")
     parser.add_argument('--datasettype', type=str, default='ASCHOPLEX', required=False, choices=['ASCHOPLEX', 'NNUNETV2', 'UMAMBA'], help='Type of dataset (ASCHOPLEX, NNUNETV2 or UMAMBA)')
     parser.add_argument("--description", required=False, help="Data description")

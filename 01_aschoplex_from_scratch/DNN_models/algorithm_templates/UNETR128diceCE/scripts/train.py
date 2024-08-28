@@ -134,8 +134,10 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
     train_files, val_files = datafold_read(datalist=data_list_file_path, basedir=data_file_base_dir, fold=fold)
  
     # get list of all image paths of the train_files list 
-    str_imgs_train = [os.path.join(data_file_base_dir, item['image']) for item in train_files]
-    str_imgs_val = [os.path.join(data_file_base_dir, item['image']) for item in val_files]
+    #str_imgs_train = [os.path.join(data_file_base_dir, item['image']) for item in train_files]
+    str_imgs_train = [os.path.join(data_file_base_dir, item['image'][0] if isinstance(item['image'], list) else item['image'])for item in train_files if item['image']]
+    str_imgs_val = [os.path.join(data_file_base_dir, item['image'][0] if isinstance(item['image'], list) else item['image']) for item in val_files if item['image']]
+    #str_imgs_val = [os.path.join(data_file_base_dir, item['image']) for item in val_files]
     
     # T1xFLAIR img-seg comparison
     str_ref_seg_tr = get_reference_label_paths(str_imgs_train, data_benchmark_base_dir)

@@ -576,12 +576,11 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         for param in model.parameters():
                             param.grad = None
 
-                        if amp:
+                        if amp:     # Automatic Mixed Precision
                             with autocast():
                                 outputs = model(inputs)
                                 loss = loss_function(outputs.float(), labels)   # loss for the current batch
                                 ref_loss = loss_function(outputs.float(), ref_labels).detach()   # loss for the reference label
-                                print("Current loss: ", loss, "Reference loss: ", ref_loss)
                     
 
                             scaler.scale(loss).backward()
@@ -745,7 +744,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                             hausdorff_value = torch.full((1, metric_dim), float("nan")).to(device)
                             ref_hausdorff_value = torch.full((1, metric_dim), float("nan")).to(device)
                         logger.debug(f"{_index + 1} / {len(val_loader)}/ {val_filename}: {value}, 'reference value': {ref_value}") 
-                        logger.debug(f"{_index + 1} / {len(val_loader)}/ {val_filename}: {hd_value}, 'reference hd value': {ref_hd_value}")
+                        logger.debug(f"{_index + 1} / {len(val_loader)}/ {val_filename}: {hausdorff_value}, 'reference hd value': {ref_hausdorff_value}")
 
                         for _c in range(metric_dim):
                             val0 = torch.nan_to_num(value[0, _c], nan=0.0)

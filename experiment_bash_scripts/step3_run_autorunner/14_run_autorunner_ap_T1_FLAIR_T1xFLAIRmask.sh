@@ -2,9 +2,9 @@
 
 # Define the base directory for the project
 BASE_DIR="/home/linuxlia/Lia_Masterthesis"
-BASE_DIR="/home/studenti/facchi/lia_masterthesis"
+#BASE_DIR="/home/studenti/facchi/lia_masterthesis"
 BASE_DATA_DIR="$BASE_DIR/data"
-BASE_DATA_DIR="/var/datasets/LIA"
+#BASE_DATA_DIR="/var/datasets/LIA"
 datasetname="Dataset011_ChoroidPlexus_T1_FLAIR_T1xFLAIRmask_sym_AP" 
 
 

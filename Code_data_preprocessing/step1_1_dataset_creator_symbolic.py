@@ -176,6 +176,58 @@ def folderstructure_changer_symbolic(path,
         else:
             # If indices are not provided, throw an error
             raise ValueError('Indices for train and test subjects are not provided')
+        
+    elif datasettype == 'T1_reference':
+        folder_name = "reference_labels_T1"
+
+        if output_dir is not None:
+            new_dataset_path = os.path.join(output_dir, folder_name)
+        else:
+            new_dataset_path = os.path.join(path, '..', folder_name)
+
+        if train_test_index_list:
+            # If indices are provided, seperate into training and testing
+            train_ref_dir =  os.path.join(new_dataset_path, "ref_labelTr")
+            test_ref_dir =  os.path.join(new_dataset_path, "ref_labelTs")
+            os.makedirs(train_ref_dir, exist_ok=True)
+            os.makedirs(test_ref_dir, exist_ok=True)
+
+            # Create pattern for the reference label files
+            file_pattern = '{}_ChP_mask_T1_manual_seg.nii'
+
+            print("train_test_index_list = ", train_test_index_list)
+            print("train_dir = ", train_ref_dir)
+            print("test_dir = ", test_ref_dir)
+        else:
+            # If indices are not provided, throw an error
+            raise ValueError('Indices for train and test subjects are not provided')
+        
+    elif datasettype == 'FLAIR_reference':
+        folder_name = "reference_labels_FLAIR"
+
+        if output_dir is not None:
+            new_dataset_path = os.path.join(output_dir, folder_name)
+        else:
+            new_dataset_path = os.path.join(path, '..', folder_name)
+
+        if train_test_index_list:
+            # If indices are provided, seperate into training and testing
+            train_ref_dir =  os.path.join(new_dataset_path, "ref_labelTr")
+            test_ref_dir =  os.path.join(new_dataset_path, "ref_labelTs")
+            os.makedirs(train_ref_dir, exist_ok=True)
+            os.makedirs(test_ref_dir, exist_ok=True)
+
+            # Create pattern for the reference label files
+            file_pattern = '{}_ChP_mask_FLAIR_manual_seg.nii'
+
+            print("train_test_index_list = ", train_test_index_list)
+            print("train_dir = ", train_ref_dir)
+            print("test_dir = ", test_ref_dir)
+        else:
+            # If indices are not provided, throw an error
+            raise ValueError('Indices for train and test subjects are not provided')
+
+
 
     else:
 
@@ -308,7 +360,7 @@ def folderstructure_changer_symbolic(path,
     # ------------------
 
     # Create symbolic links to the images and masks
-    if datasettype == 'reference':
+    if datasettype == 'reference' or datasettype == 'T1_reference' or datasettype == 'FLAIR_reference':
         
         if train_test_index_list is not None:
             for subject in train_subjects:
@@ -584,7 +636,7 @@ if __name__ == '__main__':
     parser.add_argument('--amount_train_subjects', type=int, default=10)
     parser.add_argument('--train_val_split', type=float, default=0.8)
     parser.add_argument('--train_test_index_list', type=str, default=None)
-    parser.add_argument('--datasettype', type=str, default='ASCHOPLEX', choices=['ASCHOPLEX', 'NNUNETV2', 'UMAMBA', 'reference'])
+    parser.add_argument('--datasettype', type=str, default='ASCHOPLEX', choices=['ASCHOPLEX', 'NNUNETV2', 'UMAMBA', 'reference', 'T1_reference', 'FLAIR_reference'])
     parser.add_argument('--modality', type=str, nargs='+', default=['T1'])
     parser.add_argument('--add_id_img', type=str, default='image')
     parser.add_argument('--add_id_lab', type=str, default='seg')

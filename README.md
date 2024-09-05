@@ -147,8 +147,85 @@ nnUNetv2_predict -i INPUT_FOLDER -o OUTPUT_FOLDER -d DATASET_ID -c 3d_fullres -f
 nnUNetv2_predict -i INPUT_FOLDER -o OUTPUT_FOLDER -d DATASET_ID -c 3d_fullres -f all -tr nnUNetTrainerUMambaEnc --disable_tta
 ```
 
+#### nnunetv2 
+# Setting up Paths
+
+nnU-Net relies on environment variables to know where raw data, preprocessed data and trained model weights are stored. 
+To use the full functionality of nnU-Net, the following three environment variables must be set:
+
+1) `nnUNet_raw`: This is where you place the raw datasets. This folder will have one subfolder for each dataset names 
+DatasetXXX_YYY where XXX is a 3-digit identifier (such as 001, 002, 043, 999, ...) and YYY is the (unique) 
+dataset name. The datasets must be in nnU-Net format, see [here](dataset_format.md).
+
+    Example tree structure:
+    ```
+    nnUNet_raw/Dataset001_NAME1
+    ├── dataset.json
+    ├── imagesTr
+    │   ├── ...
+    ├── imagesTs
+    │   ├── ...
+    └── labelsTr
+        ├── ...
+    nnUNet_raw/Dataset002_NAME2
+    ├── dataset.json
+    ├── imagesTr
+    │   ├── ...
+    ├── imagesTs
+    │   ├── ...
+    └── labelsTr
+        ├── ...
+    ```
+
+2) `nnUNet_preprocessed`: This is the folder where the preprocessed data will be saved. The data will also be read from 
+this folder during training. It is important that this folder is located on a drive with low access latency and high 
+throughput (such as a nvme SSD (PCIe gen 3 is sufficient)).
+
+3) `nnUNet_results`: This specifies where nnU-Net will save the model weights. If pretrained models are downloaded, this 
+is where it will save them.
+
+### How to set environment variables
+See [here](set_environment_variables.md).
+
+In our case: 
+# Linux & MacOS
+
+## Permanent
+Locate the `.bashrc` file in your home folder and add the following lines to the bottom:
+
+```bash
+export nnUNet_raw="/home/linuxlia/Lia_Masterthesis/data/Umamba_data/nnUNet_raw"
+export nnUNet_preprocessed="/home/linuxlia/Lia_Masterthesis/data/Umamba_data/nnUNet_preprocessed"
+export nnUNet_results="/home/linuxlia/Lia_Masterthesis/data/Umamba_data/nnUNet_results"
+```
+
+ Furthermore, export the U-Mamba trainers to make them accessible by imports
+ ```bash 
+ export PYTHONPATH=$PYTHONPATH:/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/03_U-Mamba/umamba/nnunetv2
+ ```
+
+and add it to PATH
+```bash 
+export PATH="/home/linuxlia/miniconda3/envs/umamba/bin:$PATH"
+```
 
 
+# Define the path to the Conda environment's bin directory
+CONDA_BIN_PATH=/home/linuxlia/miniconda3/envs/umamba/bin
+
+# Add the directory containing the custom trainer class to PYTHONPATH
+export PYTHONPATH=$PYTHONPATH:/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/03_U-Mamba/umamba/nnunetv2
+
+# Preprocessing
+nnUNetv2_plan_and_preprocess -d 332 --verify_dataset_integrity
+
+# Train 3D models using Mamba block in bottleneck (U-Mamba_Bot)
+#nnUNetv2_train 332 3d_fullres all -tr nnUNetTrainerUMambaBot
+
+# Inference
+#nnUNetv2_predict -i INPUT_FOLDER -o OUTPUT_FOLDER -d 332 -c CONFIGURATION -f all -tr nnUNetTrainerUMambaBot --disable_tta
+
+!! activate umamba AND monai13!!! otherwise it wont work
 
 
  ## SAM 

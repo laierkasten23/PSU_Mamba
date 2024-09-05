@@ -48,7 +48,7 @@ use_pretrain: false
 training:
   # hyper-parameters
   amp: true                                     # automatic mixed precision is used for training -° speed up training, reduce GPU memory usage
-  determ: false
+  determ: true
   early_stopping_fraction: 0.001
   early_stop_mode: false                        # early stopping is not used to make it comparable 
   early_stop_delta: 0
@@ -57,9 +57,9 @@ training:
   learning_rate: 0.0002
   num_images_per_batch: 2
   num_iterations: 1500
-  num_iterations_per_validation: 5
-  num_patches_per_image: 2
-  num_patches_per_iter: 2     # maybe see how this should be set  
+  num_iterations_per_validation: 30
+  num_patches_per_image: 1
+  num_patches_per_iter: 1     # maybe see how this should be set  
   num_sw_batch_size: "$@training#num_patches_per_iter"
   output_classes: null
   n_cases: null

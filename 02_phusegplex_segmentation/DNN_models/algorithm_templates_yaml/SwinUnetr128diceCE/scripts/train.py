@@ -593,8 +593,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                             outputs = model(inputs)
                             loss = loss_function(outputs.float(), labels)
                             ref_loss = loss_function(outputs.float(), ref_labels)
-                            print("Else loss: ", loss)
-
+                            
                             loss.backward()
                             clip_grad_norm_(model.parameters(), 0.5)
                             optimizer.step()
@@ -609,7 +608,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         idx_iter += 1
 
                         if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
-                            print(f"[{str(datetime.now())[:19]}] " + f"{step}/{epoch_len}, train_loss: {loss.item():.4f}, train_loss_ref: {ref_loss.item():.4f}")
                             logger.debug(
                                 f"[{str(datetime.now())[:19]}] " + f"{step}/{epoch_len}, train_loss: {loss.item():.4f}, train_loss_ref: {ref_loss.item():.4f}"
                             )
@@ -628,7 +626,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                 loss_torch_t1xflair = loss_torch_t1xflair.tolist()
             
                 if torch.cuda.device_count() == 1 or dist.get_rank() == 0:
-                    print("trying to compute loss_torch_epoch ")
                     loss_torch_epoch = loss_torch[0] / loss_torch[1]
                     loss_torch_epoch_t1xflair = loss_torch_t1xflair[0] / loss_torch_t1xflair[1]
                     logger.debug(
@@ -848,7 +845,6 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                                 torch.save(model.module.state_dict(), os.path.join(ckpt_path, "best_hd_metric_model.pt"))
                             else:
                                 torch.save(model.state_dict(), os.path.join(ckpt_path, "best_hd_metric_model.pt"))
-                            print("saved new best hausdorff metric model")
                             logger.debug("Saved new best hausdorff metric model")
 
                             dict_file = {}

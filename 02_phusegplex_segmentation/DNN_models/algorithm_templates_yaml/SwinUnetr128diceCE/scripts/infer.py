@@ -43,7 +43,7 @@ class InferClass:
         self.patch_size_valid = parser.get_parsed_content("training#patch_size_valid")
         softmax = parser.get_parsed_content("training#softmax")
 
-        ckpt_name = parser.get_parsed_content("ckpt_path")
+        ckpt_name = parser.get_parsed_content("infer")["ckpt_name"]
         data_list_key = parser.get_parsed_content("infer")["data_list_key"]
         output_path = parser.get_parsed_content("infer")["output_path"]
 

@@ -2,10 +2,10 @@ import nibabel as nib
 import SimpleITK as sitk
 import os
 
-parent_dir = "/home/linuxlia/Lia_Masterthesis/data/Final_coreg_240829"
+parent_dir = "/home/linuxlia/Lia_Masterthesis/data/own_coregistration_240831/022"
 # Load the T1 (fixed) and FLAIR (moving) images using nibabel
-fixed_image = sitk.ReadImage(os.path.join(parent_dir,'022_OK' ,'022_T1.nii'), sitk.sitkFloat32)
-moving_image = sitk.ReadImage(os.path.join(parent_dir,'022_OK' ,'r022_T1xFLAIR.nii'), sitk.sitkFloat32)
+fixed_image = sitk.ReadImage(os.path.join(parent_dir,'022_T1.nii'), sitk.sitkFloat32)
+moving_image = sitk.ReadImage(os.path.join(parent_dir, '022_ChP_mask_T1xFLAIR_manual_seg.nii'), sitk.sitkFloat32)
 
 # Initialize the registration method
 registration_method = sitk.ImageRegistrationMethod()
@@ -58,7 +58,7 @@ resampled_image = sitk.Resample(
 )
 
 # Define full path to save the registered image
-output_path = os.path.join(parent_dir, '022_OK', '022_T1xFLAIR.nii')
+output_path = os.path.join(parent_dir, '022_ChP_mask_T1xFLAIR_manual_seg_new.nii')
 
 # Save the registered (resampled) image
 sitk.WriteImage(resampled_image, output_path)

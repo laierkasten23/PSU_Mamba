@@ -468,7 +468,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             logger.debug("Amp enabled")
 
     # Initialize the best metric and the best metric epoch
-    best_metric = -1; best_hd_metric = -1
+    best_metric = -1; best_hd_metric = 3000
     best_metric_epoch = -1; best_hd_metric_epoch = -1
     idx_iter = 0
     metric_dim = output_classes - 1 if softmax else output_classes

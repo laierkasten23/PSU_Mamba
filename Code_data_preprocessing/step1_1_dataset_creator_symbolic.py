@@ -53,8 +53,7 @@ def folderstructure_changer_symbolic(path,
                             use_single_label_for_bichannel:bool = False, 
                             umamba_fold_json_path:str = None, 
                             skip_validation:bool = False, 
-                            output_dir:str = None, 
-                            compress_data:bool = False):
+                            output_dir:str = None):
     """
     This function changes the folder structure of the datasets
     from the following structure:
@@ -361,7 +360,7 @@ def folderstructure_changer_symbolic(path,
     # ------------------
 
     # Create symbolic links to the images and masks
-    if datasettype == 'reference' or datasettype == 'T1_reference' or datasettype == 'FLAIR_reference':
+    if datasettype == 'reference':
         
         if train_test_index_list is not None:
             for subject in train_subjects:
@@ -646,7 +645,6 @@ if __name__ == '__main__':
     parser.add_argument('--umamba_fold_json_path', type=str, default=None, help='Path to the json file containing the folds for the UMAMBA dataset')
     parser.add_argument('--skip_validation', type=bool, default=False, help='If True, the validation data is not created')
     parser.add_argument('--output_dir', type=str, default=None, help='Path to the output directory')
-    parser.add_argument('--compress_data', type=bool, default=False, help='If True, the data is compressed to .gz format')
     args = parser.parse_args()
 
     print(f"args = {args}")
@@ -667,8 +665,7 @@ if __name__ == '__main__':
                             args.train_val_split, args.train_test_index_list,
                             args.datasettype, mod, args.add_id_img, args.add_id_lab, 
                             args.fileending, args.use_single_label_for_bichannel, 
-                            args.umamba_fold_json_path, args.skip_validation, 
-                            args.output_dir, args.compress_data)
+                            args.umamba_fold_json_path, args.skip_validation, args.output_dir)
 
 
   

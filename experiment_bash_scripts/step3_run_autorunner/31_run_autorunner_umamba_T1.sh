@@ -5,7 +5,8 @@ BASE_DIR="/home/linuxlia/Lia_Masterthesis"
 BASE_DATA_DIR="$BASE_DIR/data/Umamba_data/nnUNet_raw"
 datasetname="Dataset431_ChoroidPlexus_T1_sym_UMAMBA" 
 INPUT_FOLDER="$BASE_DATA_DIR/$datasetname/imagesTs"
-OUTPUT_FOLDER="/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/thesis_experiments/umamba_predictions/working_directory_T1"
+OUTPUT_FOLDER="/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/thesis_experiments/umamba_predictions/working_directory_T1/pred_raw"
+OUTPUT_FOLDER_PP="/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/thesis_experiments/umamba_predictions/working_directory_T1/pred_pp"
 
 # Preprocessing
 nnUNetv2_plan_and_preprocess -d 431 --verify_dataset_integrity
@@ -13,10 +14,23 @@ nnUNetv2_plan_and_preprocess -d 431 --verify_dataset_integrity
 # Train 3D models using Mamba block in bottleneck (U-Mamba_Bot)
 nnUNetv2_train 431 3d_fullres all -tr nnUNetTrainerUMambaBot
 
-nnUNetv2_train 431 3d_fullres 0 -tr nnUNetTrainerUMambaBot
-nnUNetv2_train 431 3d_fullres 1 -tr nnUNetTrainerUMambaBot
-nnUNetv2_train 431 3d_fullres 2 -tr nnUNetTrainerUMambaBot
-nnUNetv2_train 431 3d_fullres 3 -tr nnUNetTrainerUMambaBot
+nnUNetv2_train 431 3d_fullres 0 -tr nnUNetTrainerUMambaBot --npz
+nnUNetv2_train 431 3d_fullres 1 -tr nnUNetTrainerUMambaBot --npz
+nnUNetv2_train 431 3d_fullres 2 -tr nnUNetTrainerUMambaBot --npz
+nnUNetv2_train 431 3d_fullres 3 -tr nnUNetTrainerUMambaBot --npz
+
+nnUNetv2_train 431 3d_fullres 0 -tr nnUNetTrainerUMambaBot --val --npz
+
+nnUNetv2_find_best_configuration 431 -c 3d_fullres -tr nnUNetTrainerUMambaBot -f 0 1 2 3
+
+nnUNetv2_predict -d Dataset431_ChoroidPlexus_T1_sym_UMAMBA -i INPUT_FOLDER -o OUTPUT_FOLDER -f  0 1 2 3 -tr nnUNetTrainerUMambaBot -c 3d_fullres -p nnUNetPlans
+nnUNetv2_predict -d Dataset431_ChoroidPlexus_T1_sym_UMAMBA -i $INPUT_FOLDER -o $OUTPUT_FOLDER -f  0 1 2 3 -tr nnUNetTrainerUMambaBot -c 3d_fullres -p nnUNetPlans
+
+***Once inference is completed, run postprocessing like this:***
+
+nnUNetv2_apply_postprocessing -i $OUTPUT_FOLDER -o $OUTPUT_FOLDER_PP -pp_pkl_file /home/linuxlia/Lia_Masterthesis/data/Umamba_data/nnUNet_results/Dataset431_ChoroidPlexus_T1_sym_UMAMBA/nnUNetTrainerUMambaBot__nnUNetPlans__3d_fullres/crossval_results_folds_0_1_2_3/postprocessing.pkl -np 8 -plans_json /home/linuxlia/Lia_Masterthesis/data/Umamba_data/nnUNet_results/Dataset431_ChoroidPlexus_T1_sym_UMAMBA/nnUNetTrainerUMambaBot__nnUNetPlans__3d_fullres/crossval_results_folds_0_1_2_3/plans.json
+
+
 
 # Inference
 nnUNetv2_predict -i INPUT_FOLDER -o OUTPUT_FOLDER -d 431 -c CONFIGURATION -f all -tr nnUNetTrainerUMambaBot --disable_tta

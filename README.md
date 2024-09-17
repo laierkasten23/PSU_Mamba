@@ -81,11 +81,24 @@ python3 step1_dataset_creator.py --path /home/linuxlia/Lia_Masterthesis/data/paz
 
 ## Aschoplex 
 ### Environment 
+```
+python3 -m venv monai13 --system-site-packages
+```
 
 ## MONAI 
 ### Environment 
  ```
  source envs/monai13/bin/activate
+
+ pip install monai
+ pip install nibabel
+ pip install mlflow
+ pip install testresources
+ pip install wrapt==1.14.1
+ pip install protobuf==3.20.3
+ pip install fire
+ pip install einops==0.8.0
+
  ```
 
 ```
@@ -221,6 +234,15 @@ nnUNetv2_plan_and_preprocess -d 332 --verify_dataset_integrity
 
 # Train 3D models using Mamba block in bottleneck (U-Mamba_Bot)
 #nnUNetv2_train 332 3d_fullres all -tr nnUNetTrainerUMambaBot
+
+IMPORTANT: If you plan to use `nnUNetv2_find_best_configuration` (see below) add the `--npz` flag. This makes 
+nnU-Net save the softmax outputs during the final validation. They are needed for that. Exported softmax
+predictions are very large and therefore can take up a lot of disk space, which is why this is not enabled by default.
+If you ran initially without the `--npz` flag but now require the softmax predictions, simply rerun the validation with:
+```bash
+nnUNetv2_train DATASET_NAME_OR_ID UNET_CONFIGURATION FOLD --val --npz
+```
+
 
 # Inference
 #nnUNetv2_predict -i INPUT_FOLDER -o OUTPUT_FOLDER -d 332 -c CONFIGURATION -f all -tr nnUNetTrainerUMambaBot --disable_tta

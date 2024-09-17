@@ -28,15 +28,8 @@
 #--templates_path_or_url "$BASE_DIR/phuse_thesis_2024/02_phusegplex_segmentation/DNN_models/algorithm_templates_yaml/" 
 
 # print that FLAIR training starts now: 
-echo "FLAIR training starts now"
-nnUNetv2_train 432 3d_fullres 0 -tr nnUNetTrainerUMambaBot
-nnUNetv2_train 432 3d_fullres 1 -tr nnUNetTrainerUMambaBot
-nnUNetv2_train 432 3d_fullres 2 -tr nnUNetTrainerUMambaBot
-nnUNetv2_train 432 3d_fullres 3 -tr nnUNetTrainerUMambaBot
-echo "FLAIR training finished, last fold of T1"
-nnUNetv2_train 431 3d_fullres 3 -tr nnUNetTrainerUMambaBot
-echo "T1 training finished, now T1xFLAIR"
-nnUNetv2_train 433 3d_fullres 0 -tr nnUNetTrainerUMambaBot
-nnUNetv2_train 433 3d_fullres 1 -tr nnUNetTrainerUMambaBot
-nnUNetv2_train 433 3d_fullres 2 -tr nnUNetTrainerUMambaBot
+echo "T1xFLAIR training for 1 starts now"
+
+nnUNetv2_train 433 3d_fullres 1 -tr nnUNetTrainerUMambaBot --c
+nnUNetv2_train 433 3d_fullres 2 -tr nnUNetTrainerUMambaBot --c
 nnUNetv2_train 433 3d_fullres 3 -tr nnUNetTrainerUMambaBot

@@ -31,7 +31,6 @@ loss:
   smooth_dr: 1.0e-06
   smooth_nr: 0
   softmax: $@softmax
-  squared_pred: true
   to_onehot_y: $@softmax
 
 lr_scheduler:

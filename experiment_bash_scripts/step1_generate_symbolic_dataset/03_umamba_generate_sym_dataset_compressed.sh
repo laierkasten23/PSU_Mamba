@@ -51,17 +51,6 @@ python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_cre
 python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_creator_symbolic.py" \
 --path "$path" \
 --task_id 434 \
---task_name 'ChoroidPlexus_T1_FLAIR_sym_UMAMBA' \
---datasettype "$datasettype" \
---output_dir "$output_dir" \
---skip_validation "$skip_validation" \
---train_test_index_list "$train_test_index_list" \
---fileending '.nii.gz' \
---modality 'T1' 'FLAIR'
-    
-python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_creator_symbolic.py" \
---path "$path" \
---task_id 435 \
 --task_name 'ChoroidPlexus_T1_FLAIR_T1xFLAIRmask_sym_UMAMBA' \
 --datasettype "$datasettype" \
 --output_dir "$output_dir" \
@@ -70,6 +59,18 @@ python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_cre
 --fileending '.nii.gz' \
 --modality 'T1' 'FLAIR' \
 --use_single_label_for_bichannel True
+    
+python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_creator_symbolic.py" \
+--path "$path" \
+--task_id 435 \
+--task_name 'ChoroidPlexus_T1_FLAIR_sym_UMAMBA' \
+--datasettype "$datasettype" \
+--output_dir "$output_dir" \
+--skip_validation "$skip_validation" \
+--train_test_index_list "$train_test_index_list" \
+--fileending '.nii.gz' \
+--modality 'T1' 'FLAIR' \
+
     
     
     

@@ -466,14 +466,17 @@ def generate_json(args):
                     [f"{i+1:03}" for i in sorted(indices_tr_val[0])],
                     [f"{i+1:03}" for i in sorted(indices_tr_val[1])]
                     ]
+                print("formatted_indices_tr_val", formatted_indices_tr_val)
                 
 
                 # Split data into training and validation based on the formatted indices
                 train_ids = []; train_ids2 = [] # for second modality
                 for i in sorted(formatted_indices_tr_val[0]):
-                    for path in image_paths:
-                        if f"{i}_" in path:
+                    print("i", i)
+                    for path in sorted(image_paths):
+                        if f"/{i}_" in path:
                             train_ids.append(path)
+                            print("train_id added", path)
                             if args.modality == ['T1', 'FLAIR'] or args.modality == ['FLAIR', 'T1']:
                                 train_ids2.append(path.replace('0000', '0001'))
                             break
@@ -481,7 +484,7 @@ def generate_json(args):
 
                 validation_ids = []; validation_ids2 = []
                 for i in sorted(formatted_indices_tr_val[1]):
-                    for path in image_paths:
+                    for path in sorted(image_paths):
                         if f"{i}_" in path:
                             validation_ids.append(path)
                             if args.modality == ['T1', 'FLAIR'] or args.modality == ['FLAIR', 'T1']:
@@ -490,16 +493,16 @@ def generate_json(args):
 
                 label_train_ids = []; label_train_ids2 = []
                 for i in sorted(formatted_indices_tr_val[0]):
-                    for path in label_paths:
+                    for path in sorted(label_paths):
                         if f"{i}seg" in path:
                             label_train_ids.append(path)
-                            if args.modality == ['T1', 'FLAIR'] and '0004' not in path:
+                            if '0004' not in path and (args.modality == ['T1', 'FLAIR'] or args.modality == ['FLAIR', 'T1']):
                                 label_train_ids2.append(path.replace('0000', '0001'))
                             break
 
                 label_valid_ids = []; label_valid_ids2 = []
                 for i in sorted(formatted_indices_tr_val[1]):
-                    for path in label_paths:
+                    for path in sorted(label_paths):
                         if f"{i}seg" in path:
                                 label_valid_ids.append(path)
                                 if args.modality == ['T1', 'FLAIR'] and '0004' not in path:
@@ -509,7 +512,7 @@ def generate_json(args):
                 json_dict['numTraining'] = len(train_ids)
                 json_dict['numValidation'] = len(validation_ids)
                 # if modality is T1 and FLAIR, add the second modality as list for 'image'. If there are two labels as well add them as list for 'label', else for one label as before
-                if args.modality == ['T1', 'FLAIR'] :
+                if args.modality == ['T1', 'FLAIR'] or args.modality == ['FLAIR', 'T1']:
                     if len(label_train_ids2) != 0 : # two modalities and two labels
                         json_dict['training'] = [{"fold": 0, "image": ['%s' %i, '%s' %j] , "label": ['%s' %k, '%s' %l], "subject_id": '%s' %m} for i, j, k, l, m in zip(train_ids, train_ids2, label_train_ids, label_train_ids2, sorted(formatted_indices_tr_val[0]))]
                         json_dict['validation'] = [{"image": ['%s' %i, '%s' %j], "label": ['%s' %k, '%s' %l]} for i, j, k, l in zip(validation_ids, validation_ids2, label_valid_ids, label_valid_ids2)]
@@ -520,7 +523,7 @@ def generate_json(args):
                     json_dict['training'] = [{"fold": 0, "image": '%s' %i , "label": '%s' %j, "subject_id": '%s' %k} for i, j, k in zip(train_ids, label_train_ids, sorted(formatted_indices_tr_val[0]))]
                     json_dict['validation'] = [{"image": '%s' %i, "label": '%s' %j, "subject_id": '%s' %k} for i,j, k in zip(validation_ids, label_valid_ids, sorted(formatted_indices_tr_val[1]))]
 
-                print("json_dict['training']", json_dict['training'])
+                #print("json_dict['training']", json_dict['training'])
 
                 folds = split_into_folds(indices_tr_val[0], used_groups, args.num_folds, start_one_based_index=True) # split train indices into N folds containing the indices + 1, to correspond to the filenames!!
                 for i, fold in enumerate(folds):

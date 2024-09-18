@@ -383,11 +383,30 @@ def generate_json(args):
         # If UMAMBA, get validation data
         if args.datasettype == 'UMAMBA':
 
-            if args.modality == ['T1', 'FLAIR']:
-                json_dict['numTraining'] = len(image_paths)/2
-                image_paths2 = [path.replace('0000', '0001') for path in sorted(image_paths)]
-                label_paths2 = [path.replace('0000', '0001') for path in sorted(label_paths)]
-                json_dict['training'] = [{"fold": 0, "image": '%s' %i , "label": '%s' %j, "image2": '%s' %k, "label2": '%s' %l} for i, j, k, l in zip(image_paths, label_paths, image_paths2, label_paths2)]
+            if args.modality == ['T1', 'FLAIR'] or args.modality == ['FLAIR', 'T1']:
+                json_dict['numTraining'] = int(len(image_paths)/2)
+
+                # Create dictionaries to map base filenames to paths
+                image_dict_0000 = {os.path.basename(path).rsplit('_', 1)[0]: path for path in sorted(image_paths) if '0000' in path}
+                image_dict_0001 = {os.path.basename(path).rsplit('_', 1)[0]: path for path in sorted(image_paths) if '0001' in path}
+                label_dict = {os.path.basename(path).rsplit('_', 1)[0]: path for path in sorted(label_paths)}
+       
+
+                # Create the training list
+                training_list = []
+
+                for base_filename_tr, base_filename_lab in zip(sorted(image_dict_0000.keys()), sorted(label_dict.keys())):
+                    image_path = image_dict_0000[base_filename_tr]
+                    image_path2 = image_dict_0001[base_filename_tr]
+                    label_path = label_dict[base_filename_lab]
+                    training_list.append({
+                        "fold": 0,
+                        "image": image_path,
+                        "image2": image_path2,
+                        "label": label_path,
+                        "subject": base_filename_tr
+                    })
+                json_dict['training'] = training_list
             else:
                 json_dict['numTraining'] = len(image_paths)
                 json_dict['training'] = [{"fold": 0, "image": '%s' %i , "label": '%s' %j} for i, j in zip(image_paths, label_paths)]
@@ -455,7 +474,7 @@ def generate_json(args):
                     for path in image_paths:
                         if f"{i}_" in path:
                             train_ids.append(path)
-                            if args.modality == ['T1', 'FLAIR']:
+                            if args.modality == ['T1', 'FLAIR'] or args.modality == ['FLAIR', 'T1']:
                                 train_ids2.append(path.replace('0000', '0001'))
                             break
                 
@@ -465,7 +484,7 @@ def generate_json(args):
                     for path in image_paths:
                         if f"{i}_" in path:
                             validation_ids.append(path)
-                            if args.modality == ['T1', 'FLAIR']:
+                            if args.modality == ['T1', 'FLAIR'] or args.modality == ['FLAIR', 'T1']:
                                 validation_ids2.append(path.replace('0000', '0001'))
                             break
 
@@ -614,12 +633,12 @@ def generate_json(args):
                 for path in test_image_paths:
                     if f"{i}_" in path:
                         test_ids.append(path)
-                        if args.modality == ['T1', 'FLAIR']:
+                        if args.modality == ['T1', 'FLAIR'] or args.modality == ['FLAIR', 'T1']:
                             test_ids2.append(path.replace('0000', '0001'))
                         break
             #test_ids = [test_image_paths[i] for i in indices_test[0]]       # TODO: CONTINUE HERE!!!
             json_dict['numTest'] = len(test_ids)
-            if args.modality == ['T1', 'FLAIR']:
+            if args.modality == ['T1', 'FLAIR'] or args.modality == ['FLAIR', 'T1']:
                 json_dict['testing'] = [{"image": ['%s' %i, '%s' %j], "subject_id": '%s' %k} for i, j, k in zip(test_ids, test_ids2, sorted(formatted_indices_test))]
             else:
                 json_dict['testing'] = [{"image": '%s' %i, "subject_id": '%s' %k} for i, k in zip(test_ids, sorted(formatted_indices_test))]
@@ -670,7 +689,7 @@ def setup_argparse():
     parser.add_argument("--include_groups", type=ast.literal_eval, required=False, help="List of groups to include in the experiment")    # TODO: check, maybe  type=str, nargs='+',
     parser.add_argument("--indices", type=ast.literal_eval, required=False, help="List of indices to use for training and validation")    # TODO: check, maybe  type=str, nargs='+',
     parser.add_argument('--json_dir', type=str, default=None, required=False, help='Name of the directory where the json files are stored. If nothing is specified, json will be stored in data folder, otherwise a new folder will be created where it will be created.')
-    parser.add_argument('--modality', type=parse_modality, default='MR', required=False, help='Modality of the dataset', choices=['T1', 'FLAIR', 'T1xFLAIR',  ['T1', 'FLAIR'], 'MR', ['T1'], ['FLAIR'], ['T1xFLAIR']])
+    parser.add_argument('--modality', type=parse_modality, default='MR', required=False, help='Modality of the dataset', choices=['T1', 'FLAIR', 'T1xFLAIR',  ['T1', 'FLAIR'], ['FLAIR', 'T1'], 'MR', ['T1'], ['FLAIR'], ['T1xFLAIR']])
     parser.add_argument("--mode", type=str, required=True, choices=['train', 'finetune', 'test', 'train_predict', 'finetune_predict'], default='train', help="Operation mode")
     parser.add_argument("--num_folds", type=int, required=False, default=5, help="The number of folds to split the training data into. Default is 5.")
     parser.add_argument("--pretrained_model_path", type=str, help="Path to pretrained model")

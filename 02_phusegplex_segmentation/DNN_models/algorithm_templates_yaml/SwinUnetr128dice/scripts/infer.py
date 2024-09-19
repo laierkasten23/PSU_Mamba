@@ -22,6 +22,7 @@ from monai.bundle import ConfigParser
 from monai.bundle.scripts import _pop_args, _update_args
 from monai.data import ThreadDataLoader, decollate_batch, list_data_collate
 from monai.inferers import sliding_window_inference
+from monai.auto3dseg.utils import datafold_read
 
 
 class InferClass:
@@ -58,16 +59,10 @@ class InferClass:
         for item in datalist[data_list_key]:
             list_data.append(item)
 
-        files = []
-        for _i in range(len(list_data)):
-            str_img = os.path.join(data_file_base_dir, 'image_Ts', list_data[_i]["image"])
-
-            if not os.path.exists(str_img):
-                continue
-
-            files.append({"image": str_img})
-
-        self.infer_files = files
+        testing_files, _ = datafold_read(
+            datalist=data_list_file_path, basedir=data_file_base_dir, fold=-1, key=data_list_key
+        )
+        self.infer_files = testing_files
 
         self.infer_loader = None
         if self.fast:

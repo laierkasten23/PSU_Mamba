@@ -125,7 +125,13 @@ python3 Code_data_preprocessing/step1_dataset_creator.py --path /home/linuxlia/L
 linuxlia@CAD-WORKSTATION
 ```
  conda activate umamba
- ```
+```
+
+hpc 
+python3 -m venv {env_name} --system-site-packages
+pip3 install torch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2 --index-url https://download.pytorch.org/whl/cu118 -I
+
+
 
 ### Step 3: Generate Datalist json
 
@@ -220,6 +226,14 @@ export nnUNet_results="/home/linuxlia/Lia_Masterthesis/data/Umamba_data/nnUNet_r
 and add it to PATH
 ```bash 
 export PATH="/home/linuxlia/miniconda3/envs/umamba/bin:$PATH"
+```
+
+```bash 
+export PYTHONPATH=/home/studenti/facchi/lia_masterthesis/phuse_thesis_2024/U-Mamba/umamba/nnunetv2:$PYTHONPATH
+```
+
+```bash 
+export PATH="/home/studenti/facchi/lia_masterthesis/phuse_thesis_2024/U-Mamba/umamba/nnunetv":$PATH"
 ```
 
 

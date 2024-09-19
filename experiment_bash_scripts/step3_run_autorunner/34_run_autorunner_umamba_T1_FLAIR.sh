@@ -11,6 +11,9 @@ nnUNetv2_plan_and_preprocess -d 434 --verify_dataset_integrity
 
 cp /home/linuxlia/Lia_Masterthesis/data/Umamba_data/nnUNet_raw/Dataset434_ChoroidPlexus_T1_FLAIR_T1xFLAIRmask_sym_UMAMBA/splits_final.json /home/linuxlia/Lia_Masterthesis/data/Umamba_data/nnUNet_preprocessed/Dataset434_ChoroidPlexus_T1_FLAIR_T1xFLAIRmask_sym_UMAMBA/splits_final.json
 
+nnUNetv2_plan_and_preprocess -d 434 -c 3d_fullres --verify_dataset_integrity --verbose
+
+
 nnUNetv2_train 434 3d_fullres 0 -tr nnUNetTrainerUMambaBot
 nnUNetv2_train 434 3d_fullres 1 -tr nnUNetTrainerUMambaBot
 #nnUNetv2_train 434 3d_fullres 2 -tr nnUNetTrainerUMambaBot

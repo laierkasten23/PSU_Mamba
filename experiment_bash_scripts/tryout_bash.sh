@@ -27,9 +27,38 @@
 #--algos SwinUnetr128diceCE \
 #--templates_path_or_url "$BASE_DIR/phuse_thesis_2024/02_phusegplex_segmentation/DNN_models/algorithm_templates_yaml/" 
 
-# print that FLAIR training starts now: 
-echo "T1xFLAIR training for 1 starts now"
+#!/bin/bash
+BASE_DIR="/home/linuxlia/Lia_Masterthesis"
+#BASE_DIR="/home/studenti/facchi/lia_masterthesis"
 
-nnUNetv2_train 433 3d_fullres 1 -tr nnUNetTrainerUMambaBot --c
-nnUNetv2_train 433 3d_fullres 2 -tr nnUNetTrainerUMambaBot --c
-nnUNetv2_train 433 3d_fullres 3 -tr nnUNetTrainerUMambaBot
+mode=train_predict
+BASE_DATA_DIR="$BASE_DIR/data"
+#BASE_DATA_DIR="/var/datasets/LIA"
+datasettype=ASCHOPLEX 
+train_val_ratio=1.0
+num_folds=4
+groups='/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' 
+#groups='/var/datasets/LIA/pazienti/patients.json'
+benchmark_dataroot="$BASE_DATA_DIR/reference_labels"
+
+
+python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step2_create_json_nnunetv2.py" \
+--mode $mode \
+--dataroot "$BASE_DATA_DIR/Dataset022_ChoroidPlexus_T1_FLAIR_T1xFLAIRmask_sym_PHU" \
+--datasettype $datasettype \
+--train_val_ratio $train_val_ratio \
+--num_folds $num_folds \
+--groups $groups \
+--benchmark_dataroot "$BASE_DATA_DIR/reference_labels" \
+--json_dir "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/JSON_file_experiments" \
+--modality "['T1', 'FLAIR']" 
+
+
+
+
+
+
+
+
+ 
+

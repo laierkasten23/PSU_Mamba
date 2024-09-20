@@ -32,7 +32,6 @@ __pycache__/
 # Ignore data files (replace with your actual data files and formats)
 ANON*
 Screenshots/
-dataset_*/
 pazienti_*
 data/
 

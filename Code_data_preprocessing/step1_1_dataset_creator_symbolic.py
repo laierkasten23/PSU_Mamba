@@ -179,6 +179,7 @@ def folderstructure_changer_symbolic(path,
         
     elif datasettype == 'T1_reference':
         folder_name = "reference_labels_T1"
+        print("Creating reference labels for T1 images")
 
         if output_dir is not None:
             new_dataset_path = os.path.join(output_dir, folder_name)
@@ -360,7 +361,7 @@ def folderstructure_changer_symbolic(path,
     # ------------------
 
     # Create symbolic links to the images and masks
-    if datasettype == 'reference':
+    if datasettype == 'reference' or datasettype == 'T1_reference' or datasettype == 'FLAIR_reference':
         
         if train_test_index_list is not None:
             for subject in train_subjects:

@@ -11,8 +11,7 @@ from nnunetv2.training.dataloading.utils import get_case_identifiers
 class nnUNetDataset(object):
     def __init__(self, folder: str, case_identifiers: List[str] = None,
                  num_images_properties_loading_threshold: int = 0,
-                 folder_with_segs_from_previous_stage: str = None, 
-                 reference_labels_folder: str = None): # Lia: added for reference labels
+                 folder_with_segs_from_previous_stage: str = None):
         """
         This does not actually load the dataset. It merely creates a dictionary where the keys are training case names and
         the values are dictionaries containing the relevant information for that case.
@@ -42,8 +41,6 @@ class nnUNetDataset(object):
         case_identifiers.sort()
 
         self.dataset = {}
-        self.reference_labels_folder = reference_labels_folder  # Lia added for reference labels
-        
         for c in case_identifiers:
             self.dataset[c] = {}
             self.dataset[c]['data_file'] = join(folder, f"{c}.npz")
@@ -63,7 +60,6 @@ class nnUNetDataset(object):
         ret = {**self.dataset[key]}
         if 'properties' not in ret.keys():
             ret['properties'] = load_pickle(ret['properties_file'])
-        reference_label = None  # Lia added for reference labels
         return ret
 
     def __setitem__(self, key, value):

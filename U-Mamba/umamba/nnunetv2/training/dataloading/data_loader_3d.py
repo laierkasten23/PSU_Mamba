@@ -51,6 +51,7 @@ class nnUNetDataLoader3D(nnUNetDataLoaderBase):
 
 if __name__ == '__main__':
     folder = '/media/fabian/data/nnUNet_preprocessed/Dataset002_Heart/3d_fullres'
-    ds = nnUNetDataset(folder, 0)  # this should not load the properties!
+    folder = '/var/datasets/LIA/Umamba_data/nnUNet_preprocessed/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/nnUNetPlans_3d_fullres'
+    ds = nnUNetDataset(folder)  # this should not load the properties!
     dl = nnUNetDataLoader3D(ds, 5, (16, 16, 16), (16, 16, 16), 0.33, None, None)
     a = next(dl)

@@ -116,7 +116,7 @@ def check_cases(image_files: List[str], label_file: str, expected_num_channels: 
     return ret
 
 
-def verify_dataset_integrity(folder: str, num_processes: int = 6) -> None:
+def verify_dataset_integrity(folder: str, num_processes: int = 8) -> None:
     """
     folder needs the imagesTr, imagesTs and labelsTr subfolders. There also needs to be a dataset.json
     checks if the expected number of training cases and labels are present
@@ -125,10 +125,6 @@ def verify_dataset_integrity(folder: str, num_processes: int = 6) -> None:
     :param folder:
     :return:
     """
-
-    print(f"Number of processes: {num_processes}")
-
-
     assert isfile(join(folder, "dataset.json")), f"There needs to be a dataset.json file in folder, folder={folder}"
     dataset_json = load_json(join(folder, "dataset.json"))
 
@@ -210,7 +206,6 @@ def verify_dataset_integrity(folder: str, num_processes: int = 6) -> None:
             zip([join(folder, 'labelsTr', i) for i in labelfiles], [reader_writer_class] * len(labelfiles),
                 [expected_labels] * len(labelfiles))
         )
-
         if not all(result):
             raise RuntimeError(
                 'Some segmentation images contained unexpected labels. Please check text output above to see which one(s).')

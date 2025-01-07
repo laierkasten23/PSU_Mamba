@@ -1,11 +1,6 @@
 # Activate the Conda environment
 source /home/linuxlia/miniconda3/bin/activate umamba
 
-# Print the Python interpreter being used
-which python
-
-which nibabel
-
 # Print the Python version
 python --version
 

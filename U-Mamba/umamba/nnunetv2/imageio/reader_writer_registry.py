@@ -40,9 +40,7 @@ def determine_reader_writer_from_dataset_json(dataset_json_content: dict, exampl
 
 def determine_reader_writer_from_file_ending(file_ending: str, example_file: str = None, allow_nonmatching_filename: bool = False,
                                              verbose: bool = True):
-
     for rw in LIST_OF_IO_CLASSES:
-        print("rw.supported_file_endings: ", rw.supported_file_endings)
         if file_ending.lower() in rw.supported_file_endings:
             if example_file is not None:
                 # if an example file is provided, try if we can actually read it. If not move on to the next reader
@@ -59,7 +57,6 @@ def determine_reader_writer_from_file_ending(file_ending: str, example_file: str
                 if verbose: print(f'Using {rw} as reader/writer')
                 return rw
         else:
-
             if allow_nonmatching_filename and example_file is not None:
                 try:
                     tmp = rw()
@@ -70,7 +67,6 @@ def determine_reader_writer_from_file_ending(file_ending: str, example_file: str
                     if verbose: print(f'Failed to open file {example_file} with reader {rw}:')
                     if verbose: traceback.print_exc()
                     pass
-    print(f"HEHEHHEHEHEHHE for file ending {file_ending} and file {example_file} (file None means no file provided).")
     raise RuntimeError(f"Unable to determine a reader for file ending {file_ending} and file {example_file} (file None means no file provided).")
 
 

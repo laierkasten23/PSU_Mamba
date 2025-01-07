@@ -142,8 +142,8 @@ class nnUNetTrainer(object):
         self.initial_lr = 1e-2
         self.weight_decay = 3e-5
         self.oversample_foreground_percent = 0.33
-        self.num_iterations_per_epoch = 250
-        self.num_val_iterations_per_epoch = 50
+        self.num_iterations_per_epoch = 25
+        self.num_val_iterations_per_epoch = 25
         self.num_epochs = 300
         self.current_epoch = 0
         self.enable_deep_supervision = True
@@ -180,7 +180,7 @@ class nnUNetTrainer(object):
         # self.configure_rotation_dummyDA_mirroring_and_inital_patch_size and will be saved in checkpoints
 
         ### checkpoint saving stuff
-        self.save_every = 20
+        self.save_every = 50
         self.disable_checkpointing = False
 
         ## DDP batch size and oversampling can differ between workers and needs adaptation
@@ -534,10 +534,10 @@ class nnUNetTrainer(object):
                                     folder_with_segs_from_previous_stage=self.folder_with_segs_from_previous_stage)
             # if the split file does not exist we need to create it
             if not isfile(splits_file):
-                self.print_to_log_file("Creating new 4-fold cross-validation split...") # Changed by Lia 
+                self.print_to_log_file("Creating new 5-fold cross-validation split...")
                 splits = []
                 all_keys_sorted = np.sort(list(dataset.keys()))
-                kfold = KFold(n_splits=4, shuffle=True, random_state=12345) # now only 4 folds
+                kfold = KFold(n_splits=5, shuffle=True, random_state=12345)
                 for i, (train_idx, test_idx) in enumerate(kfold.split(all_keys_sorted)):
                     train_keys = np.array(all_keys_sorted)[train_idx]
                     test_keys = np.array(all_keys_sorted)[test_idx]
@@ -875,7 +875,7 @@ class nnUNetTrainer(object):
         self.network.train()
         self.lr_scheduler.step(self.current_epoch)
         self.print_to_log_file('')
-        self.print_to_log_file(f'Epoch {self.current_epoch} / {self.num_epochs - 1}')
+        self.print_to_log_file(f'Epoch {self.current_epoch}')
         self.print_to_log_file(
             f"Current learning rate: {np.round(self.optimizer.param_groups[0]['lr'], decimals=5)}")
         # lrs are the same for all workers so we don't need to gather them in case of DDP training

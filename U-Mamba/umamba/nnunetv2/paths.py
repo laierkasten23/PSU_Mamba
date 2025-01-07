@@ -42,10 +42,8 @@ data/
 │   ├── ...
 """
 base = join(os.sep.join(__file__.split(os.sep)[:-3]), 'data') 
-
+base = '/var/datasets/LIA/Umamba_data'
 # or you can set your own path, e.g., base = '/home/user_name/Documents/U-Mamba/data'
-base = '/home/linuxlia/Lia_Masterthesis/data/Umamba_data'
-
 nnUNet_raw = join(base, 'nnUNet_raw') # os.environ.get('nnUNet_raw')
 nnUNet_preprocessed = join(base, 'nnUNet_preprocessed') # os.environ.get('nnUNet_preprocessed')
 nnUNet_results = join(base, 'nnUNet_results') # os.environ.get('nnUNet_results')

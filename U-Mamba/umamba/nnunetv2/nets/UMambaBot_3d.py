@@ -40,6 +40,10 @@ class UpsampleLayer(nn.Module):
         return x
 
 class MambaLayer(nn.Module):
+    # TODO 
+    # - check patch size to avoid segmenting ears
+    # - scan paths
+    # - put mamba also in encoding layers
     def __init__(self, dim, d_state = 16, d_conv = 4, expand = 2):
         super().__init__()
         self.dim = dim
@@ -59,11 +63,17 @@ class MambaLayer(nn.Module):
         assert C == self.dim
         n_tokens = x.shape[2:].numel()
         img_dims = x.shape[2:]
+        #print('x.shape mamby layer:', x.shape)
         x_flat = x.reshape(B, C, n_tokens).transpose(-1, -2)
+        # different scan paths
+        
+
+        #print('x_flat.shape:', x_flat.shape)
+        
         x_norm = self.norm(x_flat)
         x_mamba = self.mamba(x_norm)
         out = x_mamba.transpose(-1, -2).reshape(B, C, *img_dims)
-
+        #print('out.shape:', out.shape)
         return out
 
 
@@ -237,10 +247,12 @@ class UNetResEncoder(nn.Module):
         self.kernel_sizes = kernel_sizes
 
     def forward(self, x):
+        #print("UNetResEncoder x.shape:", x.shape)
         if self.stem is not None:
             x = self.stem(x)
         ret = []
         for s in self.stages:
+            #print("UNetResEncoder s(x).shape for stage s", s , s(x).shape)
             x = s(x)
             ret.append(x)
         if self.return_skips:
@@ -435,6 +447,7 @@ class UMambaBot(nn.Module):
         self.decoder = UNetResDecoder(self.encoder, num_classes, n_conv_per_stage_decoder, deep_supervision)
 
     def forward(self, x):
+        # ([2, 1, 160, 128, 112]))
         skips = self.encoder(x)
         skips[-1] = self.mamba_layer(skips[-1])
         return self.decoder(skips)

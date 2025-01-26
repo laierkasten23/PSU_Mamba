@@ -149,6 +149,9 @@ def generate_json(args):
         python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP" --train_val_ratio .5 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' --json_dir "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/JSON_file_experiments" (successful :) ) 
         python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA" --train_val_ratio .5 --num_folds 4 --datasettype "UMAMBA" --modality "['T1']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' --json_dir "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/JSON_file_experiments" (successful :) ) 
         
+        python step2_create_json_nnunetv2.py --mode "test" --dataroot "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex" --work_dir "/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training" --train_val_ratio 0.5 --num_folds 5   
+        
+        
 
     Args:
         dataroot (str): The root directory of the dataset. Default is ".".
@@ -242,6 +245,10 @@ def generate_json(args):
     # If no working directory is given, save json file in the dataroot directory
     if args.work_dir is None:
         args.work_dir = args.dataroot
+        
+    # Convert "None" string to None
+    if args.groups_json_path == "None":
+        args.groups_json_path = None
 
     # Set path to output file
     if args.json_dir is not None:
@@ -319,6 +326,7 @@ def generate_json(args):
     # needed when one of the following modes is selected. Testing is handled separately.
     #------------------------------------------------------------------------------------------
     if args.mode in ['train', 'finetune', 'train_predict', 'finetune_predict']:
+
         print(args.datasettype == 'ASCHOPLEX')
         # Check the folder structure
         if os.path.exists(os.path.join(args.dataroot, 'labels')):
@@ -438,6 +446,7 @@ def generate_json(args):
             # If groups are provided (not None), filter the groups and calculate the group distribution
             ###
            
+            
             if args.groups_json_path:
                 with open(args.groups_json_path, 'r') as f:
                     groups_all = json.load(f)
@@ -576,6 +585,7 @@ def generate_json(args):
     # TESTING is needed when one of the following modes is selected
     #------------------------------------------------------------------------------------------
     if args.mode in ['test', 'train_predict', 'finetune_predict']:
+        print("THIS IS TESTING")
         test_dir_v0 = os.path.join(args.dataroot, 'labels', 'final')
         test_dir_v1 = os.path.join(args.dataroot, 'image_Ts')
         test_dir_v2 = os.path.join(args.dataroot, 'imagesTs')
@@ -607,6 +617,8 @@ def generate_json(args):
                 raise ValueError("Data are not in the correct format. Please, provide images in .nii or .nii.gz Nifti format")
 
         # Implement group logic for test data
+        print("this is arggs.groups_json_path", args.groups_json_path)
+        print("is None", args.groups_json_path is None)
         if args.groups_json_path:
             with open(args.groups_json_path, 'r') as f:
                 groups_all = json.load(f)
@@ -683,12 +695,12 @@ def parse_modality(value):
 
 def setup_argparse():
     parser = argparse.ArgumentParser(description="Configure and initiate training, finetuning, or testing pipeline with unified dataset path.")
-    parser.add_argument("--benchmark_dataroot", type=str, required=True, help="Base path to the benchmark dataset directory")
+    parser.add_argument("--benchmark_dataroot", type=str, required=False, help="Base path to the benchmark dataset directory")
     parser.add_argument("--dataroot", type=str, required=True, help="Base path to the dataset directory")
     parser.add_argument('--datasettype', type=str, default='ASCHOPLEX', required=False, choices=['ASCHOPLEX', 'NNUNETV2', 'UMAMBA'], help='Type of dataset (ASCHOPLEX, NNUNETV2 or UMAMBA)')
     parser.add_argument("--description", required=False, help="Data description")
     parser.add_argument('--fileending', type=str, default='.nii', required=False, help='File ending of the images')
-    parser.add_argument("--groups_json_path", type=str, required=False, default='/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json', help="Path to the groups json file")  # TODO: check
+    parser.add_argument("--groups_json_path", required=False, default='/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json', help="Path to the groups json file")  # TODO: check
     parser.add_argument("--include_groups", type=ast.literal_eval, required=False, help="List of groups to include in the experiment")    # TODO: check, maybe  type=str, nargs='+',
     parser.add_argument("--indices", type=ast.literal_eval, required=False, help="List of indices to use for training and validation")    # TODO: check, maybe  type=str, nargs='+',
     parser.add_argument('--json_dir', type=str, default=None, required=False, help='Name of the directory where the json files are stored. If nothing is specified, json will be stored in data folder, otherwise a new folder will be created where it will be created.')

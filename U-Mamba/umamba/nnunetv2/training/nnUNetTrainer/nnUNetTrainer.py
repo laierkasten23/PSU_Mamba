@@ -884,6 +884,10 @@ class nnUNetTrainer(object):
     def train_step(self, batch: dict) -> dict:
         data = batch['data']
         target = batch['target']
+        
+        # (batch_size, num_channels, x, y, z)
+    
+        
 
         data = data.to(self.device, non_blocking=True)
         if isinstance(target, list):

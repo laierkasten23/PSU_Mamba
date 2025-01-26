@@ -84,6 +84,8 @@ working_dir*/
 bundle_dir_json/   
 algorithm_trained/  
 
+visualization/patch*
+
 */.ipynb_checkpoints/*
 */.vscode/*
 */.idea/*

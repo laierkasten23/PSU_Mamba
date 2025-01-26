@@ -73,6 +73,20 @@ python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_cre
 #--fileending '.nii.gz' \
 #--modality 'T1' 'FLAIR' \
 
+
+######
+python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step1_1_dataset_creator_symbolic.py" \
+--path "$path" \
+--task_id 733 \
+--task_name 'ChoroidPlexus_T1xFLAIR_sym_UMAMBA_preanalysis01' \
+--test_data_only True \
+--datasettype "$datasettype" \
+--output_dir "$output_dir" \
+--skip_validation "$skip_validation" \
+--train_test_index_list "$train_test_index_list" \
+--fileending '.nii.gz' \
+--modality "T1xFLAIR"
+
     
     
     

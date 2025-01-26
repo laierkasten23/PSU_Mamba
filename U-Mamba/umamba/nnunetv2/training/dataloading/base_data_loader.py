@@ -65,9 +65,18 @@ class nnUNetDataLoaderBase(DataLoader):
                  overwrite_class: Union[int, Tuple[int, ...]] = None, verbose: bool = False):
         # in dataloader 2d we need to select the slice prior to this and also modify the class_locations to only have
         # locations for the given slice
-        need_to_pad = self.need_to_pad.copy()
+        '''
+        data_shape: shape of the data. 
+        force_fg: if True, force the patch to contain at least one foreground class.
+        class_locations: dictionary containing the locations of the classes in the data.
+        overwrite_class: if not None, force the patch to contain the specified class.
+        verbose: if True, print some debug information.
+        '''
+        need_to_pad = self.need_to_pad.copy() # copy the need_to_pad array for each dimension
         dim = len(data_shape)
 
+        # This loop iterates over each dimension to ensure that the data shape plus the necessary padding is
+        # at least as large as the patch size. If not, it adjusts the padding accordingly.
         for d in range(dim):
             # if case_all_data.shape + need_to_pad is still < patch size we need to pad more! We pad on both sides
             # always

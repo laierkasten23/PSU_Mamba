@@ -43,7 +43,7 @@ def anonymize_data(path, new_folder_name):
     print('Folder structure created')
 
     # Get the list of all the subjects
-    subjects = os.listdir(path)
+    subjects = sorted(os.listdir(path))
     print(subjects)
 
     # if '.DS_Store', 'flair_coregistration.m' or 'origin_setting.txt' is 'in subjects' remove it
@@ -57,7 +57,7 @@ def anonymize_data(path, new_folder_name):
 
     # Copy the images and labels to the correct folder
     for (i, subject) in enumerate(subjects):
-        print(i, subject)
+        print(f"{i:02d}", subject)
     
     
         # Create the subject folder
@@ -68,13 +68,20 @@ def anonymize_data(path, new_folder_name):
 
         # Copy the images and labels and substitute the names by numbers to anonymize the dataset
 
-        for file in os.listdir(os.path.join(path, subject)):
+        for file in sorted(os.listdir(os.path.join(path, subject))):
             if 'mask' in file and not 'gz' in file:
                 shutil.copy(os.path.join(path, subject, file), os.path.join(subject_folder, 'mask.nii'))
                 print('Copying %s to %s' % (os.path.join(path, subject, file), os.path.join(subject_folder, 'mask.nii')))
             if 'co_FLAIR' in file:
                 shutil.copy(os.path.join(path, subject, file), os.path.join(subject_folder, 'co_FLAIR.nii'))
                 print('Copying %s to %s' % (os.path.join(path, subject, file), os.path.join(subject_folder, 'co_FLAIR.nii')))
+            if 'T1xFLAIR_' in file:
+                shutil.copy(os.path.join(path, subject, file), os.path.join(subject_folder, f'{str(i).zfill(2)}_T1xFLAIR.nii'))
+                print('Copying %s to %s' % (os.path.join(path, subject, file), os.path.join(subject_folder, f'{str(i).zfill(2)}_T1xFLAIR.nii')))
+            if 'coreg_cs_T1W_3D_TFE_mdc_' in file:
+                shutil.copy(os.path.join(path, subject, file), os.path.join(subject_folder, f'{str(i).zfill(2)}_T1_mdc.nii'))
+                print('Copying %s to %s' % (os.path.join(path, subject, file), os.path.join(subject_folder, f'{str(i).zfill(2)}_T1_mdc.nii')))
+
 
 
 
@@ -87,9 +94,9 @@ if __name__ == '__main__':
 
 
 '''
-    python3 anonymize_dataset.py --path '/Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/phuse_thesis_2024/data/pazienti_flair_coreg' --new_folder_name 'ANON_FLAIR_COREG' 
-    python3 anonymize_dataset.py --path '/Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/phuse_thesis_2024/data/processed_data' --new_folder_name 'ANON_FLAIR_COREG_2' 
-
+    python3 step0_anonymize_dataset.py --path '/Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/phuse_thesis_2024/data/pazienti_flair_coreg' --new_folder_name 'ANON_FLAIR_COREG' 
+    python3 step0_anonymize_dataset.py --path '/Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/phuse_thesis_2024/data/processed_data' --new_folder_name 'ANON_FLAIR_COREG_2' 
+    python3 step0_anonymize_dataset.py --path '/var/datasets/LIA/Lia_SM_preanalysis' --new_folder_name 'ANON_Lia_SM_preanalysis'
     /Users/liaschmid/Documents/Uni Heidelberg/7. Semester Thesis/ASCHOPLEX/launching_tool.py
     --path /Users/liaschmid/Documents/Uni Heidelberg/7_Semester_Thesis/ASCHOPLEX/ANON_DATA
     '''

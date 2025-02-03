@@ -105,6 +105,7 @@ class nnUNetTrainer(object):
         # would also pickle the network etc. Bad, bad. Instead we just reinstantiate and then load the checkpoint we
         # need. So let's save the init args
         self.my_init_kwargs = {}
+
         for k in inspect.signature(self.__init__).parameters.keys():
             self.my_init_kwargs[k] = locals()[k]
 
@@ -198,6 +199,21 @@ class nnUNetTrainer(object):
                                also_print_to_console=True, add_timestamp=False)
 
     def initialize(self):
+        """
+        Initializes the trainer by setting up the network, optimizer, learning rate scheduler, and loss function.
+        This method performs the following steps:
+        1. Determines the number of input channels based on the plans manager, configuration manager, and dataset JSON.
+        2. Builds the network architecture and moves it to the specified device.
+        3. Optionally compiles the network for performance optimization if applicable.
+        4. Configures the optimizer and learning rate scheduler.
+        5. If using Distributed Data Parallel (DDP), wraps the network in the DDP wrapper and converts batch normalization layers to synchronized batch normalization.
+        6. Builds the loss function.
+        7. Sets the `was_initialized` flag to True to prevent re-initialization.
+        Raises:
+            RuntimeError: If the trainer has already been initialized.
+        """
+        
+        # determines number of input channels and initializes network, optimizer, lr_scheduler, and loss
         if not self.was_initialized:
             self.num_input_channels = determine_num_input_channels(self.plans_manager, self.configuration_manager,
                                                                    self.dataset_json)
@@ -374,6 +390,20 @@ class nnUNetTrainer(object):
         return loss
 
     def configure_rotation_dummyDA_mirroring_and_inital_patch_size(self):
+        '''
+        Configures the rotation, dummy data augmentation (DA), mirroring, and initial patch size for training.
+
+        This function determines the rotation angles for data augmentation, whether to use dummy 2D data augmentation,
+        the axes for mirroring, and the initial patch size based on the patch size configuration.
+
+        Returns:
+            tuple: A tuple containing:
+                - rotation_for_DA (dict): Dictionary with rotation ranges for 'x', 'y', and 'z' axes.
+                - do_dummy_2d_data_aug (bool): Flag indicating whether to use dummy 2D data augmentation.
+                - initial_patch_size (list): List of initial patch sizes for each dimension.
+                - mirror_axes (tuple): Tuple of axes indices for mirroring.
+        '''
+        # TODO (LIA: ) prpbably overwrite this part or at least extend it
         """
         This function is stupid and certainly one of the weakest spots of this implementation. Not entirely sure how we can fix it.
         """
@@ -576,6 +606,7 @@ class nnUNetTrainer(object):
         return tr_keys, val_keys
 
     def get_tr_and_val_datasets(self):
+        print("IN GET_TR_AND_VAL_DATASETS of nnUNetTrainer")
         # create dataset split
         tr_keys, val_keys = self.do_split()
 
@@ -584,12 +615,26 @@ class nnUNetTrainer(object):
         dataset_tr = nnUNetDataset(self.preprocessed_dataset_folder, tr_keys,
                                    folder_with_segs_from_previous_stage=self.folder_with_segs_from_previous_stage,
                                    num_images_properties_loading_threshold=0)
+        #dataset_tr.dataset['convexHull'] = 
+    
         dataset_val = nnUNetDataset(self.preprocessed_dataset_folder, val_keys,
                                     folder_with_segs_from_previous_stage=self.folder_with_segs_from_previous_stage,
                                     num_images_properties_loading_threshold=0)
         return dataset_tr, dataset_val
 
     def get_dataloaders(self):
+        """
+        Prepares and returns the training and validation data loaders with appropriate transformations and augmentations.
+        This method determines the dimensionality of the data (2D or 3D) based on the patch size and configures the necessary
+        data augmentation and transformation pipelines for both training and validation datasets. It also handles the 
+        creation of multi-threaded or single-threaded data loaders based on the allowed number of processes for data 
+        augmentation.
+        Returns:
+            tuple: A tuple containing:
+                - mt_gen_train: The training data loader with transformations and augmentations applied.
+                - mt_gen_val: The validation data loader with transformations applied.
+        """
+        
         # we use the patch size to determine whether we need 2D or 3D dataloaders. We also use it to determine whether
         # we need to use dummy 2D augmentation (in case of 3D training) and what our initial patch size should be
         patch_size = self.configuration_manager.patch_size
@@ -641,7 +686,8 @@ class nnUNetTrainer(object):
         return mt_gen_train, mt_gen_val
 
     def get_plain_dataloaders(self, initial_patch_size: Tuple[int, ...], dim: int):
-        dataset_tr, dataset_val = self.get_tr_and_val_datasets()
+
+        dataset_tr, dataset_val = self.get_tr_and_val_datasets() # outputs dict every subject ('data_file -> .npz and 'properties_file' -> .pkl)
 
         if dim == 2:
             dl_tr = nnUNetDataLoader2D(dataset_tr, self.batch_size,
@@ -672,6 +718,7 @@ class nnUNetTrainer(object):
         return dl_tr, dl_val
 
     @staticmethod
+    # TODO LIA: maybe also tackle this function for the new trainer class
     def get_training_transforms(
         patch_size: Union[np.ndarray, Tuple[int]],
         rotation_for_DA: dict,
@@ -687,6 +734,8 @@ class nnUNetTrainer(object):
         regions: List[Union[List[int], Tuple[int, ...], int]] = None,
         ignore_label: int = None,
     ) -> AbstractTransform:
+        # todo extract data shape #lia
+        #print("data shape:", self.data_dict['data'].shape)
         tr_transforms = []
         if do_dummy_2d_data_aug:
             ignore_axes = (0,)
@@ -765,7 +814,7 @@ class nnUNetTrainer(object):
         tr_transforms = Compose(tr_transforms)
         return tr_transforms
 
-    @staticmethod
+    @staticmethod # TODO LIA: maybe also tackle this function for the new trainer class
     def get_validation_transforms(
         deep_supervision_scales: Union[List, Tuple, None],
         is_cascaded: bool = False,
@@ -829,8 +878,10 @@ class nnUNetTrainer(object):
 
         # dataloaders must be instantiated here because they need access to the training data which may not be present
         # when doing inference
-        self.dataloader_train, self.dataloader_val = self.get_dataloaders()
-
+        # TODO LIA: maybe change this part for the new trainer class
+        print("BEFORE GETTING DATALOADERS in nnUNetTrainer")
+        self.dataloader_train, self.dataloader_val = self.get_dataloaders() # ! here our overwritten method is taken
+        print("AFTER GETTING DATALOADERS (nnUNetTrainer)")
         # copy plans and dataset.json so that they can be used for restoring everything we need for inference
         save_json(self.plans_manager.plans, join(self.output_folder_base, 'plans.json'), sort_keys=False)
         save_json(self.dataset_json, join(self.output_folder_base, 'dataset.json'), sort_keys=False)
@@ -884,6 +935,8 @@ class nnUNetTrainer(object):
     def train_step(self, batch: dict) -> dict:
         data = batch['data']
         target = batch['target']
+        
+        #print("in train_step: data TYPE", type(data), "target TYPER", type(target))
         
         # (batch_size, num_channels, x, y, z)
     
@@ -1252,14 +1305,18 @@ class nnUNetTrainer(object):
 
     def run_training(self):
         self.on_train_start()
-
+        # first step done. until now, no transformations done (LIA)
         for epoch in range(self.current_epoch, self.num_epochs):
             self.on_epoch_start()
+            # this part was just logging
 
             self.on_train_epoch_start()
+            # this part was just logging
             train_outputs = []
             for batch_id in range(self.num_iterations_per_epoch):
-                train_outputs.append(self.train_step(next(self.dataloader_train)))
+                train_outputs.append(self.train_step(next(self.dataloader_train))) # [{'loss': array(0.68527895, dtype=float32)}]
+                #print("train_outputs: ", train_outputs)
+             
             self.on_train_epoch_end(train_outputs)
 
             with torch.no_grad():

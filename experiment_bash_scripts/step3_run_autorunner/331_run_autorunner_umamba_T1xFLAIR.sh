@@ -4,14 +4,16 @@
 BASE_DATA_DIR="/var/datasets/LIA/Umamba_data/nnUNet_raw"
 datasetname="Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA" 
 INPUT_FOLDER="$BASE_DATA_DIR/$datasetname/imagesTs"
-OUTPUT_FOLDER="/home/studenti/lia/lia_masterthesis/phuse_thesis_2024/thesis_experiments/umamba_predictions/working_directory_T1xFLAIR/pred_raw/nnUNetPlans_Enc"
-OUTPUT_FOLDER_PP="/home/studenti/lia/lia_masterthesis/phuse_thesis_2024/thesis_experiments/umamba_predictions/working_directory_T1xFLAIR/pred_pp/nnUNetPlans_Enc"
+OUTPUT_FOLDER="/home/studenti/lia/lia_masterthesis/phuse_thesis_2024/thesis_experiments/umamba_predictions/working_directory_T1xFLAIR/pred_raw/nnUNetPlans_Aug"
+OUTPUT_FOLDER_PP="/home/studenti/lia/lia_masterthesis/phuse_thesis_2024/thesis_experiments/umamba_predictions/working_directory_T1xFLAIR/pred_pp/nnUNetPlans_Aug"
 # Preprocessing
 nnUNetv2_plan_and_preprocess -d 433 -c 3d_fullres -overwrite_plans_name nnUNetPlans_enc --verify_dataset_integrity
 nnUNetv2_plan_and_preprocess -d 433 -c 3d_fullres -overwrite_plans_name nnUNetPlans_enc_z_scan --verify_dataset_integrity
 nnUNetv2_plan_and_preprocess -d 433 -c 3d_fullres -overwrite_plans_name nnUNetPlans_enc_y_scan --verify_dataset_integrity
 nnUNetv2_plan_and_preprocess -d 433 -c 3d_fullres -overwrite_plans_name nnUNetPlans_wo_Mamba --verify_dataset_integrity
-
+nnUNetv2_plan_and_preprocess -d 433 -c 3d_fullres -overwrite_plans_name nnUNetPlans_Aug --verify_dataset_integrity
+nnUNetv2_plan_and_preprocess -d 433 -c 3d_fullres -overwrite_plans_name nnUNetPlans_test --verify_dataset_integrity
+nnUNetv2_plan_and_preprocess -d 433 -c 3d_fullres -overwrite_plans_name nnUNetPlans_convtest --verify_dataset_integrity
 
 nnUNetv2_plan_experiment -d 433 -c 3d_fullres
 
@@ -22,7 +24,11 @@ nnUNetv2_train 433 3d_fullres 0 -tr nnUNetTrainerUMambaBot -p nnUNetPlans_test -
 nnUNetv2_train 433 3d_fullres 1 -tr nnUNetTrainerUMambaBot -p nnUNetPlans_64 --npz
 nnUNetv2_train 433 3d_fullres 2 -tr nnUNetTrainerUMambaBot -p nnUNetPlans_64 --npz
 nnUNetv2_train 433 3d_fullres 3 -tr nnUNetTrainerUMambaBot -p nnUNetPlans_64 --npz
+nnUNetv2_train 433 3d_fullres 1 -tr nnUNetTrainerUMambaBot -p nnUNetPlans_test --npz
 
+nnUNetv2_train 433 3d_fullres 0 -tr nnUNetTrainerDA5 -p nnUNetPlans_test 
+nnUNetv2_train 433 3d_fullres 3 -tr nnUNetTrainerConvexHull -p nnUNetPlans_convtest 
+nnUNetv2_train 433 3d_fullres 3 -tr nnUNetTrainerConvexHullUMambaBot -p nnUNetPlans_convtest 
 # wo Mamba 
 
 nnUNetv2_train 433 3d_fullres 0 -tr nnUNetTrainer -p nnUNetPlans_wo_Mamba --npz
@@ -31,7 +37,7 @@ nnUNetv2_train 433 3d_fullres 0 -tr nnUNetTrainer -p nnUNetPlans_wo_Mamba --npz
 
 ## Enc: 
 nnUNetv2_train 433 3d_fullres 0 -tr nnUNetTrainerUMambaEnc -p nnUNetPlans_enc --npz
-nnUNetv2_train 433 3d_fullres 0 -tr nnUNetTrainerUMambaEnc -p nnUNetPlans_enc_z_scan --npz --c
+nnUNetv2_train 433 3d_fullres 3 -tr nnUNetTrainerUMambaEnc -p nnUNetPlans_enc_z_scan --npz 
 nnUNetv2_train 433 3d_fullres 0 -tr nnUNetTrainerUMambaEnc -p nnUNetPlans_enc_y_scan --npz
 
 #nnUNetv2_train 332 3d_fullres all -tr nnUNetTrainerUMambaBot

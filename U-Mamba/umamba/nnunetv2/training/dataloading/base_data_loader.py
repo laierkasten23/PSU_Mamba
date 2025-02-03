@@ -53,12 +53,15 @@ class nnUNetDataLoaderBase(DataLoader):
         return np.random.uniform() < self.oversample_foreground_percent
 
     def determine_shapes(self):
+        print("Here the shapes are determined: nnUNetDataLoaderBase(Dataloader)")
+        print("self in determine_shapes", self)
         # load one case
         data, seg, properties = self._data.load_case(self.indices[0])
         num_color_channels = data.shape[0]
 
         data_shape = (self.batch_size, num_color_channels, *self.patch_size)
         seg_shape = (self.batch_size, seg.shape[0], *self.patch_size)
+        print("data_shape", data_shape, "seg_shape", seg_shape) # TODO LIA
         return data_shape, seg_shape
 
     def get_bbox(self, data_shape: np.ndarray, force_fg: bool, class_locations: Union[dict, None],

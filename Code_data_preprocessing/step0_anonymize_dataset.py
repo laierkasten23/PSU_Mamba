@@ -3,6 +3,16 @@ import os
 import random
 import shutil
 import sys
+import nibabel as nib
+
+def convert_nii_to_niigz(input_filepath, output_filepath):
+    try:
+        img = nib.load(input_filepath)
+        nib.save(img, output_filepath)
+        print(f"Converted {input_filepath} to {output_filepath}")
+    except Exception as e:
+        print(f"Error converting {input_filepath} to {output_filepath}: {e}")
+
 
 def anonymize_data(path, new_folder_name):
     """
@@ -69,6 +79,7 @@ def anonymize_data(path, new_folder_name):
         # Copy the images and labels and substitute the names by numbers to anonymize the dataset
 
         for file in sorted(os.listdir(os.path.join(path, subject))):
+            '''
             if 'mask' in file and not 'gz' in file:
                 shutil.copy(os.path.join(path, subject, file), os.path.join(subject_folder, 'mask.nii'))
                 print('Copying %s to %s' % (os.path.join(path, subject, file), os.path.join(subject_folder, 'mask.nii')))
@@ -81,6 +92,13 @@ def anonymize_data(path, new_folder_name):
             if 'coreg_cs_T1W_3D_TFE_mdc_' in file:
                 shutil.copy(os.path.join(path, subject, file), os.path.join(subject_folder, f'{str(i).zfill(2)}_T1_mdc.nii'))
                 print('Copying %s to %s' % (os.path.join(path, subject, file), os.path.join(subject_folder, f'{str(i).zfill(2)}_T1_mdc.nii')))
+            '''
+            if 'T1xFLAIR' in file:
+                shutil.copy(os.path.join(path, subject, file), os.path.join(subject_folder, f'{str(i).zfill(2)}_ChP_seg_T1xFLAIR.nii'))
+                print('Copying %s to %s' % (os.path.join(path, subject, file), os.path.join(subject_folder, f'{str(i).zfill(2)}_ChP_seg_T1xFLAIR.nii')))
+            if 'T1mdc' in file:
+                shutil.copy(os.path.join(path, subject, file), os.path.join(subject_folder, f'{str(i).zfill(2)}_ChP_seg_T1mdc.nii'))
+                print('Copying %s to %s' % (os.path.join(path, subject, file), os.path.join(subject_folder, f'{str(i).zfill(2)}_ChP_seg_T1mdc.nii')))
 
 
 
@@ -99,4 +117,7 @@ if __name__ == '__main__':
     python3 step0_anonymize_dataset.py --path '/var/datasets/LIA/Lia_SM_preanalysis' --new_folder_name 'ANON_Lia_SM_preanalysis'
     /Users/liaschmid/Documents/Uni Heidelberg/7. Semester Thesis/ASCHOPLEX/launching_tool.py
     --path /Users/liaschmid/Documents/Uni Heidelberg/7_Semester_Thesis/ASCHOPLEX/ANON_DATA
+    python3 step0_anonymize_dataset.py --path '/var/datasets/LIA/Lia_SM_preanalysis' --new_folder_name 'ANON_Lia_SM_preanalysis'
+    python3 step0_anonymize_dataset.py --path '/var/datasets/LIA/MICCAI_preanalysis_data/processed_data_Dem' --new_folder_name 'ANON_DEM_preanalysis'
+    
     '''

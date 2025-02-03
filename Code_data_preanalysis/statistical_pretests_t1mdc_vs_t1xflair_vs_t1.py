@@ -123,7 +123,12 @@ def process_subjects(subjects_dir, file_ending1 = '_ChP_mask_T1_mdc.nii', file_e
     return dsc_scores, jaccard_scores, kappa_scores, hausdorff_scores, volumes_t1c, volumes_flair
 
 argparser = argparse.ArgumentParser(description="Compute statistical measures for T1c and T1xFLAIR masks.")
-argparser.add_argument("subjects_dir", type=str, help="Path to the directory containing the subject data.")
+argparser.add_argument("--subjects_dir", required=True, type=str, help="Path to the directory containing the subject data.")
+argparser.add_argument("--file_ending1", type=str, default='_ChP_mask_T1_mdc.nii', help="File ending for the T1mdc masks.")
+argparser.add_argument("--file_ending2", type=str, default='_ChP_mask_T1xFLAIR.nii', help="File ending for the T1xFLAIR masks.")
+argparser.add_argument("--output_dir", type=str, default='.', help="Path to the output directory.")
+argparser.add_argument("--output_file", type=str, default='statistical_measures.csv', help="Name of the output file.")
+argparser.add_argument("--save_results", action="store_true", help="Save the results to a CSV file.")
 args = argparser.parse_args()
 
 # Main
@@ -132,10 +137,12 @@ if __name__ == "__main__":
 
     # Define the path to the directory containing the subject data
     print("T1mc vs T1xFLAIR")
-    subjects_dir = '/home/linuxlia/Lia_Masterthesis/data/T1mc_vs_T1xFLAIR_controlled_OK'
+    #subjects_dir = '/home/linuxlia/Lia_Masterthesis/data/T1mc_vs_T1xFLAIR_controlled_OK'
+    # Parse the arguments
+    args = argparser.parse_args()
 
     # Process the subjects and compute statistical measures
-    dsc_scores, jaccard_scores, kappa_scores, hausdorff_scores, volumes_t1mc, volumes_t1xflair = process_subjects(subjects_dir)
+    dsc_scores, jaccard_scores, kappa_scores, hausdorff_scores, volumes_t1mc, volumes_t1xflair = process_subjects(args.subjects_dir, args.file_ending1, args.file_ending2) 
 
     # Perform statistical tests
     # Wilcoxon signed-rank test
@@ -149,3 +156,28 @@ if __name__ == "__main__":
 
     print("\nPaired t-test result:")
     print(f"Volumes T1c vs T1xFLAIR: statistic={ttest_volumes.statistic}, p-value={ttest_volumes.pvalue}")
+    
+    if args.save_results:
+        import pandas as pd
+        
+        # Create a DataFrame with the results
+        results = pd.DataFrame({
+            "DSC": dsc_scores,
+            "Jaccard": jaccard_scores,
+            "Kappa": kappa_scores,
+            "Hausdorff": hausdorff_scores,
+            "Volume_T1mc": volumes_t1mc,
+            "Volume_T1xFLAIR": volumes_t1xflair
+        })
+        
+        # Save the results to a CSV file
+        results.to_csv(os.path.join(args.output_dir, args.output_file), index=False)
+        print(f"Results saved to {os.path.join(args.output_dir, args.output_file)}")
+        
+        
+        '''
+        Example:
+        python statistical_pretests_t1mdc_vs_t1xflair_vs_t1.py --subjects_dir /var/datasets/LIA/MICCAI_preanalysis_data/ANON_DEM_preanalysis --file_ending1 _ChP_seg_T1mdc.nii --file_ending2 _ChP_seg_T1xFLAIR.nii --output_dir /var/datasets/LIA/MICCAI_preanalysis_data/ --output_file MICCAI_preanalysis_Dem.csv --save_results
+        '''
+        
+        

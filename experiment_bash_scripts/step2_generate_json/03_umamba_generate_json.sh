@@ -2,6 +2,7 @@
 
 # Define the base directory for the project
 BASE_DIR="/home/linuxlia/Lia_Masterthesis"
+BASE_DIR="/home/studenti/lia/lia_masterthesis"
 
 mode=train_predict
 BASE_DATA_DIR="$BASE_DIR/data/Umamba_data/nnUNet_raw"

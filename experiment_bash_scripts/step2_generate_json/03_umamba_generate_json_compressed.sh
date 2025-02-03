@@ -15,7 +15,7 @@ benchmark_dataroot="/var/datasets/LIA/reference_labels"
 # groups='/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' 
 # groups='/var/datasets/LIA/pazienti/patients.json'
 groups='/mnt/turing/LIA/pazienti/patients.json'
-
+groups='/mnt/LIA/pazienti/patients.json'
 
 
 

@@ -277,7 +277,7 @@ class nnUNetTrainerDA5(nnUNetTrainer):
             tr_transforms.append(MoveSegAsOneHotToData(1, use_labels, 'seg', 'data'))
             tr_transforms.append(ApplyRandomBinaryOperatorTransform(
                 channel_idx=list(range(-len(use_labels), 0)),
-                p_per_sample=0.4,
+                p_per_sample=0.4, 
                 key="data",
                 strel_size=(1, 8),
                 p_per_label=1))

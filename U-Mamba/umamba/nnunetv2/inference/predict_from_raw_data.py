@@ -189,6 +189,7 @@ class nnUNetPredictor(object):
         return list_of_lists_or_source_folder, output_filename_truncated, seg_from_prev_stage_files
 
     def predict_from_files(self,
+                        
                            list_of_lists_or_source_folder: Union[str, List[List[str]]],
                            output_folder_or_list_of_truncated_output_files: Union[str, None, List[str]],
                            save_probabilities: bool = False,
@@ -201,6 +202,25 @@ class nnUNetPredictor(object):
         """
         This is nnU-Net's default function for making predictions. It works best for batch predictions
         (predicting many images at once).
+
+        Args:
+            list_of_lists_or_source_folder (Union[str, List[List[str]]]): Either a folder containing the source files or a 
+                list of lists where each sublist contains file paths to the raw data.
+            output_folder_or_list_of_truncated_output_files (Union[str, None, List[str]]): Either the output folder where 
+                predictions will be saved or a list of truncated output file paths.
+            save_probabilities (bool, optional): If True, the function will save the predicted probabilities. Defaults to False.
+            overwrite (bool, optional): If True, existing files in the output folder will be overwritten. Defaults to True.
+            num_processes_preprocessing (int, optional): Number of processes to use for preprocessing. Defaults to 
+                default_num_processes.
+            num_processes_segmentation_export (int, optional): Number of processes to use for exporting segmentation results. 
+                Defaults to default_num_processes.
+            folder_with_segs_from_prev_stage (str, optional): Folder containing segmentations from a previous stage, if 
+                applicable. Defaults to None.
+            num_parts (int, optional): Number of parts to split the prediction task into. Defaults to 1.
+            part_id (int, optional): ID of the part to process. Defaults to 0.
+
+        Returns:
+            None
         """
         if isinstance(output_folder_or_list_of_truncated_output_files, str):
             output_folder = output_folder_or_list_of_truncated_output_files
@@ -253,7 +273,7 @@ class nnUNetPredictor(object):
                                                             input_list_of_lists: List[List[str]],
                                                             seg_from_prev_stage_files: Union[List[str], None],
                                                             output_filenames_truncated: Union[List[str], None],
-                                                            num_processes: int):
+                                                            num_processes: int):    
         return preprocessing_iterator_fromfiles(input_list_of_lists, seg_from_prev_stage_files,
                                                 output_filenames_truncated, self.plans_manager, self.dataset_json,
                                                 self.configuration_manager, num_processes, self.device.type == 'cuda',
@@ -330,12 +350,32 @@ class nnUNetPredictor(object):
         return self.predict_from_data_iterator(iterator, save_probabilities, num_processes_segmentation_export)
 
     def predict_from_data_iterator(self,
+                                
                                    data_iterator,
                                    save_probabilities: bool = False,
                                    num_processes_segmentation_export: int = default_num_processes):
         """
         each element returned by data_iterator must be a dict with 'data', 'ofile' and 'data_properties' keys!
         If 'ofile' is None, the result will be returned instead of written to a file
+        
+        Predicts from a data iterator and optionally saves the probabilities.
+
+        Args:
+            data_iterator (iterable): An iterator that yields dictionaries with keys 'data', 'ofile', and 'data_properties'.
+                - 'data' (str or numpy array): The data to predict on. If a string, it is assumed to be a file path to a numpy array.
+                - 'ofile' (str or None): The output file path where the prediction will be saved. If None, the result is returned.
+                - 'data_properties' (dict): Properties of the data required for prediction.
+            save_probabilities (bool, optional): If True, saves the probabilities of the predictions. Defaults to False.
+            num_processes_segmentation_export (int, optional): Number of processes to use for segmentation export. Defaults to default_num_processes.
+
+        Returns:
+            list: A list of results from the predictions. If 'ofile' is None, the results are returned directly.
+
+        Notes:
+            - This function uses multiprocessing to handle the export of predictions in the background.
+            - It ensures that the GPU does not predict too fast to avoid overwhelming the disk with npy files.
+            - If the data_iterator is an instance of MultiThreadedAugmenter, it will be properly finished after predictions.
+            - Clears the LRU cache and device cache after predictions.
         """
         with multiprocessing.get_context("spawn").Pool(num_processes_segmentation_export) as export_pool:
             worker_list = [i for i in export_pool._pool]

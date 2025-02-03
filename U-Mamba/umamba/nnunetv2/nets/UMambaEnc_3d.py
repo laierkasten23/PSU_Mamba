@@ -319,7 +319,7 @@ class ResidualMambaEncoder(nn.Module):
         # print(f"x.shape before: {x.shape}")
         #x = x.permute(0, 1, -1, -2, -3) # ! WITHOUT IT x IS (240,240,180)=(z,y,x) -> for geometrical bias we want (180,240,240)=(x,y,z)
         # print(f"x.shape after: {x.shape}")
-        # exit()
+
         if self.stem is not None:
             x = self.stem(x)
         ret = []

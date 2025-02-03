@@ -10,6 +10,8 @@ class nnUNetDataLoader3D(nnUNetDataLoaderBase):
         selected_keys = self.get_indices()
         # preallocate memory for data and seg
         data_all = np.zeros(self.data_shape, dtype=np.float32)
+
+        
         seg_all = np.zeros(self.seg_shape, dtype=np.int16)
         case_properties = []
 
@@ -24,7 +26,7 @@ class nnUNetDataLoader3D(nnUNetDataLoaderBase):
             # If we are doing the cascade then the segmentation from the previous stage will already have been loaded by
             # self._data.load_case(i) (see nnUNetDataset.load_case)
             shape = data.shape[1:]
-            #print('Shape:', shape) #Lia
+            # print('SHAPE (generate_train_batch -> here it is still correct):', shape) # ! HERE DATA IS OKAY; WTF IS THE DATA SHAPE ABOVE?????
             
             # Added by Lia to show if images are consistent. Shape is (z,y,x)
             # plt.imshow(data[0,100,:,:])
@@ -46,13 +48,16 @@ class nnUNetDataLoader3D(nnUNetDataLoaderBase):
             # remove label -1 in the data augmentation but this way it is less error prone)
             this_slice = tuple([slice(0, data.shape[0])] + [slice(i, j) for i, j in zip(valid_bbox_lbs, valid_bbox_ubs)])
             data = data[this_slice]
-
+            #print("data shape after cropping", data.shape)
+            #print("GO TO HELL, nnUNetDataLoader3D generate_train_batch")
+            
             this_slice = tuple([slice(0, seg.shape[0])] + [slice(i, j) for i, j in zip(valid_bbox_lbs, valid_bbox_ubs)])
             seg = seg[this_slice]
             
             # shape here is still 3 dim
             
 
+            # ! THIS IS DONE BEFORE DATA AUGMENTATION WHICH MEANS THAT OUR CONVEX HULL CALCULATION NEEDS TO BE DONE HERE!
             padding = [(-min(0, bbox_lbs[i]), max(bbox_ubs[i] - shape[i], 0)) for i in range(dim)]
             # Here the cropped and padded patch id added to the data_all and seg_all arrays (LIA) 
             data_all[j] = np.pad(data, ((0, 0), *padding), 'constant', constant_values=0)

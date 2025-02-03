@@ -28,9 +28,18 @@
 #  --json_path /home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP/dataset_train_val_pred.json  \
 #  --templates_path_or_url /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/01_aschoplex_from_scratch/DNN_models/algorithm_templates/ \
 #  --algos UNETR128diceCE  
+#nnUNetv2_train 433 3d_fullres 0 -tr nnUNetTrainerConvexHull -p nnUNetPlans_convtest --val --npz
+nnUNetv2_train 433 3d_fullres 1 -tr nnUNetTrainerConvexHull -p nnUNetPlans_convtest --val --npz
+nnUNetv2_train 433 3d_fullres 2 -tr nnUNetTrainerConvexHull -p nnUNetPlans_convtest --val --npz
+nnUNetv2_train 433 3d_fullres 3 -tr nnUNetTrainerConvexHull -p nnUNetPlans_convtest --val --npz
 
-nnUNetv2_train 433 3d_fullres 1 -tr nnUNetTrainer -p nnUNetPlans_wo_Mamba --npz --c
-nnUNetv2_train 433 3d_fullres 2 -tr nnUNetTrainer -p nnUNetPlans_wo_Mamba --npz
-nnUNetv2_train 433 3d_fullres 3 -tr nnUNetTrainer -p nnUNetPlans_wo_Mamba --npz
 
-nnUNetv2_train 433 3d_fullres 3 -tr nnUNetTrainerUMambaEnc -p nnUNetPlans_enc_z_scan --npz --c
+
+nnUNetv2_train 433 3d_fullres 1 -tr nnUNetTrainerConvexHullUMambaBot -p nnUNetPlans_convtest --val --npz
+nnUNetv2_train 433 3d_fullres 2 -tr nnUNetTrainerConvexHullUMambaBot -p nnUNetPlans_convtest --val --npz
+nnUNetv2_train 433 3d_fullres 3 -tr nnUNetTrainerConvexHullUMambaBot -p nnUNetPlans_convtest --val --npz
+
+nnUNetv2_train 433 3d_fullres 0 -tr nnUNetTrainerConvexHullUMambaEnc -p nnUNetPlans_convtest --val --npz
+nnUNetv2_train 433 3d_fullres 1 -tr nnUNetTrainerConvexHullUMambaEnc -p nnUNetPlans_convtest --val --npz
+nnUNetv2_train 433 3d_fullres 2 -tr nnUNetTrainerConvexHullUMambaEnc -p nnUNetPlans_convtest --val --npz
+nnUNetv2_train 433 3d_fullres 3 -tr nnUNetTrainerConvexHullUMambaEnc -p nnUNetPlans_convtest --val --npz

@@ -10,6 +10,7 @@ datasettype=UMAMBA
 #path="$BASE_DIR/data/pazienti"
 path="/var/datasets/LIA/pazienti"
 path="/mnt/turing/LIA/pazienti"
+path="/mnt/LIA/pazienti"
 #output_dir="$BASE_DIR/data/Umamba_data/nnUNet_raw/"
 output_dir="/var/datasets/LIA/Umamba_data/nnUNet_raw/"
 skip_validation=True

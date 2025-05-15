@@ -72,6 +72,8 @@ class MambaLayer(nn.Module):
     '''
     
     # * IT USES THIS METHOD TO FORWARD THE INPUT
+    # ! original version
+    '''
     def forward_patch_token(self, x):
         B, d_model = x.shape[:2] # d_model is 1 initially
         assert d_model == self.dim
@@ -92,8 +94,73 @@ class MambaLayer(nn.Module):
         # * out IS STILL 3D TENSOR
 
         return out
+    ''' 
+    
+    def forward_patch_token(self, x):
+        # ! for diagonal scan path in yx plane!
+        #print("ENTERING IN FORWARD UMambaEnc!!")
+        B, d_model = x.shape[:2]  # d_model is 1 initially
+        assert d_model == self.dim
+        img_dims = x.shape[2:]  # img_dims = (Z, Y, X) = (240, 240, 180)
+
+        # ** Step 1: Permute to prioritize X over (Y, Z) **
+        x = x.permute(0, 1, 4, 3, 2)  # Now (B, d_model, X, Y, Z)
+
+        # ** Step 2: Apply diagonal scan order in (Y, Z) for each X **
+        X, Y, Z = img_dims[2], img_dims[1], img_dims[0]  # Extract dimensions
+
+        # Create sorting indices for diagonal traversal in (Y, Z)
+        z_coords, y_coords = torch.meshgrid(
+            torch.arange(Z, device=x.device), torch.arange(Y, device=x.device), indexing='ij'
+        )
+        diag_order = torch.argsort((z_coords + y_coords).flatten())  # Sort by diagonal sum
+
+        # Reshape and apply diagonal ordering within each X slice
+        x_flat = x.reshape(B, d_model, X, Y * Z)  # Flatten (Y, Z)
+        x_flat = x_flat[:, :, :, diag_order]  # Apply diagonal scan order
+
+        # ** Step 3: Flatten and process with Mamba **
+        x_flat = x_flat.reshape(B, d_model, X * Y * Z).transpose(-1, -2)  # Final flattening
+        x_norm = self.norm(x_flat)
+        x_mamba = self.mamba(x_norm)
+
+        # ** Step 4: Restore original image dimensions and ordering **
+        out = x_mamba.transpose(-1, -2).reshape(B, d_model, X, Y, Z)  # Reshape back
+        out = out.permute(0, 1, 4, 3, 2)  # Convert back to (B, d_model, Z, Y, X)
+
+        return out
+
+    '''
+    def forward_channel_token(self, x):
+        # ! for diagonal scan path in yx plane! 
+        #print("forward_channel_token- UMamba Enc")
+        B, n_tokens = x.shape[:2]
+        d_model = x.shape[2:].numel()
+        assert d_model == self.dim, f"d_model: {d_model}, self.dim: {self.dim}"
+        img_dims = x.shape[2:]
+
+        # ** Apply diagonal scan before flattening **
+        X, Y, Z = img_dims[2], img_dims[1], img_dims[0]  # Extract dimensions
+        z_coords, y_coords = torch.meshgrid(
+            torch.arange(Z, device=x.device), torch.arange(Y, device=x.device), indexing='ij'
+        )
+        diag_order = torch.argsort((z_coords + y_coords).flatten())  # Sort by diagonal sum
+
+        x_flat = x.reshape(B, n_tokens, X, Y * Z)  # Flatten (Y, Z)
+        x_flat = x_flat[:, :, :, diag_order]  # Apply diagonal scan order
+        x_flat = x_flat.reshape(B, n_tokens, d_model)  # Final flattening
+
+        assert x_flat.shape[2] == d_model, f"x_flat.shape[2]: {x_flat.shape[2]}, d_model: {d_model}"
+        
+        x_norm = self.norm(x_flat)
+        x_mamba = self.mamba(x_norm)
+        out = x_mamba.reshape(B, n_tokens, *img_dims)
+
+        return out
 
     # * It USES THIS METHOD IN THE BOTTLENECK!
+    # ! original version
+    '''
     def forward_channel_token(self, x):
         B, n_tokens = x.shape[:2]
         d_model = x.shape[2:].numel()
@@ -106,7 +173,8 @@ class MambaLayer(nn.Module):
         out = x_mamba.reshape(B, n_tokens, *img_dims)
 
         return out
-
+     
+    
     @autocast(enabled=False)
     def forward(self, x):
         if x.dtype == torch.float16 or x.dtype == torch.bfloat16:

@@ -55,13 +55,14 @@ class MambaLayer(nn.Module):
                 expand=expand,    # Block expansion factor
         )
     
+    ''' # ! Original Version
     @autocast(enabled=False)
     def forward(self, x):
         if x.dtype == torch.float16:
             x = x.type(torch.float32)
         B, C = x.shape[:2]
         assert C == self.dim
-        n_tokens = x.shape[2:].numel()
+        n_tokens = x.shape[2:].numel() # total number of voxels in the 3D image (i.e., Z × Y × X)
         img_dims = x.shape[2:]
         #print('x.shape mamby layer:', x.shape)
         x_flat = x.reshape(B, C, n_tokens).transpose(-1, -2)
@@ -74,6 +75,45 @@ class MambaLayer(nn.Module):
         x_mamba = self.mamba(x_norm)
         out = x_mamba.transpose(-1, -2).reshape(B, C, *img_dims)
         #print('out.shape:', out.shape)
+        return out
+    '''
+    
+    # ! Version for diagonal scan path in yz direction
+    @autocast(enabled=False)
+    def forward(self, x):
+        print("HEEEEEEEEEEEEEELLLLLLLLLLLOOOOOOOOOOO")
+        print("yz diagonal scan path")
+        if x.dtype == torch.float16:
+            x = x.type(torch.float32)
+        B, C = x.shape[:2]
+        assert C == self.dim
+        # n_tokens = x.shape[2:].numel() # as no 1D flattening anymore. 
+        img_dims = x.shape[2:]
+        # ** Step 1: Permute to prioritize X over (Y, Z) **
+        x = x.permute(0, 1, 4, 3, 2)  # Now (B, C, X, Y, Z)
+
+        # ** Step 2: Apply diagonal scan order in (Y, Z) **
+        X, Y, Z = img_dims[2], img_dims[1], img_dims[0]  # Extract dimensions
+
+        # Create sorting indices for diagonal traversal in (Y, Z)
+        z_coords, y_coords = torch.meshgrid(
+            torch.arange(Z, device=x.device), torch.arange(Y, device=x.device), indexing='ij'
+        )
+        diag_order = torch.argsort(z_coords + y_coords, dim=None)  # Sort by diagonal sum
+
+        # Reshape and apply diagonal ordering within each X slice
+        x_flat = x.reshape(B, C, X, Y * Z)  # Flatten (Y, Z)
+        x_flat = x_flat[:, :, :, diag_order]  # Apply diagonal scan order
+
+        # ** Step 3: Flatten and process with Mamba **
+        x_flat = x_flat.reshape(B, C, X * Y * Z).transpose(-1, -2)  # Final flattening
+        x_norm = self.norm(x_flat)
+        x_mamba = self.mamba(x_norm)
+
+        # ** Step 4: Restore original image dimensions and ordering **
+        out = x_mamba.transpose(-1, -2).reshape(B, C, X, Y, Z)  # Reshape back
+        out = out.permute(0, 1, 4, 3, 2)  # Convert back to (B, C, Z, Y, X)
+
         return out
 
 
@@ -447,6 +487,7 @@ class UMambaBot(nn.Module):
         self.decoder = UNetResDecoder(self.encoder, num_classes, n_conv_per_stage_decoder, deep_supervision)
 
     def forward(self, x):
+        print("IN U-Mamba Bot now")
         # ([2, 1, 160, 128, 112]))
         skips = self.encoder(x)
         skips[-1] = self.mamba_layer(skips[-1])

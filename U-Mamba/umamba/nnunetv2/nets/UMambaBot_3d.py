@@ -58,18 +58,42 @@ class MambaLayer(nn.Module):
     ''' # ! Original Version
     @autocast(enabled=False)
     def forward(self, x):
+        xy_scan = True 
+        x_scan = False
+        y_scan = False
+        z_scan = False
+        
         if x.dtype == torch.float16:
             x = x.type(torch.float32)
         B, C = x.shape[:2]
         assert C == self.dim
         n_tokens = x.shape[2:].numel() # total number of voxels in the 3D image (i.e., Z × Y × X)
         img_dims = x.shape[2:]
-        #print('x.shape mamby layer:', x.shape)
-        x_flat = x.reshape(B, C, n_tokens).transpose(-1, -2)
-        # different scan paths
         
-
-        #print('x_flat.shape:', x_flat.shape)
+        if x_scan:
+            x_flat = x.reshape(B, C, n_tokens).transpose(-1, -2)           
+            x_norm = self.norm(x_flat)
+            x_mamba = self.mamba(x_norm)
+            out = x_mamba.transpose(-1, -2).reshape(B, C, *img_dims)
+            return out
+    
+        if y_scan:
+            x = x.permute(0, 1, 2, -1, -2) # ! permute to y direction from (z, y, x) to (z, x, y)
+            x_flat = x.reshape(B, C, n_tokens).transpose(-1, -2)
+            x_norm = self.norm(x_flat)
+            x_mamba = self.mamba(x_norm)
+            out = x_mamba.transpose(-1, -2).reshape(B, C, *img_dims)
+            out = out.permute(0, 1, 2, -1, -2)
+            return out
+        
+        if z_scan:
+            x = x.permute(0, 1, 4, 3, 2) # ! permute to z direction from (B, C, z, y, x) to (B, C, x, y, z)
+            x_flat = x.reshape(B, C, n_tokens).transpose(-1, -2)
+            x_norm = self.norm(x_flat)
+            x_mamba = self.mamba(x_norm)
+            out = x_mamba.transpose(-1, -2).reshape(B, C, *img_dims)
+            out = out.permute(0, 1, 4, 3, 2)
+            return out
         
         x_norm = self.norm(x_flat)
         x_mamba = self.mamba(x_norm)

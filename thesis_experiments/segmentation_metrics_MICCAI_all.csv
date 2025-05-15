@@ -1,0 +1,12 @@
+Model,Mean Dice,Mean HD,Precision,Recall,F1 Score,Best Dice,Worst Dice,Best HD,Worst HD
+nnUNetTrainer_T1xFLAIR,0.8647,1.1676,0.8514,0.8868,0.8684,091.nii,055.nii,004.nii,035.nii
+nnUNetTrainerConvexHull_T1xFLAIR,0.8737,1.1476,0.87,0.8837,0.8768,091.nii,055.nii,004.nii,035.nii
+nnUNetTrainerConvexHullUMambaBot_T1xFLAIR,0.8741,1.2123,0.8749,0.8804,0.8776,091.nii,008.nii,004.nii,016.nii
+nnUNetTrainerConvexHullUMambaBot_64_yx_diag_inf_T1xFLAIR,0.8789,1.1497,0.8791,0.8781,0.8786,091.nii,055.nii,004.nii,035.nii
+nnUNetTrainerConvexHullUMambaBot_conv_Bot_64_z_T1xFLAIR,0.8803,1.1461,0.8829,0.8768,0.8798,091.nii,055.nii,004.nii,035.nii
+nnUNetTrainerConvexHullUMambaEnc_64_yx_diag_inf_T1xFLAIR,0.8772,1.1739,0.8852,0.8756,0.8804,091.nii,055.nii,004.nii,035.nii
+nnUNetTrainerConvexHullUMambaEnc_lex_T1xFLAIR,0.8704,1.3082,0.8852,0.875,0.88,091.nii,008.nii,005.nii,016.nii
+nnUNetTrainerUMambaBot_64_lex_T1xFLAIR,0.8708,1.1975,0.8849,0.8741,0.8795,091.nii,055.nii,005.nii,035.nii
+nnUNetTrainerUMambaBot_lex_T1xFLAIR,0.8759,1.2246,0.8861,0.8729,0.8794,091.nii,055.nii,004.nii,016.nii
+nnUNetTrainerUMambaEnc_64_yx_diag_inf_T1xFLAIR,0.8772,1.1739,0.8871,0.8721,0.8795,091.nii,055.nii,004.nii,035.nii
+nnUNetTrainerUMambaEnc_lex_T1xFLAIR,0.8633,1.8196,0.8878,0.8708,0.8792,091.nii,055.nii,005.nii,016.nii

@@ -75,23 +75,47 @@ class MambaLayer(nn.Module):
     # ! original version
     '''
     def forward_patch_token(self, x):
+        xy_scan = False
+        x_scan = False
+        y_scan = True
+        z_scan = False
+        
         B, d_model = x.shape[:2] # d_model is 1 initially
         assert d_model == self.dim
         n_tokens = x.shape[2:].numel() # n_tokens is 240*240*180
         img_dims = x.shape[2:] # img_dims (240, 240, 180)
-        # * reshape starts from z to flatten the image, BUT we want to change scan paths
-        #x = x.permute(0, 1, -1, -2, -3) # ! WITHOUT IT x IS (240,240,180)=(z,y,x) -> for geometrical bias we want (180,240,240)=(x,y,z)
-        x = x.permute(0, 1, 2, -1, -2) # ! permute to y direction
-        x_flat = x.reshape(B, d_model, n_tokens).transpose(-1, -2) # (B, 1, 180*240*240 (if permuted)) -> (B, 180*240*240 if permuted, 1)
-        x_norm = self.norm(x_flat)
-        x_mamba = self.mamba(x_norm)
-        #img_dims = img_dims[::-1] # (180, 240, 240) # ! ADDED
-        img_dims = [img_dims[0], img_dims[2], img_dims[1]]
-        out = x_mamba.transpose(-1, -2).reshape(B, d_model, *img_dims)
-        #out = out.permute(0, 1, -1, -2, -3) # ! ADDED
-        out = out.permute(0, 1, 2, -1, -2)# ! ADDED for y direction 
         
-        # * out IS STILL 3D TENSOR
+        if x_scan: 
+            x_flat = x.reshape(B, d_model, n_tokens).transpose(-1, -2) # (B, 1, 240*240*180) -> (B, 240*240*180, 1)
+            x_norm = self.norm(x_flat)
+            x_mamba = self.mamba(x_norm)
+            out = x_mamba.transpose(-1, -2).reshape(B, d_model, *img_dims)
+            
+        if y_scan: 
+            # * reshape starts from z to flatten the image, BUT we want to change scan paths
+            x = x.permute(0, 1, 2, -1, -2) # ! permute to y direction from (z, y, x) to (z, x, y)
+            x_flat = x.reshape(B, d_model, n_tokens).transpose(-1, -2) # (B, 1, 180*240*240 (if permuted)) -> (B, 180*240*240 if permuted, 1)
+            x_norm = self.norm(x_flat)
+            x_mamba = self.mamba(x_norm)
+            img_dims = [img_dims[0], img_dims[2], img_dims[1]]
+            out = x_mamba.transpose(-1, -2).reshape(B, d_model, *img_dims)
+            out = out.permute(0, 1, 2, -1, -2)# ! ADDED for y direction 
+            return out
+        
+        if z_scan: 
+            # * reshape starts from z to flatten the image, BUT we want to change scan paths
+        240,240,180)=(z,y,x) -> for geometrical bias we want (180,240,240)=(x,y,z)
+            x_flat = x.reshape(B, d_model, n_tokens).transpose(-1, -2) # (B, 1, 180*240*240 (if permuted)) -> (B, 180*240*240 if permuted, 1)
+            x_norm = self.norm(x_flat)
+            x_mamba = self.mamba(x_norm)
+            img_dims = img_dims[::-1] # (180, 240, 240) # ! ADDED
+            out = x_mamba.transpose(-1, -2).reshape(B, d_model, *img_dims)
+            out = out.permute(0, 1, -1, -2, -3) # ! ADDED
+            return out
+        
+        if xy_scan:
+            # ** Step 1: Permute to prioritize X over (Y, Z) **
+            x = x.permute(0, 1, 4, 3, 2)  # Now (B, d_model, X, Y, Z)
 
         return out
     ''' 

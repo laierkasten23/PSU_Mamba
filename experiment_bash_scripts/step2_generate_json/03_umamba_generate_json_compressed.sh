@@ -63,3 +63,11 @@ python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step2_create_json_n
 #--benchmark_dataroot "$BASE_DATA_DIR/reference_labels" \
 #--groups $groups \
 #--modality "['T1', 'FLAIR']" 
+
+
+python3 "$BASE_DIR/phuse_thesis_2024/Code_data_preprocessing/step2_create_json_nnunetv2.py" \
+--mode $mode \
+--dataroot "$BASE_DATA_DIR/Dataset994_Dir_z" \
+--datasettype $datasettype \
+--fileending $fileending \
+--modality "['T1xFLAIR']" 

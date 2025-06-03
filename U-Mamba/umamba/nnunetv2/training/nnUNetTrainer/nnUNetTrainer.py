@@ -936,11 +936,50 @@ class nnUNetTrainer(object):
         data = batch['data']
         target = batch['target']
         
-        #print("in train_step: data TYPE", type(data), "target TYPER", type(target))
-        
+        #! added to debug (lia)
+        #("in train_step: data TYPE", type(data), "target TYPER", type(target))
         # (batch_size, num_channels, x, y, z)
-    
-        
+        # Print shapes once at the beginning of training
+        plot_inspection = False
+        if plot_inspection:
+            if self.current_epoch == 0 and not hasattr(self, "_inspected_batch"):
+                self._inspected_batch = True
+                print("Data shape:", data.shape)
+                if isinstance(target, list):
+                    print("Target is a list. Shapes per level:", [t.shape for t in target])
+                    target_for_plot = target[0].cpu().numpy()
+                else:
+                    print("Target shape:", target.shape)
+                    target_for_plot = target.cpu().numpy()
+
+                img = data[0].cpu().numpy()[0]  # assume single channel
+                seg = target_for_plot[0]  # First item of batch
+
+                import matplotlib.pyplot as plt
+                import matplotlib
+                matplotlib.use('Agg')  # Use non-interactive backend
+
+                # path to save the images
+                inspection_path = "/home/studenti/lia/lia_masterthesis/phuse_thesis_2024/PRL/path_analysis_results/inspection/"
+                os.makedirs(inspection_path, exist_ok=True)
+                
+                mid_x = img.shape[0] // 2
+                mid_y = img.shape[1] // 2
+                mid_z = img.shape[2] // 2
+
+                def overlay_plot(im_slice, mask_slice, title, filename):
+                    plt.figure(figsize=(5, 5))
+                    plt.imshow(im_slice, cmap='gray')
+                    plt.imshow(mask_slice, alpha=0.5, cmap='jet')
+                    plt.axis('off')
+                    plt.title(title)
+                    plt.savefig(filename)
+                    plt.close()
+
+                overlay_plot(img[mid_x, :, :], seg[0, mid_x, :, :], "Mid-X Slice", inspection_path + "xy.png")
+                overlay_plot(img[:, mid_y, :], seg[0, :, mid_y, :], "Mid-Y Slice", inspection_path + "xz.png")
+                overlay_plot(img[:, :, mid_z], seg[0, :, :, mid_z], "Mid-Z Slice", inspection_path + "yz.png")
+                # end if plot # TODO: remove this later (lia)
 
         data = data.to(self.device, non_blocking=True)
         if isinstance(target, list):
@@ -954,7 +993,13 @@ class nnUNetTrainer(object):
         # If the device_type is 'mps' then it will complain that mps is not implemented, even if enabled=False is set. Whyyyyyyy. (this is why we don't make use of enabled=False)
         # So autocast will only be active if we have a cuda device.
         with autocast(self.device.type, enabled=True) if self.device.type == 'cuda' else dummy_context():
-            output = self.network(data)
+            #output = self.network(data)
+            # ! changed for pca
+            if 'mask' in inspect.signature(self.network.forward).parameters:
+                output = self.network(data, mask=target)
+            else:
+                output = self.network(data)
+            #! changed until here
             # del data
             l = self.loss(output, target)
 
@@ -981,6 +1026,8 @@ class nnUNetTrainer(object):
             loss_here = np.mean(outputs['loss'])
 
         self.logger.log('train_losses', loss_here, self.current_epoch)
+        
+
 
     def on_validation_epoch_start(self):
         self.network.eval()

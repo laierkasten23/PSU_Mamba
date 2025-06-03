@@ -58,7 +58,7 @@ def perform_bayesian_analysis(scores_t1xflair, scores_t1mdc):
     prob_t1xflair = baycomp.two_on_single(scores_t1xflair, np.ones(len(scores_t1xflair)), rope=rope_t1xflair, plot=True, names=names_t1xflair)
     prob_t1mdc = baycomp.two_on_single(scores_t1mdc, np.ones(len(scores_t1mdc)), rope=rope_t1mdc, plot=True, names=names_t1mdc)
     prob_t1xflair_vs_t1mdc = baycomp.two_on_single(scores_t1xflair, scores_t1mdc, rope=rope_t1mdc, plot=True, names=names_t1xflair_vs_t1mdc)
-
+    
     # Results
     print(f"T1xFLAIR vs T1-CE Probability within ROPE: {prob_t1xflair}")
     print(f"T1mdc vs T1-CE Probability within ROPE: {prob_t1mdc}")

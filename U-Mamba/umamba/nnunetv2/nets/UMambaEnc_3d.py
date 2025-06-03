@@ -660,7 +660,7 @@ def get_umamba_enc_3d_from_plans(
         'n_conv_per_stage': configuration_manager.n_conv_per_stage_encoder,
         'n_conv_per_stage_decoder': configuration_manager.n_conv_per_stage_decoder
     }
-
+    # Initialize the model
     model = network_class(
         input_channels=num_input_channels,
         n_stages=num_stages,

@@ -272,6 +272,8 @@ def folderstructure_changer_symbolic(path,
             identifier = '0003'
         elif modality == 'T1xFLAIR':
             identifier = '0004'
+        elif modality == 'dummy':
+            identifier = '0004'
         else:
             raise ValueError('Modality not supported')
         
@@ -387,6 +389,31 @@ def folderstructure_changer_symbolic(path,
     # randomly subsample also validation subjects or use the given list of folds for train and validation # TODO: include and generate the lists
     elif datasettype == 'UMAMBA':
 
+        ### ! Added for dummy dataset
+        if modality == 'dummy':
+            print("UMAMBA dummy mode: using synthetic filenames with _vol_ and _seg_")
+            for subject in subjects:
+                subj_dir = os.path.join(path, subject)
+                subject_files = sorted(os.listdir(subj_dir))
+                # Find the vol and seg files for this subject
+                vol_file = next((f for f in subject_files if f.startswith(subject) and '_vol_' in f), None)
+                seg_file = next((f for f in subject_files if f.startswith(subject) and '_seg_' in f), None)
+                if vol_file is None or seg_file is None:
+                    print(f"Warning: Could not find vol or seg file for subject {subject} in {subj_dir}")
+                    continue
+                # Always use 0004 as identifier
+                identifier = '0004'
+                # Create symlinks for imagesTr and labelsTr
+                path_to_save_img = os.path.join(new_dataset_path, 'imagesTr', f"{subject}_{identifier}.nii.gz")
+                path_to_save_lab = os.path.join(new_dataset_path, 'labelsTr', f"{subject}.nii.gz")
+                src_img_path = os.path.join(subj_dir, vol_file)
+                src_lab_path = os.path.join(subj_dir, seg_file)
+                os.symlink(src_img_path, path_to_save_img)
+                os.symlink(src_lab_path, path_to_save_lab)
+                print(f"Dummy: created symbolic link from {src_img_path} to {path_to_save_img}")
+                print(f"Dummy: created symbolic link from {src_lab_path} to {path_to_save_lab}")
+            return
+        ###
         if umamba_fold_json_path is not None:
         
             for idx, (train_subjects_fold, val_subjects_fold) in enumerate(zip(train_subject_all_folds, val_subject_all_folds)):
@@ -504,6 +531,8 @@ def folderstructure_changer_symbolic(path,
                 os.symlink(src_img_path, path_to_save_img_test)
                 print("Test: created symbolic link from %s to %s" % (src_img_path, path_to_save_img_test))
 
+        
+        
         else: # subjsample val_subjects from train_subjects
             val_subjects = random.sample(train_subjects, int((1-train_val_split)*len(train_subjects)))
             train_subjects = [subject for subject in train_subjects if subject not in val_subjects]

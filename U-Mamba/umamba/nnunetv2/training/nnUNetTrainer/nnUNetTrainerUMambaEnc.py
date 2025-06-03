@@ -11,6 +11,16 @@ class nnUNetTrainerUMambaEnc(nnUNetTrainer):
                                    configuration_manager: ConfigurationManager,
                                    num_input_channels,
                                    enable_deep_supervision: bool = True) -> nn.Module:
+        """
+        factory method responsible for constructing the appropriate UMambaEnc neural network architecture based on 
+        the dimensionality of the input data.
+        :param plans_manager: PlansManager object containing the training plans
+        :param dataset_json: JSON file containing dataset information
+        :param configuration_manager: ConfigurationManager object containing the training configuration
+        :param num_input_channels: Number of input channels for the model
+        :param enable_deep_supervision: Boolean flag to enable deep supervision
+        :return: The constructed UMambaEnc neural network model
+        """
 
         if len(configuration_manager.patch_size) == 2:
             model = get_umamba_enc_2d_from_plans(plans_manager, dataset_json, configuration_manager,

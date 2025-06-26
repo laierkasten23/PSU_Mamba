@@ -20,7 +20,7 @@ from dynamic_network_architectures.building_blocks.helper import maybe_convert_s
 from torch.cuda.amp import autocast
 from dynamic_network_architectures.building_blocks.residual import BasicBlockD
 
-def flatten_for_scan(x, scan_type='x'):
+def flatten_for_scan(x, scan_type='yz-diag'):
     B, C, D, H, W = x.shape
     if scan_type == 'x':
         print("Flattening for x scan")
@@ -30,17 +30,20 @@ def flatten_for_scan(x, scan_type='x'):
         return flatten, unpermute
     
     elif scan_type == 'y':
+        print("Flattening for y scan")
         x_perm = x.permute(0, 1, 3, 4, 2)
         flatten = x_perm.reshape(B, C, -1).transpose(-1, -2)
         unpermute = lambda t: t.reshape(B, C, H, W, D).permute(0, 1, 4, 2, 3)
         return flatten, unpermute
     
     elif scan_type == 'z':
+        #print("Flattening for z scan")
         flatten = x.reshape(B, C, -1).transpose(-1, -2)
         unpermute = lambda t: t.transpose(-1, -2).reshape(B, C, D, H, W)
         return flatten, unpermute
     
     elif scan_type == 'yz-diag':
+        #print("Flattening for yz-diag scan")
         x_perm = x.permute(0, 1, 4, 3, 2)
         X, Y, Z = x_perm.shape[2:]
         z_coords, y_coords = torch.meshgrid(
@@ -120,7 +123,7 @@ class UpsampleLayer(nn.Module):
         return x
 
 class MambaLayer(nn.Module):
-    def __init__(self, dim, d_state=16, d_conv=4, expand=2, scan_type='x'):
+    def __init__(self, dim, d_state=16, d_conv=4, expand=2, scan_type='yz-diag'): #TODO
         super().__init__()
         self.dim = dim
         self.norm = nn.LayerNorm(dim)
@@ -227,7 +230,7 @@ class ResidualMambaEncoder(nn.Module):
                  return_skips: bool = False,
                  stem_channels: int = None,
                  pool_type: str = 'conv',
-                 mamba_scan_type: str = 'pca'  # 'x', 'y', 'z', 'yz-diag', 'xy-diag', 'pca'
+                 mamba_scan_type: str = 'yz-diag'  # 'x', 'y', 'z', 'yz-diag', 'xy-diag', 'pca' #TODO 
                  ):
         super().__init__()
         if isinstance(kernel_sizes, int):
@@ -517,7 +520,7 @@ class UMambaEnc(nn.Module):
                  nonlin_kwargs: dict = None,
                  deep_supervision: bool = False,
                  stem_channels: int = None,
-                 mamba_scan_type: str = 'pca', #TODO
+                 mamba_scan_type: str = 'yz-diag', #TODO
                  ):
         super().__init__()
         n_blocks_per_stage = n_conv_per_stage

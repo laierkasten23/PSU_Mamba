@@ -26,6 +26,7 @@ from nnunetv2.configuration import ANISO_THRESHOLD, default_num_processes
 from nnunetv2.evaluation.evaluate_predictions import compute_metrics_on_folder
 from nnunetv2.inference.export_prediction import export_prediction_from_logits, resample_and_save
 from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
+#from nnunetv2.inference.predict_from_raw_data_pca import PCAAwarePredictor
 from nnunetv2.inference.sliding_window_prediction import compute_gaussian
 from nnunetv2.paths import nnUNet_preprocessed, nnUNet_results
 from nnunetv2.training.data_augmentation.compute_initial_patch_size import get_patch_size
@@ -106,8 +107,16 @@ class nnUNetTrainer(object):
         # need. So let's save the init args
         self.my_init_kwargs = {}
 
+        missing_keys = []
         for k in inspect.signature(self.__init__).parameters.keys():
-            self.my_init_kwargs[k] = locals()[k]
+            if k in locals():
+                self.my_init_kwargs[k] = locals()[k]
+            else:
+                missing_keys.append(k)
+
+        if missing_keys:
+            print(f"[nnUNetTrainer] Skipped saving some init args not in locals(): {missing_keys}")
+
 
         ###  Saving all the init args into class variables for later access
         self.plans_manager = PlansManager(plans)
@@ -121,9 +130,10 @@ class nnUNetTrainer(object):
         # inference and some of the folders may not be defined!
         self.preprocessed_dataset_folder_base = join(nnUNet_preprocessed, self.plans_manager.dataset_name) \
             if nnUNet_preprocessed is not None else None
-        self.output_folder_base = join(nnUNet_results, self.plans_manager.dataset_name,
-                                       self.__class__.__name__ + '__' + self.plans_manager.plans_name + "__" + configuration) \
-            if nnUNet_results is not None else None
+        if not hasattr(self, "output_folder_base") or self.output_folder_base is None:
+            self.output_folder_base = join(nnUNet_results, self.plans_manager.dataset_name,
+                                        self.__class__.__name__ + '__' + self.plans_manager.plans_name + "__" + configuration) \
+                if nnUNet_results is not None else None
         self.output_folder = join(self.output_folder_base, f'fold_{fold}')
 
         self.preprocessed_dataset_folder = join(self.preprocessed_dataset_folder_base,
@@ -145,7 +155,7 @@ class nnUNetTrainer(object):
         self.oversample_foreground_percent = 0.33
         self.num_iterations_per_epoch = 25
         self.num_val_iterations_per_epoch = 25
-        self.num_epochs = 300
+        self.num_epochs = 500
         self.current_epoch = 0
         self.enable_deep_supervision = True
 

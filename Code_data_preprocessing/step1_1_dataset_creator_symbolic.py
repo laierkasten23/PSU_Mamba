@@ -4,9 +4,12 @@ import argparse
 import random
 from random import sample
 import shutil
+import sys
+print("Running Python from:", sys.executable)
 import nibabel as nib
 from typing import Union, List
 import json
+
 
 
 
@@ -19,7 +22,7 @@ def check_modality(image_name, modality):
     :param modality: modality of the image
     :return: None
     '''
-    mod_checker = any(mod in image_name for mod in ['T1', 'T2', 'FLAIR', 'T1gd', 'T1xFLAIR'])
+    mod_checker = any(mod in image_name for mod in ['T1', 'T2', 'FLAIR', 'T1gd', 'T1xFLAIR', 'T1w'])
     if modality not in image_name and mod_checker:
         raise ValueError('Modality of the image does not match the modality argument')
     
@@ -274,6 +277,8 @@ def folderstructure_changer_symbolic(path,
             identifier = '0004'
         elif modality == 'dummy':
             identifier = '0004'
+        elif modality == 'T1w':
+            identifier = '0001'
         else:
             raise ValueError('Modality not supported')
         
@@ -657,6 +662,7 @@ def folderstructure_changer_symbolic(path,
 
 
 if __name__ == '__main__':
+    
     print('Starting reorganizing Dataset')
     parser = argparse.ArgumentParser()
     parser.add_argument('--path', type=str, default='/home/linuxlia/Lia_Masterthesis/data/pazienti', help='Path to the dataset')

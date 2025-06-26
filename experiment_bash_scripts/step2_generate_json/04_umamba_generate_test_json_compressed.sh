@@ -5,7 +5,7 @@ BASE_DIR="/home/studenti/lia/lia_masterthesis"
 
 mode=test
 # BASE_DATA_DIR="$BASE_DIR/data/Umamba_data/nnUNet_raw"
-BASE_DATA_DIR="/var/datasets/LIA/Umamba_data/nnUNet_raw"
+BASE_DATA_DIR="/data1/LIA/Umamba_data/nnUNet_raw"
 datasettype=UMAMBA
 fileending=".nii.gz"
 

@@ -19,7 +19,7 @@ from mamba_ssm import Mamba
 from dynamic_network_architectures.building_blocks.helper import maybe_convert_scalar_to_list, get_matching_pool_op
 from torch.cuda.amp import autocast
 from dynamic_network_architectures.building_blocks.residual import BasicBlockD
-
+import logging
 
 import torch.nn as nn
 from torch.cuda.amp import autocast
@@ -27,6 +27,12 @@ from mamba_ssm.modules.mamba_simple import Mamba
 
 from sklearn.decomposition import PCA
 
+logging.basicConfig(
+    filename='umamba_scan_path.log',
+    filemode='a',  # append mode
+    format='%(asctime)s %(levelname)s:%(message)s',
+    level=logging.INFO
+)
 
 def flatten_for_scan(x, scan_type='x'):
     """
@@ -56,7 +62,7 @@ def flatten_for_scan(x, scan_type='x'):
         return flatten, unpermute
 
     elif scan_type == 'z':
-        print("Using z-scan")
+        #print("Using z-scan")
         # No permutation
         flatten = x.reshape(B, C, -1).transpose(-1, -2)
         unpermute = lambda t: t.transpose(-1, -2).reshape(B, C, D, H, W)
@@ -71,7 +77,7 @@ def flatten_for_scan(x, scan_type='x'):
             torch.arange(Y, device=x.device),
             indexing='ij'
         )
-        #diag_order = torch.argsort(z_coords + y_coords, dim=None) #TODO
+        
         diag_order = torch.argsort((z_coords + y_coords).flatten()) #! changed
         x_flat = x_perm.reshape(B, C, X, Y * Z)[:, :, :, diag_order]
         flatten = x_flat.reshape(B, C, -1).transpose(-1, -2)
@@ -86,7 +92,7 @@ def flatten_for_scan(x, scan_type='x'):
             torch.arange(Y, device=x.device),
             indexing='ij'
         )
-        #diag_order = torch.argsort(x_coords + y_coords, dim=None) #TODO check
+        
         diag_order = torch.argsort((x_coords + y_coords).flatten()) #! changed
         x_flat = x_perm.reshape(B, C, D, X * Y)[:, :, :, diag_order]
         flatten = x_flat.reshape(B, C, -1).transpose(-1, -2)
@@ -169,7 +175,8 @@ class MambaLayer(nn.Module):
     # - check patch size to avoid segmenting ears
     # - scan paths
     # - put mamba also in encoding layers
-    def __init__(self, dim, d_state = 16, d_conv = 4, expand = 2, scan_type='x'):
+    def __init__(self, dim, d_state = 16, d_conv = 4, expand = 2, scan_type='z'): # TODO 
+            
         super().__init__()
         self.dim = dim
         self.norm = nn.LayerNorm(dim)
@@ -181,6 +188,8 @@ class MambaLayer(nn.Module):
         )
         self.scan_type = scan_type # self.scan_type = 'x'  # 'x', 'y', 'z', 'xy-diag', 'yz-diag', 'xz-diag'
         self.register_buffer('principal_vector', torch.zeros(3), persistent=True)
+
+        
     ## NEW VERSION FROM HERE: 
     
     def set_scan_vector(self, vector):
@@ -204,6 +213,7 @@ class MambaLayer(nn.Module):
             if not torch.any(self.principal_vector):
             # Fallback to x-scan if PCA vector is not yet set
                 print("[MambaLayer] PCA vector not set. Falling back to 'x' scan.")
+                logging.info("[MambaLayer] PCA vector not set. Falling back to 'x' scan.")
                 x_flat, unpermute = flatten_for_scan(x, 'x')
                 x_norm = self.norm(x_flat)
                 x_mamba = self.mamba(x_norm)
@@ -218,6 +228,7 @@ class MambaLayer(nn.Module):
             return unpermute(x_mamba)
 
         else:
+            logging.info(f"[MambaLayer] Using scan type: {self.scan_type}")
             x_flat, unpermute = flatten_for_scan(x, self.scan_type)
             x_norm = self.norm(x_flat)
             x_mamba = self.mamba(x_norm)
@@ -561,7 +572,7 @@ class UMambaFirst(nn.Module):
                  nonlin_kwargs: dict = None,
                  deep_supervision: bool = False,
                  stem_channels: int = None,
-                 mamba_scan_type: str = 'pca', #TODO
+                 mamba_scan_type: str = 'z', #TODO
                  ):
         super().__init__()
         n_blocks_per_stage = n_conv_per_stage
@@ -625,7 +636,7 @@ def get_umamba_first_3d_from_plans(
         configuration_manager: ConfigurationManager,
         num_input_channels: int,
         deep_supervision: bool = True,
-        mamba_scan_type: str = 'pca'  # 'x', 'y', 'z', 'xy-diag', 'yz-diag', 'xz-diag', 'pca' # TODO
+        mamba_scan_type: str = 'z'  # 'x', 'y', 'z', 'xy-diag', 'yz-diag', 'xz-diag', 'pca' # TODO
     ):
     num_stages = len(configuration_manager.conv_kernel_sizes)
 

@@ -53,152 +53,31 @@ class MambaLayer(nn.Module):
         )
         self.channel_token = channel_token ## whether to use channel as tokens
 
-    ''' THIS IS THE OLD METHOD!! uncomment for original version
-    # * IT USES THIS METHOD TO FORWARD THE INPUT
     def forward_patch_token(self, x):
-        B, d_model = x.shape[:2] # d_model is 1 initially
+        B, d_model = x.shape[:2]
         assert d_model == self.dim
-        n_tokens = x.shape[2:].numel() # n_tokens is 240*240*180
-        img_dims = x.shape[2:] # img_dims (240, 240, 180)
-        # * reshape starts from z to flatten the image, BUT we want to change scan paths
-        #x = x.permute(0, 1, -1, -2, -3) # ! WITHOUT IT x IS (240,240,180)=(z,y,x) -> for geometrical bias we want (180,240,240)=(x,y,z)
-        x_flat = x.reshape(B, d_model, n_tokens).transpose(-1, -2) # (B, 1, 240*240*180) -> (B, 240*240*180, 1)
+        n_tokens = x.shape[2:].numel()
+        img_dims = x.shape[2:]
+        x_flat = x.reshape(B, d_model, n_tokens).transpose(-1, -2)
         x_norm = self.norm(x_flat)
         x_mamba = self.mamba(x_norm)
         out = x_mamba.transpose(-1, -2).reshape(B, d_model, *img_dims)
-        # * out IS STILL 3D TENSOR
-
-        return out
-    '''
-    
-    # * IT USES THIS METHOD TO FORWARD THE INPUT
-    # ! original version
-    '''
-    def forward_patch_token(self, x):
-        xy_scan = False
-        x_scan = False
-        y_scan = True
-        z_scan = False
-        
-        B, d_model = x.shape[:2] # d_model is 1 initially
-        assert d_model == self.dim
-        n_tokens = x.shape[2:].numel() # n_tokens is 240*240*180
-        img_dims = x.shape[2:] # img_dims (240, 240, 180)
-        
-        if x_scan: 
-            x_flat = x.reshape(B, d_model, n_tokens).transpose(-1, -2) # (B, 1, 240*240*180) -> (B, 240*240*180, 1)
-            x_norm = self.norm(x_flat)
-            x_mamba = self.mamba(x_norm)
-            out = x_mamba.transpose(-1, -2).reshape(B, d_model, *img_dims)
-            
-        if y_scan: 
-            # * reshape starts from z to flatten the image, BUT we want to change scan paths
-            x = x.permute(0, 1, 2, -1, -2) # ! permute to y direction from (z, y, x) to (z, x, y)
-            x_flat = x.reshape(B, d_model, n_tokens).transpose(-1, -2) # (B, 1, 180*240*240 (if permuted)) -> (B, 180*240*240 if permuted, 1)
-            x_norm = self.norm(x_flat)
-            x_mamba = self.mamba(x_norm)
-            img_dims = [img_dims[0], img_dims[2], img_dims[1]]
-            out = x_mamba.transpose(-1, -2).reshape(B, d_model, *img_dims)
-            out = out.permute(0, 1, 2, -1, -2)# ! ADDED for y direction 
-            return out
-        
-        if z_scan: 
-            # * reshape starts from z to flatten the image, BUT we want to change scan paths
-        240,240,180)=(z,y,x) -> for geometrical bias we want (180,240,240)=(x,y,z)
-            x_flat = x.reshape(B, d_model, n_tokens).transpose(-1, -2) # (B, 1, 180*240*240 (if permuted)) -> (B, 180*240*240 if permuted, 1)
-            x_norm = self.norm(x_flat)
-            x_mamba = self.mamba(x_norm)
-            img_dims = img_dims[::-1] # (180, 240, 240) # ! ADDED
-            out = x_mamba.transpose(-1, -2).reshape(B, d_model, *img_dims)
-            out = out.permute(0, 1, -1, -2, -3) # ! ADDED
-            return out
-        
-        if xy_scan:
-            # ** Step 1: Permute to prioritize X over (Y, Z) **
-            x = x.permute(0, 1, 4, 3, 2)  # Now (B, d_model, X, Y, Z)
-
-        return out
-    ''' 
-    
-    def forward_patch_token(self, x):
-        # ! for diagonal scan path in yx plane!
-        #print("ENTERING IN FORWARD UMambaEnc!!")
-        B, d_model = x.shape[:2]  # d_model is 1 initially
-        assert d_model == self.dim
-        img_dims = x.shape[2:]  # img_dims = (Z, Y, X) = (240, 240, 180)
-
-        # ** Step 1: Permute to prioritize X over (Y, Z) **
-        x = x.permute(0, 1, 4, 3, 2)  # Now (B, d_model, X, Y, Z)
-
-        # ** Step 2: Apply diagonal scan order in (Y, Z) for each X **
-        X, Y, Z = img_dims[2], img_dims[1], img_dims[0]  # Extract dimensions
-
-        # Create sorting indices for diagonal traversal in (Y, Z)
-        z_coords, y_coords = torch.meshgrid(
-            torch.arange(Z, device=x.device), torch.arange(Y, device=x.device), indexing='ij'
-        )
-        diag_order = torch.argsort((z_coords + y_coords).flatten())  # Sort by diagonal sum
-
-        # Reshape and apply diagonal ordering within each X slice
-        x_flat = x.reshape(B, d_model, X, Y * Z)  # Flatten (Y, Z)
-        x_flat = x_flat[:, :, :, diag_order]  # Apply diagonal scan order
-
-        # ** Step 3: Flatten and process with Mamba **
-        x_flat = x_flat.reshape(B, d_model, X * Y * Z).transpose(-1, -2)  # Final flattening
-        x_norm = self.norm(x_flat)
-        x_mamba = self.mamba(x_norm)
-
-        # ** Step 4: Restore original image dimensions and ordering **
-        out = x_mamba.transpose(-1, -2).reshape(B, d_model, X, Y, Z)  # Reshape back
-        out = out.permute(0, 1, 4, 3, 2)  # Convert back to (B, d_model, Z, Y, X)
 
         return out
 
-    '''
-    def forward_channel_token(self, x):
-        # ! for diagonal scan path in yx plane! 
-        #print("forward_channel_token- UMamba Enc")
-        B, n_tokens = x.shape[:2]
-        d_model = x.shape[2:].numel()
-        assert d_model == self.dim, f"d_model: {d_model}, self.dim: {self.dim}"
-        img_dims = x.shape[2:]
-
-        # ** Apply diagonal scan before flattening **
-        X, Y, Z = img_dims[2], img_dims[1], img_dims[0]  # Extract dimensions
-        z_coords, y_coords = torch.meshgrid(
-            torch.arange(Z, device=x.device), torch.arange(Y, device=x.device), indexing='ij'
-        )
-        diag_order = torch.argsort((z_coords + y_coords).flatten())  # Sort by diagonal sum
-
-        x_flat = x.reshape(B, n_tokens, X, Y * Z)  # Flatten (Y, Z)
-        x_flat = x_flat[:, :, :, diag_order]  # Apply diagonal scan order
-        x_flat = x_flat.reshape(B, n_tokens, d_model)  # Final flattening
-
-        assert x_flat.shape[2] == d_model, f"x_flat.shape[2]: {x_flat.shape[2]}, d_model: {d_model}"
-        
-        x_norm = self.norm(x_flat)
-        x_mamba = self.mamba(x_norm)
-        out = x_mamba.reshape(B, n_tokens, *img_dims)
-
-        return out
-
-    # * It USES THIS METHOD IN THE BOTTLENECK!
-    # ! original version
-    '''
     def forward_channel_token(self, x):
         B, n_tokens = x.shape[:2]
         d_model = x.shape[2:].numel()
         assert d_model == self.dim, f"d_model: {d_model}, self.dim: {self.dim}"
         img_dims = x.shape[2:]
-        x_flat = x.flatten(2) # ! Here is a different flattening, maybe also tackle here. Resulting shape: (B, n_tokens, 240*240*180 = d_model)
+        x_flat = x.flatten(2)
         assert x_flat.shape[2] == d_model, f"x_flat.shape[2]: {x_flat.shape[2]}, d_model: {d_model}"
         x_norm = self.norm(x_flat)
         x_mamba = self.mamba(x_norm)
         out = x_mamba.reshape(B, n_tokens, *img_dims)
 
         return out
-     
-    
+
     @autocast(enabled=False)
     def forward(self, x):
         if x.dtype == torch.float16 or x.dtype == torch.bfloat16:
@@ -292,18 +171,13 @@ class ResidualMambaEncoder(nn.Module):
 
         do_channel_token = [False] * n_stages
         feature_map_sizes = []
-        #feature_map_size = input_size[::-1] # ! CHANGE 
-        feature_map_size = input_size 
-        print("feature_map_size Input size", feature_map_size)
-        
+        feature_map_size = input_size
         for s in range(n_stages):
             feature_map_sizes.append([i // j for i, j in zip(feature_map_size, strides[s])])
             feature_map_size = feature_map_sizes[-1]
             if np.prod(feature_map_size) <= features_per_stage[s]:
                 do_channel_token[s] = True
-        print("do_channel_token", do_channel_token)
-        print("feature_map_sizeS size", feature_map_sizes)
-        
+            
 
         print(f"feature_map_sizes: {feature_map_sizes}")
         print(f"do_channel_token: {do_channel_token}")
@@ -346,8 +220,6 @@ class ResidualMambaEncoder(nn.Module):
         input_channels = stem_channels
 
         stages = []
-        # The code `mamba_layers` is not valid Python syntax. It seems like it might be a placeholder
-        # or a comment in the code.
         mamba_layers = []
         for s in range(n_stages):
             stage = nn.Sequential(
@@ -406,19 +278,13 @@ class ResidualMambaEncoder(nn.Module):
         self.conv_bias = conv_bias
         self.kernel_sizes = kernel_sizes
 
-    # ! RESHAPING FOR GEOMETRICAL BIAS
     def forward(self, x):
-        # print(f"x.shape before: {x.shape}")
-        #x = x.permute(0, 1, -1, -2, -3) # ! WITHOUT IT x IS (240,240,180)=(z,y,x) -> for geometrical bias we want (180,240,240)=(x,y,z)
-        # print(f"x.shape after: {x.shape}")
-
         if self.stem is not None:
             x = self.stem(x)
         ret = []
         for s in range(len(self.stages)):
             x = self.stages[s](x)
-            #print(f"STAGE {s} x.shape: {x.shape}")
-            x = self.mamba_layers[s](x) # ! MAMBA LAYER
+            x = self.mamba_layers[s](x)
             ret.append(x)
         if self.return_skips:
             return ret
@@ -426,17 +292,14 @@ class ResidualMambaEncoder(nn.Module):
             return ret[-1]
 
     def compute_conv_feature_map_size(self, input_size):
-        print("Input size encoder initial", input_size)
         if self.stem is not None:
             output = self.stem.compute_conv_feature_map_size(input_size)
         else:
             output = np.int64(0)
 
         for s in range(len(self.stages)):
-            
             output += self.stages[s].compute_conv_feature_map_size(input_size)
             input_size = [i // j for i, j in zip(input_size, self.strides[s])]
-            print("Input size encoder", input_size)
 
         return output
 
@@ -464,7 +327,6 @@ class UNetResDecoder(nn.Module):
 
         seg_layers = []
         for s in range(1, n_stages_encoder):
-            print("encoder.output_channels[-s]", encoder.output_channels[-s])
             input_features_below = encoder.output_channels[-s]
             input_features_skip = encoder.output_channels[-(s + 1)]
             stride_for_upsampling = encoder.strides[-s]
@@ -660,7 +522,7 @@ def get_umamba_enc_3d_from_plans(
         'n_conv_per_stage': configuration_manager.n_conv_per_stage_encoder,
         'n_conv_per_stage_decoder': configuration_manager.n_conv_per_stage_decoder
     }
-    # Initialize the model
+
     model = network_class(
         input_channels=num_input_channels,
         n_stages=num_stages,

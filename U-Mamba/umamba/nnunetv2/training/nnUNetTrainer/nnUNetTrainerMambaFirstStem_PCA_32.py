@@ -15,7 +15,6 @@ from time import time
 from scipy.ndimage import binary_dilation
 from skimage.morphology import skeletonize
 
-
 from sklearn.decomposition import PCA
 
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
@@ -40,6 +39,7 @@ from scipy.ndimage import binary_dilation
 
 from nnunetv2.training.dataloading.convex_data_loader_3d import nnUNetDataLoader3D_convex
 from nnunetv2.nets.UMambaFirst import MambaLayer
+
 class nnUNetTrainerMambaFirstStem_PCA_32(nnUNetTrainer):
     """
     A custom nnUNetTrainer that applies ConvexHullTransform during training.
@@ -52,7 +52,6 @@ class nnUNetTrainerMambaFirstStem_PCA_32(nnUNetTrainer):
     
     def get_tr_and_val_datasets(self):
         # create dataset split
-        #print("in get_tr_and_val_datasets DATASETS of OUR TRAINER!!!!!!!!!")
         tr_keys, val_keys = self.do_split()
 
         # load the datasets for training and validation. Note that we always draw random samples so we really don't
@@ -65,31 +64,13 @@ class nnUNetTrainerMambaFirstStem_PCA_32(nnUNetTrainer):
                                     folder_with_segs_from_previous_stage=self.folder_with_segs_from_previous_stage,
                                     num_images_properties_loading_threshold=0)
         
-        
         return dataset_tr, dataset_val
     
     
     def get_dataloaders(self):
         # ! this happens BEFOR train_step function in run_training of nnUNetTrainer
-        """
-        Prepares and returns the training and validation data loaders with appropriate transformations and augmentations.
-        This method determines the dimensionality of the data (2D or 3D) based on the patch size and configures the necessary
-        data augmentation and transformation pipelines for both training and validation datasets. It also handles the 
-        creation of multi-threaded or single-threaded data loaders based on the allowed number of processes for data 
-        augmentation.
-        Returns:
-            tuple: A tuple containing:
-                - mt_gen_train: The training data loader with transformations and augmentations applied.
-                - mt_gen_val: The validation data loader with transformations applied.
-        """
-        
-        # we use the patch size to determine whether we need 2D or 3D dataloaders. We also use it to determine whether
-        # we need to use dummy 2D augmentation (in case of 3D training) and what our initial patch size should be
         patch_size = self.configuration_manager.patch_size
         dim = len(patch_size)
-
-        # needed for deep supervision: how much do we need to downscale the segmentation targets for the different
-        # outputs?
 
         deep_supervision_scales = self._get_deep_supervision_scales()
 
@@ -100,9 +81,7 @@ class nnUNetTrainerMambaFirstStem_PCA_32(nnUNetTrainer):
             mirror_axes,
         ) = self.configure_rotation_dummyDA_mirroring_and_inital_patch_size()
 
-        #print("in nnUNetTrainerConvexHull get_dataloaders BEFORE get_plain_dataloaders")
-        # ! Here we changed the position!
-        dl_tr, dl_val = self.get_plain_dataloaders(initial_patch_size, dim) # ! CHANGED POSITION HERE! 
+        dl_tr, dl_val = self.get_plain_dataloaders(initial_patch_size, dim)
         
         # training pipeline
         tr_transforms = self.get_training_transforms(
@@ -125,7 +104,7 @@ class nnUNetTrainerMambaFirstStem_PCA_32(nnUNetTrainer):
         if allowed_num_processes == 0:
             mt_gen_train = SingleThreadedAugmenter(dl_tr, tr_transforms)
             mt_gen_val = SingleThreadedAugmenter(dl_val, val_transforms)
-        else: # ! Goes into LimitedLenWrapper!!
+        else:
             mt_gen_train = LimitedLenWrapper(self.num_iterations_per_epoch, data_loader=dl_tr, transform=tr_transforms,
                                              num_processes=allowed_num_processes, num_cached=6, seeds=None,
                                              pin_memory=self.device.type == 'cuda', wait_time=0.02)
@@ -135,8 +114,6 @@ class nnUNetTrainerMambaFirstStem_PCA_32(nnUNetTrainer):
                                            wait_time=0.02)
         return mt_gen_train, mt_gen_val
     
-        
-        
     def on_train_epoch_start(self):
         self.network.train()
         self.lr_scheduler.step(self.current_epoch)
@@ -146,25 +123,27 @@ class nnUNetTrainerMambaFirstStem_PCA_32(nnUNetTrainer):
             f"Current learning rate: {np.round(self.optimizer.param_groups[0]['lr'], decimals=5)}")
         self.logger.log('lrs', self.optimizer.param_groups[0]['lr'], self.current_epoch)
 
-        # Inject PCA scan vector if available
-        def find_mamba_layer(module):
-            for child in module.children():
-                if isinstance(child, MambaLayer):
-                    return child
-                result = find_mamba_layer(child)
-                if result is not None:
-                    return result
-            return None
+        mamba_layer = self.network.encoder.stem[1]
 
-        mamba_layer = find_mamba_layer(self.network)
         print("Found MambaLayer:", mamba_layer is not None)
         if mamba_layer is not None:
             print("[PCA] Attempting to load PCA scan vector...")
-            mamba_layer.set_local_pca_vectors(
-                os.path.join(self.output_folder, "local_pca_vectors.npy"),
-                os.path.join(self.output_folder, "local_pca_coords.npy")
-            )
+            # loading all local PCA vectors and coordinates
+            vectors_path = os.path.join(self.output_folder, "local_pca_vectors.npy")
+            coords_path = os.path.join(self.output_folder, "local_pca_coords.npy")
+            
+            if os.path.exists(vectors_path) and os.path.exists(coords_path):
+                vectors = np.load(vectors_path)
+                coords = np.load(coords_path)
+                mamba_layer.set_local_pca_vectors(vectors, coords)
+                self.print_to_log_file("[PCA] Local PCA vectors loaded.")
+            else:
+                self.print_to_log_file("[PCA] Local PCA vectors not found.")
+                # TODO: In this case we might want to use a fallback or default behavior. ('x') 
+                
+                
             pca_vector_path = os.path.join(self.output_folder, 'pca_scan_vector.npy')
+            
             if os.path.exists(pca_vector_path):
                 try:
                     pca_vector = np.load(pca_vector_path)
@@ -176,7 +155,6 @@ class nnUNetTrainerMambaFirstStem_PCA_32(nnUNetTrainer):
                 self.print_to_log_file("[PCA] No PCA scan vector found yet. Using fallback scan order.")
         else:
             print("[PCA] Network does not have a mamba layer or PCA scan type is not set. Using fallback scan order.")
-            
             
     def on_epoch_end(self):
         self.logger.log('epoch_end_timestamps', time(), self.current_epoch)
@@ -228,14 +206,11 @@ class nnUNetTrainerMambaFirstStem_PCA_32(nnUNetTrainer):
 
         for key in dataset_tr.keys():
             _, seg, _ = dataset_tr.load_case(key)  # seg shape: (1, D, H, W)
-            # print shape of seg
-            print(f"Shape of segmentation for key {key}: {seg.shape}")
+            #print(f"Shape of segmentation for key {key}: {seg.shape}")
             seg = seg[0]  # assume binary mask
             all_masks.append(seg)
-            # print size of all_masks
-            print(f"Size of all_masks after appending key {key}: {len(all_masks)}")
+            #print(f"Size of all_masks after appending key {key}: {len(all_masks)}")
 
-        # Find max shape along each dimension
         shapes = [mask.shape for mask in all_masks]
         max_shape = np.max(np.array(shapes), axis=0)
 
@@ -250,12 +225,9 @@ class nnUNetTrainerMambaFirstStem_PCA_32(nnUNetTrainer):
 
         all_masks = [pad_central(mask, max_shape) for mask in all_masks]
         all_masks = np.stack(all_masks)  # shape: (N, D, H, W)
-        # print shape of all_masks
-        # print(f"Shape of all_masks: {all_masks.shape}")
         mean_mask = np.mean(all_masks, axis=0)
 
         coords = np.argwhere(mean_mask > 0.05) # shape (N, 3), gives positions
-        
         weights = mean_mask[mean_mask > 0.05] # shape (), gives actual values
 
         if len(coords) > 0:
@@ -265,58 +237,93 @@ class nnUNetTrainerMambaFirstStem_PCA_32(nnUNetTrainer):
 
             principal_vector = pca.components_[0]
             np.save(os.path.join(self.output_folder, "pca_scan_vector.npy"), principal_vector)
-            # unit vector (array of length 3) representing main direction of variance among  coords in mask region
             print(f"PCA vector saved to: {self.output_folder}/pca_scan_vector.npy")
         else:
             print("No foreground voxels found in mean mask.")
             
         # --- Local PCA on patches ---
         print("Computing local PCA vectors for patches...")
-        patch_size = (32, 32, 32)
-        stride = (32, 32, 32)  # non-overlapping; change for overlap if desired
+        patch_size = (8, 8, 8)
+        stride = (8, 8, 8)  # non-overlapping; change for overlap if desired
         D, H, W = mean_mask.shape
-        local_pca_vectors = []
-        local_pca_coords = []
+        local_pca_vectors = [] # shape: (N, 3)
+        local_pca_coords = [] # shape: (N, 3)
 
         for z in range(0, D - patch_size[0] + 1, stride[0]):
             for y in range(0, H - patch_size[1] + 1, stride[1]):
                 for x in range(0, W - patch_size[2] + 1, stride[2]):
+                    # Extract the patch from the mean mask
                     patch = mean_mask[z:z+patch_size[0], y:y+patch_size[1], x:x+patch_size[2]]
+                    # Check if the patch has enough foreground voxels
                     coords_patch = np.argwhere(patch > 0.05)
                     if len(coords_patch) > 0:
                         pca_patch = PCA(n_components=1)
                         pca_patch.fit(coords_patch)
                         principal_vector_patch = pca_patch.components_[0]
+                        print("Principal vector for patch at (z, y, x):", principal_vector_patch)
                         # Save the patch origin and its principal vector
                         local_pca_vectors.append(principal_vector_patch)
                         local_pca_coords.append((z, y, x))
-                        # Optionally, save each vector to a file:
                         np.save(os.path.join(self.output_folder, f"local_pca_vector_z{z}_y{y}_x{x}.npy"), principal_vector_patch)
+        print("Saving subvolumes and PCA planes...")
+        volume_index = 0
+        for i, (z, y, x) in enumerate(local_pca_coords):
+            patch = mean_mask[z:z+patch_size[0], y:y+patch_size[1], x:x+patch_size[2]]
+            principal_vector = local_pca_vectors[i]  # shape: (3,)
+            
+            patch_filename = os.path.join(self.output_folder, f"patch_{volume_index:04d}.npy")
+            np.save(patch_filename, patch)
+
+            affine = np.eye(4)
+            patch_img = nib.Nifti1Image(patch.astype(np.float32), affine)
+            nib.save(patch_img, os.path.join(self.output_folder, f"patch_{volume_index:04d}.nii.gz"))
+
+            np.save(os.path.join(self.output_folder, f"pca_vector_{volume_index:04d}.npy"), principal_vector)
+
+            if save_full_plane := True:
+                from scipy.linalg import svd
+                _, _, Vt = svd(principal_vector.reshape(1, -1))
+                plane_basis = Vt[1:3]
+                np.save(os.path.join(self.output_folder, f"pca_plane_{volume_index:04d}.npy"), plane_basis)
+            
+            pca_vec_filename = os.path.join(self.output_folder, f"pca_vector_{volume_index:04d}.npy")
+            np.save(pca_vec_filename, principal_vector)
+
+            if save_full_plane := True:
+                from scipy.linalg import svd
+                _, _, Vt = svd(principal_vector.reshape(1, -1))  # shape: (1, 3)
+                plane_basis = Vt[1:3]  # Get the remaining two vectors orthogonal to principal
+                plane_filename = os.path.join(self.output_folder, f"pca_plane_{volume_index:04d}.npy")
+                np.save(plane_filename, plane_basis)  # shape: (2, 3)
+            
+            volume_index += 1
+
         # Optionally, save all local vectors and their coordinates as a single file
         np.save(os.path.join(self.output_folder, "local_pca_vectors.npy"), np.array(local_pca_vectors))
-        np.save(os.path.join(self.output_folder, "local_pca_coords.npy"), np.array(local_pca_coords))
+        coords_arr = np.array(local_pca_coords)
+        if coords_arr.ndim == 1:
+            coords_arr = coords_arr.reshape(-1, 3)
+        np.save(os.path.join(self.output_folder, "local_pca_coords.npy"), coords_arr)
         print(f"Saved {len(local_pca_vectors)} local PCA vectors for patches.")
 
-
-    
     @staticmethod
     def build_network_architecture(plans_manager: PlansManager,
                                 dataset_json,
                                 configuration_manager: ConfigurationManager,
                                 num_input_channels,
                                 enable_deep_supervision: bool = True) -> nn.Module:
+        
+        output_folder = configuration_manager.output_dir  
 
         if len(configuration_manager.patch_size) == 2:
             model = get_umamba_enc_2d_from_plans(plans_manager, dataset_json, configuration_manager,
                                         num_input_channels, deep_supervision=enable_deep_supervision)
         elif len(configuration_manager.patch_size) == 3:
             model = get_umamba_first_3d_from_plans(plans_manager, dataset_json, configuration_manager,
-                                        num_input_channels, deep_supervision=enable_deep_supervision)
+                                        num_input_channels, deep_supervision=enable_deep_supervision, 
+                                        output_folder=output_folder)
         else:
             raise NotImplementedError("Only 2D and 3D models are supported")
 
-        
         print("UMambaEnc: {}".format(model))
-
         return model
-

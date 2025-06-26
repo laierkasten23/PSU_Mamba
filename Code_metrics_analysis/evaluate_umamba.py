@@ -182,6 +182,7 @@ def evaluate_all_experiments(pred_folders, gt_folder, save_csv_path):
             "Worst HD": worst_hd_prefix
         })
 
+
     # Convert the results list to a DataFrame
     results = pd.DataFrame(results_list)
 
@@ -202,3 +203,15 @@ if __name__ == "__main__":
     print("In evaluate_umamba.py")
     print(args)
     evaluate_all_experiments(args.pred_folders, args.gt_folder, args.save_csv_path)
+    
+    # python evaluate_umamba.py \
+  # --pred_folders /data1/LIA/umamba_predictions/working_directory_T1xFLAIR/pred_raw/ \
+  # --gt_folder /data1/LIA/Umamba_data/nnUNet_raw/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/labelsTs \
+  # --save_csv_path /data1/LIA/Umamba_data/results_umamba.csv
+  
+  # /mnt/LIA/reference_labels/ref_labelTs
+  
+#python3 evaluate_umamba.py \
+#    --pred_folders "/data1/LIA/umamba_predictions/working_directory_T1xFLAIR/pred_raw/" \
+#    --gt_folder "/mnt/LIA/reference_labels/ref_labelTs" \
+#    --save_csv_path "/data1/LIA/Umamba_data/results_umamba.csv"

@@ -20,118 +20,6 @@ from dynamic_network_architectures.building_blocks.helper import maybe_convert_s
 from torch.cuda.amp import autocast
 from dynamic_network_architectures.building_blocks.residual import BasicBlockD
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch.cuda.amp import autocast
-from mamba_ssm.modules.mamba_simple import Mamba
-
-from sklearn.decomposition import PCA
-
-
-def flatten_for_scan(x, scan_type='x'):
-    """
-    Input: x: (B, C, D, H, W) tensor
-    Output: Flattened tensor and unpermute function
-    scan_type: 'x', 'y', 'z', 'yz-diag', 'xy-diag'
-    - 'x': Flatten along the x-axis
-    - 'y': Flatten along the y-axis
-    - 'z': Flatten along the z-axis
-    - 'yz-diag': Flatten along the diagonal of the yz-plane
-    - 'xy-diag': Flatten along the diagonal of the xy-plane
-    """
-    B, C, D, H, W = x.shape
-
-    if scan_type == 'x':
-        print("Using x-scan")
-        x_perm = x.permute(0, 1, 4, 3, 2)  # (B, C, X, Y, Z)
-        flatten = x_perm.reshape(B, C, -1).transpose(-1, -2)
-        unpermute = lambda t: t.reshape(B, C, W, H, D).permute(0, 1, 4, 3, 2)
-        return flatten, unpermute
-
-    elif scan_type == 'y':
-        print("Using y-scan")
-        x_perm = x.permute(0, 1, 3, 4, 2)  # (B, C, Y, X, Z)
-        flatten = x_perm.reshape(B, C, -1).transpose(-1, -2)
-        unpermute = lambda t: t.reshape(B, C, H, W, D).permute(0, 1, 4, 2, 3)
-        return flatten, unpermute
-
-    elif scan_type == 'z':
-        print("Using z-scan")
-        # No permutation
-        flatten = x.reshape(B, C, -1).transpose(-1, -2)
-        unpermute = lambda t: t.transpose(-1, -2).reshape(B, C, D, H, W)
-        return flatten, unpermute
-
-    elif scan_type == 'yz-diag':
-        print("Using yz-diag-scan")
-        x_perm = x.permute(0, 1, 4, 3, 2)  # (B, C, X, Y, Z)
-        X, Y, Z = x_perm.shape[2:]
-        z_coords, y_coords = torch.meshgrid(
-            torch.arange(Z, device=x.device),
-            torch.arange(Y, device=x.device),
-            indexing='ij'
-        )
-        #diag_order = torch.argsort(z_coords + y_coords, dim=None) #TODO
-        diag_order = torch.argsort((z_coords + y_coords).flatten()) #! changed
-        x_flat = x_perm.reshape(B, C, X, Y * Z)[:, :, :, diag_order]
-        flatten = x_flat.reshape(B, C, -1).transpose(-1, -2)
-        unpermute = lambda t: t.reshape(B, C, X, Y, Z).permute(0, 1, 4, 3, 2)
-        return flatten, unpermute
-
-    elif scan_type == 'xy-diag':
-        x_perm = x.permute(0, 1, 2, 4, 3)  # (B, C, Z, X, Y)
-        D, X, Y = x_perm.shape[2:]
-        x_coords, y_coords = torch.meshgrid(
-            torch.arange(X, device=x.device),
-            torch.arange(Y, device=x.device),
-            indexing='ij'
-        )
-        #diag_order = torch.argsort(x_coords + y_coords, dim=None) #TODO check
-        diag_order = torch.argsort((x_coords + y_coords).flatten()) #! changed
-        x_flat = x_perm.reshape(B, C, D, X * Y)[:, :, :, diag_order]
-        flatten = x_flat.reshape(B, C, -1).transpose(-1, -2)
-        unpermute = lambda t: t.reshape(B, C, D, X, Y).permute(0, 1, 2, 4, 3)
-        return flatten, unpermute
-
-    else:
-        raise ValueError(f"Unsupported scan type: {scan_type}")
-
-    
-
-
-def flatten_pca_scan(x, mask):
-    """
-    Function to flatten the input tensor x using PCA scan.
-    Input: x: (B, C, D, H, W) tensor
-           mask: (B, 1, D, H, W) binary mask tensor
-    Output: Flattened tensor and indices
-    
-    """
-    B, C, D, H, W = x.shape
-    x_flat_list = []
-    index_list = []
-
-    for b in range(B):
-        coords = torch.nonzero(mask[b, 0], as_tuple=False).float().cpu().numpy()
-
-        if coords.shape[0] < 3:
-            raise ValueError("Too few non-zero voxels for PCA.")
-
-        pca = PCA(n_components=1)
-        scores = pca.fit_transform(coords).squeeze()
-        sorted_indices = torch.tensor(scores).argsort()
-        sorted_coords = coords[sorted_indices]
-        flat_idx = [int(D * H * x[0] + H * x[1] + x[2]) for x in sorted_coords]
-
-        x_b = x[b].reshape(C, -1)[:, flat_idx].T
-        x_flat_list.append(x_b)
-        index_list.append(flat_idx)
-
-    x_flat = torch.stack(x_flat_list, dim=0)  # (B, N, C)
-    return x_flat, index_list
-
-
 class UpsampleLayer(nn.Module):
     def __init__(
             self,
@@ -152,11 +40,7 @@ class UpsampleLayer(nn.Module):
         return x
 
 class MambaLayer(nn.Module):
-    # TODO 
-    # - check patch size to avoid segmenting ears
-    # - scan paths
-    # - put mamba also in encoding layers
-    def __init__(self, dim, d_state = 16, d_conv = 4, expand = 2, scan_type='y'):
+    def __init__(self, dim, d_state = 16, d_conv = 4, expand = 2):
         super().__init__()
         self.dim = dim
         self.norm = nn.LayerNorm(dim)
@@ -166,136 +50,22 @@ class MambaLayer(nn.Module):
                 d_conv=d_conv,    # Local convolution width
                 expand=expand,    # Block expansion factor
         )
-        self.scan_type = scan_type # self.scan_type = 'x'  # 'x', 'y', 'z', 'xy-diag', 'yz-diag', 'xz-diag'
     
-    ## NEW VERSION FROM HERE: 
-
-    @autocast(enabled=False)
-    def forward(self, x, mask=None):
-        if x.dtype == torch.float16:
-            x = x.type(torch.float32)
-
-        B, C = x.shape[:2]
-        assert C == self.dim
-        n_tokens = x.shape[2:].numel() # total number of voxels in the 3D image (i.e., Z × Y × X)
-        img_dims = x.shape[2:]
-        
-
-        if self.scan_type == 'pca':
-            if mask is None:
-                raise ValueError("PCA scan requires a segmentation mask.")
-            x_flat, indices = flatten_pca_scan(x, mask)
-            x_norm = self.norm(x_flat)
-            x_mamba = self.mamba(x_norm)
-
-            out = torch.zeros((B, C, img_dims[0] * img_dims[1] * img_dims[2]), device=x.device)
-            for b in range(B):
-                out[b, :, indices[b]] = x_mamba[b].T
-            return out.reshape(B, C, *img_dims)
-
-        else:
-            x_flat, unpermute = flatten_for_scan(x, self.scan_type)
-            x_norm = self.norm(x_flat)
-            x_mamba = self.mamba(x_norm)
-            out = x_mamba.transpose(-1, -2).reshape(B, C, *img_dims)
-            return unpermute(out)
-
-        
-        x_flat = flatten_for_scan(x, self.scan_type)
-        x_norm = self.norm(x_flat)
-        x_mamba = self.mamba(x_norm)
-
-        out = x_mamba.transpose(-1, -2).reshape(B, C, *img_dims)
-        return out  # Already in original shape; no need to permute back if you unify shape
-    
-    ## NEW VERSION UNTIL #TODO delete what comes after
-    
-    
-    ''' # ! Original Version
     @autocast(enabled=False)
     def forward(self, x):
-        xy_scan = True 
-        x_scan = False
-        y_scan = False
-        z_scan = False
-        
         if x.dtype == torch.float16:
             x = x.type(torch.float32)
         B, C = x.shape[:2]
         assert C == self.dim
-        n_tokens = x.shape[2:].numel() # total number of voxels in the 3D image (i.e., Z × Y × X)
+        n_tokens = x.shape[2:].numel()
         img_dims = x.shape[2:]
-        
-        if x_scan:
-            x_flat = x.reshape(B, C, n_tokens).transpose(-1, -2)           
-            x_norm = self.norm(x_flat)
-            x_mamba = self.mamba(x_norm)
-            out = x_mamba.transpose(-1, -2).reshape(B, C, *img_dims)
-            return out
-    
-        if y_scan:
-            x = x.permute(0, 1, 2, -1, -2) # ! permute to y direction from (z, y, x) to (z, x, y)
-            x_flat = x.reshape(B, C, n_tokens).transpose(-1, -2)
-            x_norm = self.norm(x_flat)
-            x_mamba = self.mamba(x_norm)
-            out = x_mamba.transpose(-1, -2).reshape(B, C, *img_dims)
-            out = out.permute(0, 1, 2, -1, -2)
-            return out
-        
-        if z_scan:
-            x = x.permute(0, 1, 4, 3, 2) # ! permute to z direction from (B, C, z, y, x) to (B, C, x, y, z)
-            x_flat = x.reshape(B, C, n_tokens).transpose(-1, -2)
-            x_norm = self.norm(x_flat)
-            x_mamba = self.mamba(x_norm)
-            out = x_mamba.transpose(-1, -2).reshape(B, C, *img_dims)
-            out = out.permute(0, 1, 4, 3, 2)
-            return out
-        
+        x_flat = x.reshape(B, C, n_tokens).transpose(-1, -2)
         x_norm = self.norm(x_flat)
         x_mamba = self.mamba(x_norm)
         out = x_mamba.transpose(-1, -2).reshape(B, C, *img_dims)
-        #print('out.shape:', out.shape)
-        return out
-    
-    
-    # ! Version for diagonal scan path in yz direction
-    @autocast(enabled=False)
-    def forward(self, x):
-        print("HEEEEEEEEEEEEEELLLLLLLLLLLOOOOOOOOOOO")
-        print("yz diagonal scan path")
-        if x.dtype == torch.float16:
-            x = x.type(torch.float32)
-        B, C = x.shape[:2]
-        assert C == self.dim
-        # n_tokens = x.shape[2:].numel() # as no 1D flattening anymore. 
-        img_dims = x.shape[2:]
-        # ** Step 1: Permute to prioritize X over (Y, Z) **
-        x = x.permute(0, 1, 4, 3, 2)  # Now (B, C, X, Y, Z)
-
-        # ** Step 2: Apply diagonal scan order in (Y, Z) **
-        X, Y, Z = img_dims[2], img_dims[1], img_dims[0]  # Extract dimensions
-
-        # Create sorting indices for diagonal traversal in (Y, Z)
-        z_coords, y_coords = torch.meshgrid(
-            torch.arange(Z, device=x.device), torch.arange(Y, device=x.device), indexing='ij'
-        )
-        diag_order = torch.argsort(z_coords + y_coords, dim=None)  # Sort by diagonal sum
-
-        # Reshape and apply diagonal ordering within each X slice
-        x_flat = x.reshape(B, C, X, Y * Z)  # Flatten (Y, Z)
-        x_flat = x_flat[:, :, :, diag_order]  # Apply diagonal scan order
-
-        # ** Step 3: Flatten and process with Mamba **
-        x_flat = x_flat.reshape(B, C, X * Y * Z).transpose(-1, -2)  # Final flattening
-        x_norm = self.norm(x_flat)
-        x_mamba = self.mamba(x_norm)
-
-        # ** Step 4: Restore original image dimensions and ordering **
-        out = x_mamba.transpose(-1, -2).reshape(B, C, X, Y, Z)  # Reshape back
-        out = out.permute(0, 1, 4, 3, 2)  # Convert back to (B, C, Z, Y, X)
 
         return out
-'''
+
 
 class BasicResBlock(nn.Module):
     def __init__(
@@ -467,12 +237,10 @@ class UNetResEncoder(nn.Module):
         self.kernel_sizes = kernel_sizes
 
     def forward(self, x):
-        #print("UNetResEncoder x.shape:", x.shape)
         if self.stem is not None:
             x = self.stem(x)
         ret = []
         for s in self.stages:
-            #print("UNetResEncoder s(x).shape for stage s", s , s(x).shape)
             x = s(x)
             ret.append(x)
         if self.return_skips:
@@ -667,8 +435,6 @@ class UMambaBot(nn.Module):
         self.decoder = UNetResDecoder(self.encoder, num_classes, n_conv_per_stage_decoder, deep_supervision)
 
     def forward(self, x):
-        #print("IN U-Mamba Bot now")
-        # ([2, 1, 160, 128, 112]))
         skips = self.encoder(x)
         skips[-1] = self.mamba_layer(skips[-1])
         return self.decoder(skips)

@@ -1,7 +1,7 @@
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
 from nnunetv2.utilities.plans_handling.plans_handler import ConfigurationManager, PlansManager
 from torch import nn
-from nnunetv2.nets.UMambaBot_3d import get_umamba_bot_3d_from_plans
+from nnunetv2.nets.UMambaBot_3d_copy import get_umamba_bot_3d_from_plans
 from nnunetv2.nets.UMambaBot_2d import get_umamba_bot_2d_from_plans
 
 

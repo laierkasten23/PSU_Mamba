@@ -2,7 +2,7 @@ import torch
 from nnunetv2.training.nnUNetTrainer.nnUNetTrainer import nnUNetTrainer
 from nnunetv2.utilities.plans_handling.plans_handler import ConfigurationManager, PlansManager
 from torch import nn
-from nnunetv2.nets.UMambaEnc_3d import get_umamba_enc_3d_from_plans
+from nnunetv2.nets.UMambaEnc_3d_copy import get_umamba_enc_3d_from_plans
 from nnunetv2.nets.UMambaEnc_2d import get_umamba_enc_2d_from_plans
 from nnunetv2.training.loss.dice import get_tp_fp_fn_tn
 

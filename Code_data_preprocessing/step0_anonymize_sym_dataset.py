@@ -113,5 +113,6 @@ if __name__ == '__main__':
 
 '''
     python3 step0_anonymize_sym_dataset.py --path '/var/datasets/LIA/MICCAI_preanalysis_data/processed_data_Dem_SM' --new_folder_name 'ANON_MICCAI_preanalysis'
+    python3 step0_anonymize_sym_dataset.py --path '/data1/LIA/processed_data_Dem_SM' --new_folder_name 'ANON_MICCAI_preanalysis_Dem_SM'
     
     '''

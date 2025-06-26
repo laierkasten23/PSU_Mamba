@@ -35,15 +35,15 @@ class ConvexHullTransform(AbstractTransform):
         # save the plot of one data slice for debugging
         import matplotlib.pyplot as plt
         #plt.imshow(data[0, 0, 100])
-        #plt.savefig('/var/datasets/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_slice_x.png')
+        #plt.savefig('/data1/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_slice_x.png')
         #plt.close()
         
         #plt.imshow(data[0, :, 100, :])
-        #plt.savefig('/var/datasets/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_slice_z.png')
+        #plt.savefig('/data1/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_slice_z.png')
         #plt.close()
         
         #plt.imshow(data[0, 100, :, :])
-        #plt.savefig('/var/datasets/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_slice_y.png')
+        #plt.savefig('/data1/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_slice_y.png')
         #plt.close()
         
         
@@ -87,11 +87,11 @@ class ConvexHullTransform(AbstractTransform):
         
         # plot and save the transformed data slice for debugging
         #plt.imshow(data_x_convex_hull[0, :, 100, :])
-        #plt.savefig('/var/datasets/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_x_convex_hull_slice_y.png')
+        #plt.savefig('/data1/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_x_convex_hull_slice_y.png')
         #plt.close()
         
         #plt.imshow(data_x_convex_hull[0, 120, :, :])
-        #plt.savefig('/var/datasets/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_x_convex_hull_slice_z.png')
+        #plt.savefig('/data1/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_x_convex_hull_slice_z.png')
         #plt.close()
         
         # Mask the input data

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the base directory for the project
-BASE_DATA_DIR="/var/datasets/LIA/Umamba_data/nnUNet_raw"
+BASE_DATA_DIR="/data1/LIA/Umamba_data/nnUNet_raw"
 datasetname="Dataset733_ChP_preanalysis_SM01_T1xFLAIR_sym_UMAMBA" 
 datasetname="Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA" 
 BASE_PRED_DIR="/home/studenti/lia/lia_masterthesis/phuse_thesis_2024/thesis_experiments/umamba_predictions"
@@ -42,7 +42,7 @@ nnUNetv2_predict -d $datasetname -i $INPUT_FOLDER -o $OUTPUT_FOLDER -f  0 1 2 3 
 
 ***Once inference is completed, run postprocessing like this:***
 
-nnUNetv2_apply_postprocessing -i $OUTPUT_FOLDER -o $OUTPUT_FOLDER_PP -pp_pkl_file /var/datasets/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/nnUNetTrainerUMambaBot__nnUNetPlans_64__3d_fullres/crossval_results_folds_0_1_2_3/postprocessing.pkl -np 8 -plans_json /var/datasets/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/nnUNetTrainerUMambaBot__nnUNetPlans_64__3d_fullres/crossval_results_folds_0_1_2_3/plans.json
+nnUNetv2_apply_postprocessing -i $OUTPUT_FOLDER -o $OUTPUT_FOLDER_PP -pp_pkl_file /data1/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/nnUNetTrainerUMambaBot__nnUNetPlans_64__3d_fullres/crossval_results_folds_0_1_2_3/postprocessing.pkl -np 8 -plans_json /data1/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/nnUNetTrainerUMambaBot__nnUNetPlans_64__3d_fullres/crossval_results_folds_0_1_2_3/plans.json
 
 # Inference
 nnUNetv2_predict -i INPUT_FOLDER -o OUTPUT_FOLDER -d 431 -c CONFIGURATION -f all -tr nnUNetTrainerUMambaBot --disable_tta

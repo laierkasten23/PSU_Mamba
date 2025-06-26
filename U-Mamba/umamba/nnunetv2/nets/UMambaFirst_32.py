@@ -19,6 +19,7 @@ from mamba_ssm import Mamba
 from dynamic_network_architectures.building_blocks.helper import maybe_convert_scalar_to_list, get_matching_pool_op
 from torch.cuda.amp import autocast
 from dynamic_network_architectures.building_blocks.residual import BasicBlockD
+from nnunetv2.utilities.pca_utils import extract_patches_and_origins, reassemble_patches
 
 
 
@@ -48,100 +49,81 @@ class MambaLayer(nn.Module):
         self.norm = nn.LayerNorm(dim)
         self.mamba = Mamba(
             d_model=dim,
-            d_state=d_state,
-            d_conv=d_conv,
-            expand=expand,
-        )
+            d_state=d_state, 
+            d_conv=d_conv, 
+            expand=expand)
         self.local_pca_vectors = None
         self.local_pca_coords = None
         self.scan_type = scan_type
         self.register_buffer('principal_vector', torch.zeros(3), persistent=True)
-    
-    def set_local_pca_vectors(self, vectors_path, coords_path):
-        self.local_pca_vectors = np.load(vectors_path)  # shape: (num_patches, 3)
-        self.local_pca_coords = np.load(coords_path)    # shape: (num_patches, 3)
+
+    def set_local_pca_vectors(self, vectors, coords):
+        print("[MambaLayer] Setting local PCA vectors and coordinates.")
+        self.local_pca_vectors = vectors
+        self.local_pca_coords = coords
+        print(f"[MambaLayer] Loaded {len(vectors)} local PCA vectors.")
 
     def get_patch_index(self, patch_origin):
-        # patch_origin: (z, y, x)
-        # Returns the index of the patch with this origin, or None if not found
+        # find the index of a specific patch within collection of patch coordinates
+        print("Patch origin:", patch_origin)
+        #print("Local PCA coordinates:", self.local_pca_coords)
+        
         arr = np.array(patch_origin)
-        matches = np.all(self.local_pca_coords == arr, axis=1)
-        idx = np.where(matches)[0]
-        return idx[0] if len(idx) > 0 else None
-    
+        # compare to the rows
+        if self.local_pca_coords is None:
+            print("[MambaLayer] No local PCA coordinates set Should run normal path flattening . Returning None.")
+            return None
+        matches = np.all(self.local_pca_coords == arr, axis=0) # ! TODO check this 
+        idx = np.where(matches)[0] # get idxs of the rows that match
+        return idx[0] if len(idx) > 0 else None # if no match, return None
+
     def get_local_pca_vector(self, patch_origin):
         idx = self.get_patch_index(patch_origin)
+        print("Index of patch origin:", idx)
         if idx is not None:
             return self.local_pca_vectors[idx]
         else:
-            # fallback to global or default
             return self.principal_vector
-    
+
     def set_scan_vector(self, vector):
-        print("Setting principal_vector to:", vector)
         if isinstance(vector, np.ndarray):
-            vector = torch.from_numpy(vector)
+            vector = torch.from_numpy(vector) if isinstance(vector, np.ndarray) else vector
         self.principal_vector.copy_(vector.to(self.principal_vector.device, dtype=self.principal_vector.dtype))
-        print("[DEBUG] Set principal_vector to:", self.principal_vector)
-        
+
     def flatten_for_scan(self, x, scan_type='x', patch_origin=None):
         B, C, D, H, W = x.shape
         if scan_type == 'pca':
-            if patch_origin is not None and self.local_pca_vectors is not None:
-                principal_vector = self.get_local_pca_vector(patch_origin)
-            else:
-                principal_vector = self.principal_vector
-            return self.flatten_pca_scan(x, principal_vector)
+            print("[MambaLayer] Using PCA scan type.")
+            print("TRYING TO GET LOCAL PCA, failing afterwards ")
+            vector = self.get_local_pca_vector(patch_origin) if patch_origin else self.principal_vector
+            print("made it")
+            return self.flatten_pca_scan(x, vector)
 
-        if scan_type == 'x':
-            x_perm = x.permute(0, 1, 4, 3, 2)
-            flatten = x_perm.reshape(B, C, -1).transpose(-1, -2)
-            unpermute = lambda t: t.reshape(B, C, W, H, D).permute(0, 1, 4, 3, 2)
-            return flatten, unpermute
-
-        elif scan_type == 'y':
-            x_perm = x.permute(0, 1, 3, 4, 2)
-            flatten = x_perm.reshape(B, C, -1).transpose(-1, -2)
-            unpermute = lambda t: t.reshape(B, C, H, W, D).permute(0, 1, 4, 2, 3)
-            return flatten, unpermute
-
-        elif scan_type == 'z':
-            flatten = x.reshape(B, C, -1).transpose(-1, -2)
-            unpermute = lambda t: t.transpose(-1, -2).reshape(B, C, D, H, W)
-            return flatten, unpermute
-
-        elif scan_type == 'yz-diag':
-            x_perm = x.permute(0, 1, 4, 3, 2)
-            X, Y, Z = x_perm.shape[2:]
-            z_coords, y_coords = torch.meshgrid(
-                torch.arange(Z, device=x.device),
-                torch.arange(Y, device=x.device),
-                indexing='ij'
-            )
-            diag_order = torch.argsort((z_coords + y_coords).flatten())
-            x_flat = x_perm.reshape(B, C, X, Y * Z)[:, :, :, diag_order]
-            flatten = x_flat.reshape(B, C, -1).transpose(-1, -2)
-            unpermute = lambda t: t.reshape(B, C, X, Y, Z).permute(0, 1, 4, 3, 2)
-            return flatten, unpermute
-
-        elif scan_type == 'xy-diag':
-            x_perm = x.permute(0, 1, 2, 4, 3)
-            D, X, Y = x_perm.shape[2:]
-            x_coords, y_coords = torch.meshgrid(
-                torch.arange(X, device=x.device),
-                torch.arange(Y, device=x.device),
-                indexing='ij'
-            )
-            diag_order = torch.argsort((x_coords + y_coords).flatten())
-            x_flat = x_perm.reshape(B, C, D, X * Y)[:, :, :, diag_order]
-            flatten = x_flat.reshape(B, C, -1).transpose(-1, -2)
-            unpermute = lambda t: t.reshape(B, C, D, X, Y).permute(0, 1, 2, 4, 3)
-            return flatten, unpermute
-
-        else:
-            raise ValueError(f"Unsupported scan type: {scan_type}")
+        permute, unpermute = {
+            'x':  ((0, 1, 4, 3, 2), lambda t: t.reshape(B, C, W, H, D).permute(0, 1, 4, 3, 2)),
+            'y':  ((0, 1, 3, 4, 2), lambda t: t.reshape(B, C, H, W, D).permute(0, 1, 4, 2, 3)),
+            'z':  (None, lambda t: t.transpose(-1, -2).reshape(B, C, D, H, W)),
+        }[scan_type]
+        
+        x_perm = x.permute(*permute) if permute else x
+        x_flat = x_perm.reshape(B, C, -1).transpose(-1, -2)
+        return x_flat, unpermute
 
     def flatten_pca_scan(self, x, principal_vector):
+        # ! TODO: INCLUDE LOGIC HERE TO FALL BACK TO x!! 
+        """
+        Flattens the input tensor x using the given principal_vector.
+        Input:
+            x: (B, C, D, H, W) tensor
+            principal_vector: (3,) numpy or torch array (should be unit vector)
+        Output:
+            x_flat: (B, N, C) tensor, where N = D*H*W
+            indices: list of sorted indices for each batch
+        """
+        if principal_vector is None:
+            print("[MambaLayer] Principal vector is None. Skipping PCA flatten.")
+            return None, None
+        
         B, C, D, H, W = x.shape
         device = x.device
         zz, yy, xx = torch.meshgrid(
@@ -151,55 +133,47 @@ class MambaLayer(nn.Module):
             indexing='ij'
         )
         coords = torch.stack([zz, yy, xx], dim=-1).reshape(-1, 3).float()
+        # Project coordinates onto principal vector
         if isinstance(principal_vector, np.ndarray):
             principal_vector = torch.from_numpy(principal_vector).to(device, dtype=torch.float32)
-        else:
+        else: 
             principal_vector = principal_vector.to(device, dtype=torch.float32)
+        # TODO: Forse qua niente matmul, ma dot product??? Gets messed up here? 
         projections = torch.matmul(coords, principal_vector)
-        sorted_indices = torch.argsort(projections)
-        x_flat_list = []
-        for b in range(B):
-            x_b = x[b].reshape(C, -1)[:, sorted_indices].T
-            x_flat_list.append(x_b)
-        x_flat = torch.stack(x_flat_list, dim=0)
+        sorted_idx = torch.argsort(projections)
+
+        x_flat_list = [x[b].reshape(C, -1)[:, sorted_idx].T for b in range(B)]
+        x_flat = torch.stack(x_flat_list)
 
         def unpermute(t):
-            out = torch.zeros((B, D * H * W, C), device=t.device, dtype=t.dtype)
+            out = torch.zeros((B, D*H*W, C), device=t.device,  dtype=t.dtype)
             for b in range(B):
-                out[b, sorted_indices] = t[b]
+                out[b, sorted_idx] = t[b]
             return out.permute(0, 2, 1).reshape(B, C, D, H, W)
 
         return x_flat, unpermute
 
-        
-    @autocast(enabled=False)
     def forward(self, x):
-        if x.dtype == torch.float16 or x.dtype == torch.bfloat16:
-            x = x.type(torch.float32)
+        if x.dtype in [torch.float16, torch.bfloat16]:
+            x = x.float()
         B, C = x.shape[:2]
-        img_dims = x.shape[2:]
+        assert C == self.dim
         
         if self.scan_type == 'pca':
-            print("[MambaLayer] Using PCA scan type.")
             if not torch.any(self.principal_vector):
-                print("[MambaLayer] PCA vector not set. Falling back to 'x' scan.")
+                print("[MambaLayer] No principal vector. Falling back to 'x'.")
                 x_flat, unpermute = self.flatten_for_scan(x, 'x')
-                x_norm = self.norm(x_flat)
-                x_mamba = self.mamba(x_norm)
-                out = x_mamba.transpose(-1, -2).reshape(B, C, *img_dims)
-                return unpermute(out)
-            print("right before flatten_pca_scan")
-
-            x_flat, unpermute = self.flatten_pca_scan(x, self.principal_vector)
-            x_norm = self.norm(x_flat)
-            x_mamba = self.mamba(x_norm)
-            return unpermute(x_mamba)
+                print("x_flat shape:", x_flat.shape)
+                
+            else:
+                x_flat, unpermute = self.flatten_pca_scan(x, self.principal_vector)
         else:
             x_flat, unpermute = self.flatten_for_scan(x, self.scan_type)
-            x_norm = self.norm(x_flat)
-            x_mamba = self.mamba(x_norm)
-            out = x_mamba.transpose(-1, -2).reshape(B, C, *img_dims)
-            return unpermute(out)
+
+        x_norm = self.norm(x_flat)
+        x_mamba = self.mamba(x_norm)
+        out = x_mamba.transpose(-1, -2).reshape(B, C, *x.shape[2:])
+        return unpermute(out)
 
 class BasicResBlock(nn.Module):
     def __init__(
@@ -258,7 +232,7 @@ class ResidualMambaEncoder(nn.Module):
                  return_skips: bool = False,
                  stem_channels: int = None,
                  pool_type: str = 'conv',
-                 mamba_scan_type: str = 'pca'  # 'x', 'y', 'z', 'yz-diag', 'xy-diag', 'pca'
+                 mamba_scan_type: str = 'x'  # 'x', 'y', 'z', 'yz-diag', 'xy-diag', 'pca' # TODO 
                  ):
         super().__init__()
         if isinstance(kernel_sizes, int):
@@ -390,18 +364,45 @@ class ResidualMambaEncoder(nn.Module):
         self.conv_bias = conv_bias
         self.kernel_sizes = kernel_sizes
 
-    # ! RESHAPING FOR GEOMETRICAL BIAS
     def forward(self, x):
         if self.stem is not None:
-            x = self.stem(x)
+            conv = self.stem[0]
+            mamba = self.stem[1]
+            rest = self.stem[2:]
+
+            x = conv(x)
+
+            patch_size = (32, 32, 32)
+            # divide the volume in mini sub volumes and where each sub volume is a patch
+            patches, coords = extract_patches_and_origins(x, patch_size)
+            mamba_outputs = []
+
+            for patch, origin in zip(patches, coords):
+                print("Origin of patch:", origin)
+                principal_vector = mamba.get_local_pca_vector(origin)
+                #! TODO: here incorporate that output can be none and directly go to scan x. 
+                x_flat, unpermute = mamba.flatten_pca_scan(patch, principal_vector)
+                
+                if x_flat is None:
+                    print("[ResidualMambaEncoder] Falling back to 'x' scan path.")
+                    x_flat, unpermute = mamba.flatten_for_scan(patch, scan_type='x')
+                x_norm = mamba.norm(x_flat)
+                x_mamba = mamba.mamba(x_norm)
+                patch_out = unpermute(x_mamba)
+                mamba_outputs.append(patch_out)
+
+            x = reassemble_patches(mamba_outputs, coords, x.shape)
+
+            for block in rest:
+                x = block(x)
+
         ret = []
         for s in range(len(self.stages)):
             x = self.stages[s](x)
             ret.append(x)
-        if self.return_skips:
-            return ret
-        else:
-            return ret[-1]
+
+        return ret if self.return_skips else ret[-1]
+
 
     def compute_conv_feature_map_size(self, input_size):
         print("Input size encoder initial", input_size)
@@ -414,7 +415,7 @@ class ResidualMambaEncoder(nn.Module):
             
             output += self.stages[s].compute_conv_feature_map_size(input_size)
             input_size = [i // j for i, j in zip(input_size, self.strides[s])]
-            print("Input size encoder", input_size)
+            #print("Input size encoder", input_size)
 
         return output
 

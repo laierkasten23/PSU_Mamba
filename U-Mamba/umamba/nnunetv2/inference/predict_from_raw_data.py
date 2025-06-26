@@ -26,6 +26,7 @@ from nnunetv2.inference.export_prediction import export_prediction_from_logits, 
     convert_predicted_logits_to_segmentation_with_correct_shape
 from nnunetv2.inference.sliding_window_prediction import compute_gaussian, \
     compute_steps_for_sliding_window
+#from nnunetv2.inference.predict_from_raw_data_pca import PCAAwarePredictor
 from nnunetv2.utilities.file_path_utilities import get_output_folder, check_workers_alive_and_busy
 from nnunetv2.utilities.find_class_by_name import recursive_find_python_class
 from nnunetv2.utilities.helpers import empty_cache, dummy_context
@@ -34,6 +35,15 @@ from nnunetv2.utilities.label_handling.label_handling import determine_num_input
 from nnunetv2.utilities.plans_handling.plans_handler import PlansManager, ConfigurationManager
 from nnunetv2.utilities.utils import create_lists_from_splitted_dataset_folder
 
+# Import your MambaLayer
+from nnunetv2.nets.UMambaFirst import MambaLayer
+from nnunetv2.nets.UMambaFirst_3d import MambaLayer as MambaLayer3d
+from nnunetv2.nets.UMambaFirst_32 import MambaLayer as MambaLayer32
+from nnunetv2.nets.UMambaFirst_patch16 import MambaLayer as MambaLayer_patch16
+#from nnunetv2.nets.UMambaFirst_global32 import MambaLayer as MambaLayer_global32 #!TODO add reassemble patches to utils 
+from nnunetv2.nets.UMambaFirst_z_3d import MambaLayer as MambaLayer_z
+from nnunetv2.nets.UMambaFirst_global import MambaLayer as MambaLayer_global
+from nnunetv2.nets.UMambaFirst_PCA import MambaLayer as MambaLayer_PCA
 
 class nnUNetPredictor(object):
     def __init__(self,
@@ -84,8 +94,10 @@ class nnUNetPredictor(object):
         parameters = []
         for i, f in enumerate(use_folds):
             f = int(f) if f != 'all' else f
+            #checkpoint = torch.load(join(model_training_output_dir, f'fold_{f}', checkpoint_name),
+            #                        map_location=torch.device('cpu'))
             checkpoint = torch.load(join(model_training_output_dir, f'fold_{f}', checkpoint_name),
-                                    map_location=torch.device('cpu'))
+                                    map_location=torch.device('cpu'), weights_only=False) # ! LIA changed python stuff rita
             if i == 0:
                 trainer_name = checkpoint['trainer_name']
                 configuration_name = checkpoint['init_args']['configuration']
@@ -664,6 +676,65 @@ class nnUNetPredictor(object):
         return predicted_logits
 
 
+class PCAAwarePredictor(nnUNetPredictor):
+    def initialize_from_trained_model_folder(self, model_training_output_dir: str, use_folds: tuple, checkpoint_name: str = 'checkpoint_final.pth'):
+        super().initialize_from_trained_model_folder(model_training_output_dir, use_folds, checkpoint_name)
+
+        def find_mamba_layer(module):
+            for child in module.children():
+                if isinstance(child, MambaLayer) or isinstance(
+                    child, MambaLayer3d) or isinstance(
+                        child, MambaLayer32) or isinstance(
+                            child, MambaLayer_patch16) or isinstance(
+                                child, MambaLayer_PCA) or isinstance(
+                                    child, MambaLayer_z) or isinstance(child, MambaLayer_global):
+                    return child
+                result = find_mamba_layer(child)
+                if result is not None:
+                    return result
+            return None
+
+        # Use first fold (assumes all folds share PCA settings)
+        print("folders in model_training_output_dir:", subdirs(model_training_output_dir, prefix='fold_'))
+        fold_folder = os.path.join(model_training_output_dir, f'fold_{use_folds[0]}')
+        pca_vec_path = os.path.join(fold_folder, 'pca_scan_vector.npy')
+        local_vec_path = os.path.join(fold_folder, 'local_pca_vectors.npy')
+        local_coords_path = os.path.join(fold_folder, 'local_pca_coords.npy')
+        
+
+        mamba_layer = find_mamba_layer(self.network)
+
+        if mamba_layer is None:
+            print("[PCA] Mamba layer not found. PCA vectors will not be injected.")
+            return
+
+        # Load global PCA scan vector
+        if os.path.exists(pca_vec_path):
+            try:
+                pca_vector = np.load(pca_vec_path)
+                mamba_layer.set_scan_vector(pca_vector)
+                print(f"[PCA] Global scan vector loaded from: {pca_vec_path}")
+            except Exception as e:
+                print(f"[PCA] Failed to load global PCA scan vector: {e}")
+        else:
+            print("[PCA] Global PCA scan vector not found.")
+
+        # Load local PCA vectors and coordinates
+        if os.path.exists(local_vec_path) and os.path.exists(local_coords_path):
+            try:
+                vectors = np.load(local_vec_path)
+                coords = np.load(local_coords_path)
+                mamba_layer.set_local_pca_vectors(vectors, coords)
+                print(f"[PCA] Local PCA vectors loaded from: {local_vec_path}")
+                print(f"[PCA] Local PCA coordinates loaded from: {local_coords_path}")
+            except Exception as e:
+                print(f"[PCA] Failed to load local PCA vectors or coordinates: {e}")
+        else:
+            print("[PCA] Local PCA vectors or coordinates not found.")
+
+
+
+
 def predict_entry_point_modelfolder():
     import argparse
     parser = argparse.ArgumentParser(description='Use this to run inference with nnU-Net. This function is used when '
@@ -712,6 +783,7 @@ def predict_entry_point_modelfolder():
     parser.add_argument('--disable_progress_bar', action='store_true', required=False, default=False,
                         help='Set this flag to disable progress bar. Recommended for HPC environments (non interactive '
                              'jobs)')
+    parser.add_argument('--use_pca', action='store_true', help='Inject PCA vectors into Mamba layers if found')
 
 
     print(
@@ -742,13 +814,22 @@ def predict_entry_point_modelfolder():
     else:
         device = torch.device('mps')
 
-    predictor = nnUNetPredictor(tile_step_size=args.step_size,
-                                use_gaussian=True,
-                                use_mirroring=not args.disable_tta,
-                                perform_everything_on_device=True,
-                                device=device,
-                                verbose=args.verbose,
-                                allow_tqdm=not args.disable_progress_bar)
+    if args.use_pca:
+        predictor = PCAAwarePredictor(tile_step_size=args.step_size,
+                                    use_gaussian=True,
+                                    use_mirroring=not args.disable_tta,
+                                    perform_everything_on_device=True,
+                                    device=device,
+                                    verbose=args.verbose,
+                                    allow_tqdm=not args.disable_progress_bar)
+    else:
+        predictor = nnUNetPredictor(tile_step_size=args.step_size,
+                                    use_gaussian=True,
+                                    use_mirroring=not args.disable_tta,
+                                    perform_everything_on_device=True,
+                                    device=device,
+                                    verbose=args.verbose,
+                                    allow_tqdm=not args.disable_progress_bar)
     predictor.initialize_from_trained_model_folder(args.m, args.f, args.chk)
     predictor.predict_from_files(args.i, args.o, save_probabilities=args.save_probabilities,
                                  overwrite=not args.continue_prediction,
@@ -821,6 +902,7 @@ def predict_entry_point():
     parser.add_argument('--disable_progress_bar', action='store_true', required=False, default=False,
                         help='Set this flag to disable progress bar. Recommended for HPC environments (non interactive '
                              'jobs)')
+    parser.add_argument('--use_pca', action='store_true', help='Inject PCA vectors into Mamba layers if found')
 
     print(
         "\n#######################################################################\nPlease cite the following paper "
@@ -855,14 +937,23 @@ def predict_entry_point():
     else:
         device = torch.device('mps')
 
-    predictor = nnUNetPredictor(tile_step_size=args.step_size,
-                                use_gaussian=True,
-                                use_mirroring=not args.disable_tta,
-                                perform_everything_on_device=True,
-                                device=device,
-                                verbose=args.verbose,
-                                verbose_preprocessing=False,
-                                allow_tqdm=not args.disable_progress_bar)
+    if args.use_pca:
+        predictor = PCAAwarePredictor(tile_step_size=args.step_size,
+                                      use_gaussian=True,
+                                      use_mirroring=not args.disable_tta,
+                                      perform_everything_on_device=True,
+                                      device=device,
+                                      verbose=args.verbose,
+                                      allow_tqdm=not args.disable_progress_bar)
+    else:
+        predictor = nnUNetPredictor(tile_step_size=args.step_size,
+                                    use_gaussian=True,
+                                    use_mirroring=not args.disable_tta,
+                                    perform_everything_on_device=True,
+                                    device=device,
+                                    verbose=args.verbose,
+                                    verbose_preprocessing=False,
+                                    allow_tqdm=not args.disable_progress_bar)
     predictor.initialize_from_trained_model_folder(
         model_folder,
         args.f,

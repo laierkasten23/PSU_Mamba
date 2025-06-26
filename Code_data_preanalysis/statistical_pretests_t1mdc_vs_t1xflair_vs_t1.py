@@ -178,6 +178,14 @@ if __name__ == "__main__":
         '''
         Example:
         python statistical_pretests_t1mdc_vs_t1xflair_vs_t1.py --subjects_dir /var/datasets/LIA/MICCAI_preanalysis_data/ANON_DEM_preanalysis --file_ending1 _ChP_seg_T1mdc.nii --file_ending2 _ChP_seg_T1xFLAIR.nii --output_dir /var/datasets/LIA/MICCAI_preanalysis_data/ --output_file MICCAI_preanalysis_Dem.csv --save_results
+        python statistical_pretests_t1mdc_vs_t1xflair_vs_t1.py --subjects_dir /data1/LIA/MICCAI_preanalysis_data/ANON_DEM_preanalysis --file_ending1 _ChP_seg_T1mdc.nii --file_ending2 _ChP_seg_T1xFLAIR.nii --output_dir /var/datasets/LIA/MICCAI_preanalysis_data/ --output_file MICCAI_preanalysis_Dem.csv --save_results
+        python statistical_pretests_t1mdc_vs_t1xflair_vs_t1.py --subjects_dir /data1/LIA/ANON_MICCAI_preanalysis_Dem --file_ending1 _ChP_seg_T1mdc.nii --file_ending2 _ChP_seg_T1xFLAIR.nii --output_dir /var/datasets/LIA/ --output_file MICCAI_preanalysis_Dem.csv --save_results
+        python statistical_pretests_t1mdc_vs_t1xflair_vs_t1.py --subjects_dir /data1/LIA/T1mc_vs_T1xFLAIR_controlled_OK --file_ending1 _ChP_mask_T1_mdc.nii --file_ending2 _ChP_mask_T1xFLAIR.nii --output_dir ~/projects/phuse_thesis_2024/PRL/ --output_file PRL_preanalysis_T1mdc_vs_T1xFLAIR.csv --save_results
+        python statistical_pretests_t1mdc_vs_t1xflair_vs_t1.py --subjects_dir /data1/LIA/T1mc_vs_T1xFLAIR_controlled_OK --file_ending1 _ChP_mask_T1_mdc.nii --file_ending2 _ChP_mask_T1.nii --output_dir ~/projects/phuse_thesis_2024/PRL/ --output_file PRL_preanalysis_T1mdc_vs_T1.csv --save_results
+        python statistical_pretests_t1mdc_vs_t1xflair_vs_t1.py --subjects_dir /data1/LIA/T1mc_vs_T1xFLAIR_controlled_OK --file_ending1 _ChP_mask_T1_mdc.nii --file_ending2 _ChP_mask_FLAIR.nii --output_dir ~/projects/phuse_thesis_2024/PRL/ --output_file PRL_preanalysis_T1mdc_vs_FLAIR.csv --save_results
+        python statistical_pretests_t1mdc_vs_t1xflair_vs_t1.py --subjects_dir /data1/LIA/T1mc_vs_T1xFLAIR_controlled_OK --file_ending1 _ChP_mask_T1.nii --file_ending2 _ChP_mask_FLAIR.nii --output_dir ~/projects/phuse_thesis_2024/PRL/ --output_file PRL_preanalysis_T1mdc_vs_FLAIR.csv --save_results
+                                                                                                                                        
+        
         '''
         
         

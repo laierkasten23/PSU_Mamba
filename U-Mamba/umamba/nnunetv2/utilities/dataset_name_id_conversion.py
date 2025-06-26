@@ -40,6 +40,12 @@ def find_candidate_datasets(dataset_id: int):
 
 
 def convert_id_to_dataset_name(dataset_id: int):
+    # bash command to echo PATH variables
+    print("nnUNet_preprocessed=%s" % nnUNet_preprocessed)
+    print("nnUNet_results=%s" % nnUNet_results)
+    print("nnUNet_raw=%s" % nnUNet_raw)
+    print("dataset_id=%d" % dataset_id)
+    
     unique_candidates = find_candidate_datasets(dataset_id)
     if len(unique_candidates) > 1:
         raise RuntimeError("More than one dataset name found for dataset id %d. Please correct that. (I looked in the "

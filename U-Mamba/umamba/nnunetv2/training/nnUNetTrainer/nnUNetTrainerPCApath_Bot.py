@@ -23,9 +23,9 @@ from nnunetv2.utilities.helpers import empty_cache, dummy_context
 from nnunetv2.utilities.plans_handling.plans_handler import ConfigurationManager, PlansManager
 from nnunetv2.utilities.collate_outputs import collate_outputs 
 
-from nnunetv2.nets.UMambaBot_3d import get_umamba_bot_3d_from_plans
+from nnunetv2.nets.UMambaBot_3d_copy import get_umamba_bot_3d_from_plans
 from nnunetv2.nets.UMambaBot_2d import get_umamba_bot_2d_from_plans
-from nnunetv2.nets.UMambaEnc_3d import get_umamba_enc_3d_from_plans
+from nnunetv2.nets.UMambaEnc_3d_copy import get_umamba_enc_3d_from_plans
 from nnunetv2.nets.UMambaEnc_2d import get_umamba_enc_2d_from_plans
 
 from typing import Union, List, Tuple
@@ -69,11 +69,11 @@ class nnUNetTrainerPCApath(nnUNetTrainer):
         #print("dataset_tr keys: ", dataset_tr.keys())
         #print("shape: ", dataset_tr.dataset[tr_keys[0]]['data'].shape)
         #plt.imshow(dataset_tr.dataset[tr_keys[0]]['data'][0, :, 100, :])
-        #plt.savefig('/var/datasets/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_slice_x_dataset_tr.png')
+        #plt.savefig('/data1/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_slice_x_dataset_tr.png')
         #plt.close()
         
         #plt.imshow(dataset_val.dataset[val_keys[0]]['data'][0, :, 100, :])
-        #plt.savefig('/var/datasets/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_slice_x_dataset_val.png')
+        #plt.savefig('/data1/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_slice_x_dataset_val.png')
         #plt.close()
         
         return dataset_tr, dataset_val

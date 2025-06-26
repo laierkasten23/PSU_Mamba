@@ -107,6 +107,8 @@ def evaluate_all_experiments(pred_folders, gt_folder, save_csv_path):
             
             # Check for empty tensors
             if torch.sum(pred_tensor) == 0 or torch.sum(gt_tensor) == 0:
+                print("Currently evaluating model path:", pred_folder)
+                print(f"Processing file: {filename}")
                 print("Warning: Empty prediction or ground truth tensor detected.")
                 continue
             
@@ -146,6 +148,13 @@ def evaluate_all_experiments(pred_folders, gt_folder, save_csv_path):
             precision, recall, f1_score = confusion_matrix_metric.aggregate()
             
             f1_scores.append(np.round(f1_score.item(),4))
+            # Match prediction and ground truth by prefix
+            pred_prefix = extract_prefix(pred_file)
+            gt_prefix = extract_prefix(filename)
+            if pred_prefix != gt_prefix:
+                print(f"Skipping: Prefix mismatch - pred: {pred_file}, gt: {filename}")
+                continue
+
             precisions.append(np.round(precision.item(),4))
             recalls.append(np.round(recall.item(),4))
 
@@ -153,21 +162,31 @@ def evaluate_all_experiments(pred_folders, gt_folder, save_csv_path):
             del pred_tensor, gt_tensor
             gc.collect()
 
-        # Aggregate metrics to get summary statistics
+            # Aggregate metrics to get summary statistics
         mean_dice = sum(dice_scores) / len(dice_scores)
+        std_dice = np.std(dice_scores)
         mean_hd_distance = sum(hd_distances) / len(hd_distances)
+        std_hd_distance = np.std(hd_distances)
         mean_precision = sum(precisions) / len(precisions)
+        std_precision = np.std(precisions)
         mean_recall = sum(recalls) / len(recalls)
+        std_recall = np.std(recalls)
         mean_f1_score = sum(f1_scores) / len(f1_scores)
+        std_f1_score = np.std(f1_scores)
 
         # Append the results to the list
         results_list.append({
             "Model": model_modality,
             "Mean Dice": np.round(mean_dice,4),
+            "Std Dice": np.round(std_dice,4),
             "Mean HD": np.round(mean_hd_distance,4),
+            "Std HD": np.round(std_hd_distance,4),
             "Precision": np.round(mean_precision,4),
+            "Std Precision": np.round(std_precision,4),
             "Recall": np.round(mean_recall,4),
+            "Std Recall": np.round(std_recall,4),
             "F1 Score": np.round(mean_f1_score,4),
+            "Std F1 Score": np.round(std_f1_score,4),
             "Best Dice": best_dice_prefix,
             "Worst Dice": worst_dice_prefix,
             "Best HD": best_hd_prefix,

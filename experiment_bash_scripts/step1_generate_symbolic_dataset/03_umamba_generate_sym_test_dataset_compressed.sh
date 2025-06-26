@@ -9,7 +9,7 @@ datasettype=UMAMBA
 path="/mnt/turing/LIA/pazienti"
 
 path="/var/datasets/LIA/ANON_Lia_SM_2"
-output_dir="/var/datasets/LIA/Umamba_data/nnUNet_raw/"
+output_dir="/data1/LIA/Umamba_data/nnUNet_raw/"
 
 skip_validation=True
 test_data_only=True

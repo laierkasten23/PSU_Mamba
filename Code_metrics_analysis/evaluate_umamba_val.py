@@ -74,15 +74,15 @@ def evaluate_model_all_folds_together(model_folder, gt_folder):
         for pred_file in pred_files:
             pred_prefix = extract_prefix(pred_file)
             # if prefix 015, 047, 80 or 098, skip
-            if mod_name == 'nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general_128__3d_fullres_global_pca' and pred_prefix in ['057', '028', '043', '025', '020', '031', '021']: # ['015', '047', '080', '098'], ['057', '028'], ['098', '047'], ['015', '080']
+            if mod_name == 'nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general_128__3d_fullres_global_pca' and pred_prefix in ['057', '028', '043', '025', '020', '031', '021']: # ['015', '047', '080', '098'], ['057', '028'], ['098', '047'], ['015', '080']
                 print(f"Skipping prediction file {pred_file} with prefix {pred_prefix}")
                 continue
             
-            if mod_name == 'nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general_128__3d_fullres_x' and pred_prefix in ['020', '028', '052']: 
+            if mod_name == 'nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general_128__3d_fullres_x' and pred_prefix in ['020', '028', '052']: 
                 print(f"Skipping prediction file {pred_file} with prefix {pred_prefix}")
                 continue
             
-            if mod_name == 'nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general_128__3d_fullres_y' and pred_prefix in ['057', '052', '043', '025']: 
+            if mod_name == 'nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general_128__3d_fullres_y' and pred_prefix in ['057', '052', '043', '025']: 
                 print(f"Skipping prediction file {pred_file} with prefix {pred_prefix}")
                 continue
             
@@ -201,15 +201,15 @@ if __name__ == "__main__":
  # 
     # Example usage:
     """
-    python evaluate_umamba_val.py --models_folder /data1/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA \
-        --gt_folder /data1/LIA/Umamba_data/nnUNet_raw/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/labelsTr \
-        --save_csv_path /data1/LIA/Umamba_data/results_umamba_val_Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA \
-        --model_names nnUNetTrainerUMambaBot__nnUNetPlans_First_general__3d_fullres nnUNetTrainerUMambaEnc__nnUNetPlans_First_general__3d_fullres nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general__3d_fullres_x nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general__3d_fullres_y nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general__3d_fullres_z nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general__3d_fullres_global_pca nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general_64__3d_fullres_x nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general_64__3d_fullres_y nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general_64__3d_fullres_z nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general_64__3d_fullres_xy-diag nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general_64__3d_fullres_global_pca nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general_32__3d_fullres_global_pca
+    python evaluate_umamba_val.py --models_folder /data1/user/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA \
+        --gt_folder /data1/user/Umamba_data/nnUNet_raw/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/labelsTr \
+        --save_csv_path /data1/user/Umamba_data/results_umamba_val_Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA \
+        --model_names nnUNetTrainerUMambaBot__nnUNetPlans_First_general__3d_fullres nnUNetTrainerUMambaEnc__nnUNetPlans_First_general__3d_fullres nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general__3d_fullres_x nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general__3d_fullres_y nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general__3d_fullres_z nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general__3d_fullres_global_pca nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general_64__3d_fullres_x nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general_64__3d_fullres_y nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general_64__3d_fullres_z nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general_64__3d_fullres_xy-diag nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general_64__3d_fullres_global_pca nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general_32__3d_fullres_global_pca
     
-    python evaluate_umamba_val.py --models_folder /data1/LIA/Umamba_data/nnUNet_results/Dataset299_BrainStem \
-        --gt_folder /data1/LIA/Umamba_data/nnUNet_raw/Dataset299_BrainStem/labelsTr \
-        --save_csv_path /data1/LIA/Umamba_data/results_umamba_val_Dataset299_BrainStem \
-        --model_names nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general_128__3d_fullres_global_pca nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general_128__3d_fullres_x nnUNetTrainerMambaFirstStem_PCA_2components_general__nnUNetPlans_First_general_128__3d_fullres_y
+    python evaluate_umamba_val.py --models_folder /data1/user/Umamba_data/nnUNet_results/Dataset299_BrainStem \
+        --gt_folder /data1/user/Umamba_data/nnUNet_raw/Dataset299_BrainStem/labelsTr \
+        --save_csv_path /data1/user/Umamba_data/results_umamba_val_Dataset299_BrainStem \
+        --model_names nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general_128__3d_fullres_global_pca nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general_128__3d_fullres_x nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba__nnUNetPlans_First_general_128__3d_fullres_y
     """
     # 
     

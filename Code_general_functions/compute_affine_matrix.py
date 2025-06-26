@@ -95,9 +95,9 @@ def find_corresponding_t1(flair_image_paths, root_dir_t1):
     
     return flair_to_t1
 
-root_dir = '/home/linuxlia/Lia_Masterthesis/data/pazienti'
-root_dir_flair = '/home/linuxlia/Lia_Masterthesis/data/rrFLAIR_OK'
-root_dir_t1 = '/home/linuxlia/Lia_Masterthesis/data/pazienti'
+root_dir = '/home/linuxuser/user/data/pazienti'
+root_dir_flair = '/home/linuxuser/user/data/rrFLAIR_OK'
+root_dir_t1 = '/home/linuxuser/user/data/pazienti'
 
 
 image_type = 'FLAIR'  # Change to 'T1' or other types as needed
@@ -145,9 +145,9 @@ for i in range(len(flair_images)):
 
 print(list_comparing_flair_vs_t1)
 
-#t1_38_path = '/home/linuxlia/Lia_Masterthesis/data/pazienti1_52_Lia/038/038_T1.nii' 
-#flair_38_path = '/home/linuxlia/Lia_Masterthesis/data/pazienti1_52_Lia/038/038_FLAIR.nii'
-#flair_38_coregistred_path = '/home/linuxlia/Lia_Masterthesis/data/pazienti1_52_Lia/038/038_FLAIR_Lia_registered.nii'
+#t1_38_path = '/home/linuxuser/user/data/pazienti1_52_user/038/038_T1.nii' 
+#flair_38_path = '/home/linuxuser/user/data/pazienti1_52_user/038/038_FLAIR.nii'
+#flair_38_coregistred_path = '/home/linuxuser/user/data/pazienti1_52_user/038/038_FLAIR_user_registered.nii'
 
 #t1_vs_flair_38 = compare_affine_matrices(t1_38_path, flair_38_path)
 #t1_vs_flair_38_coregistred = compare_affine_matrices(t1_38_path, flair_38_coregistred_path)

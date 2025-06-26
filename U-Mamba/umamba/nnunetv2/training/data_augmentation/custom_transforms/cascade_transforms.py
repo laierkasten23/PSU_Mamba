@@ -21,9 +21,9 @@ class MoveSegAsOneHotToData(AbstractTransform):
         self.index_in_origin = index_in_origin
 
     def __call__(self, **data_dict):
-        # TODO LIA: print shape of data_dict[self.key_origin] and data_dict[self.key_target] (remove later)
+        #  user: print shape of data_dict[self.key_origin] and data_dict[self.key_target] (remove later)
         print(f"Shape of {self.key_origin}: {data_dict[self.key_origin].shape}")
-        # TODO remove until here
+        #  remove until here
         seg = data_dict[self.key_origin][:, self.index_in_origin:self.index_in_origin+1]
 
         seg_onehot = np.zeros((seg.shape[0], len(self.all_labels), *seg.shape[2:]),
@@ -112,9 +112,9 @@ class ApplyRandomBinaryOperatorTransform(AbstractTransform):
         self.channel_idx = channel_idx
 
     def __call__(self, **data_dict):
-        data = data_dict[self.key] # TODO LIA: check shape and if this works
+        data = data_dict[self.key] #  user: check shape and if this works
         print(f"Input shape: {data.shape}")  # Print the input shape
-        #  TODO remove again until here. This is just for debugging
+        #   remove again until here. This is just for debugging
         for b in range(data_dict[self.key].shape[0]):
             if np.random.uniform() < self.p_per_sample:
                 # this needs to be applied in random order to the channels

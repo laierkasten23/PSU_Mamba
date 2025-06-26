@@ -232,19 +232,13 @@ def folderstructure_changer(path,
             img = nib.load(os.path.join(path, subject, image_name))
             nib.save(img, path_to_save_img_test)
     
-    
-    # Remove the original folders
-    #for subject in subjects:
-    #    shutil.rmtree(os.path.join(path, subject))
-    # Remove the dataset folder
-    #shutil.rmtree(path)
-            
+
 
 
 if __name__ == '__main__':
     print('Starting reorganizing Dataset')
     parser = argparse.ArgumentParser()
-    parser.add_argument('--path', type=str, default='/Users/liaschmid/Documents/Uni Heidelberg/7_Semester_Thesis/ASCHOPLEX/ANON_DATA_01_labels')
+    parser.add_argument('--path', type=str, default='/Users/user/Documents/projects_/ASCHOPLEX/ANON_DATA_01_labels')
     parser.add_argument('--task_id', type=int, default=53)
     parser.add_argument('--task_name', type=str, default='Choroid_Plexus')
     parser.add_argument('--test_data_only', type=bool, default=False, help='If True, only the test data is created and masks do not exist')
@@ -269,20 +263,12 @@ if __name__ == '__main__':
     
 
     '''
-    python3 launching_tool.py --dataroot '/Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/ASCHOPLEX/dataset' --work_dir '/Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/ASCHOPLEX' --finetune yes --prediction yes
+    python3 launching_tool.py --dataroot '/Users/user/Documents/projects_/ASCHOPLEX/dataset' --work_dir '/Users/user/Documents/projects_/ASCHOPLEX' --finetune yes --prediction yes
 
     Example Usage:
-    python step1_dataset_creator.py --path /var/data/MONAI_Choroid_Plexus/ANON_DATA_01_labels --folder_name dataset_aschoplex --amount_train_subjects 10
-    python step1_dataset_creator.py --path /var/data/MONAI_Choroid_Plexus/ANON_FLAIR_COREG_2 --folder_name dataset_aschoplex_2 --test_data_only True
-    python3 step1_dataset_creator.py --path /Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/phuse_thesis_2024/data/ANON_FLAIR_COREG_2 --folder_name dataset_aschoplex_2 --test_data_only True
-    python3 step1_dataset_creator.py --path /Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/phuse_thesis_2024/data/ANON_FLAIR_COREG_2 --folder_name dataset_aschoplex_2 --test_data_only True
-    python3 step1_dataset_creator.py --path /home/linuxlia/Lia_Masterthesis/data/ANON_FLAIR_COREG --task_id 59 --task_name 'ChoroidPlexus_FLAIR' --datasettype 'NNUNETV2' --modality 'FLAIR' 
-    python3 step1_dataset_creator.py --path /home/linuxlia/Lia_Masterthesis/data/ANON_FLAIR_COREG --task_id 59 --task_name 'ChoroidPlexus_FLAIR' --datasettype 'UMAMBA' --modality 'FLAIR' --add_id_img '' --add_id_lab '' --fileending '.nii.gz'
-    python3 step1_dataset_creator.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 59 --task_name 'ChoroidPlexus_FLAIR' --datasettype 'UMAMBA' --modality 'FLAIR' --add_id_img '' --add_id_lab '' --fileending '.nii.gz'
-    python3 step1_dataset_creator.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 12 --task_name 'ChoroidPlexus_T1' --train_test_index_list "001,004,006,014,027,101" --datasettype 'UMAMBA' --modality 'FLAIR' --add_id_img '' --add_id_lab '' --fileending '.nii.gz'
-    python3 step1_dataset_creator.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 11 --task_name 'ChoroidPlexus_T1_AP' --train_test_index_list "093,040,032,096,053,017,044,011,054,009,072,008,067,003,092,002,076,068,029,037,018,041,100,004,036,090,043,071,061,038,103,077,022,013,101,094,066,060,079,001,033,058,021,030,056,069,063,015,097,059,057,046,012,099,089,048,024,098,075,042,078,023,087,034,028,039,050,027,025,055,052,014,049,081,085,010" --datasettype 'ASCHOPLEX' --modality 'T1' 
+    python3 step1_dataset_creator.py --path /home/linuxuser/user/data/pazienti --task_id 11 --task_name 'ChoroidPlexus_T1_AP' --train_test_index_list "093,040,032,096,053,017,044,011,054,009,072,008,067,003,092,002,076,068,029,037,018,041,100,004,036,090,043,071,061,038,103,077,022,013,101,094,066,060,079,001,033,058,021,030,056,069,063,015,097,059,057,046,012,099,089,048,024,098,075,042,078,023,087,034,028,039,050,027,025,055,052,014,049,081,085,010" --datasettype 'ASCHOPLEX' --modality 'T1' 
     
     
-    /Users/liaschmid/Documents/Uni Heidelberg/7_Semester_Thesis/ASCHOPLEX/launching_tool.py
-    --path /Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/ASCHOPLEX/ANON_DATA
+    /Users/user/Documents/projects_/ASCHOPLEX/launching_tool.py
+    --path /Users/user/Documents/projects_/ASCHOPLEX/ANON_DATA
     '''

@@ -1,270 +1,123 @@
-# Phuse Thesis 2024
+# Choroid Plexus Segmentation in MRI Using the Novel T1×FLAIR Modality and PSU-Mamba: a Projective Scan U-Mamba Approach
 
-## General Guide
-### Step 1:  Anonymize Data
+The Choroid Plexus (CP) is increasingly recognized as a potential biomarker for neurodegenerative diseases (NDDs) such as Alzheimer’s Disease and its precursor pathologies. However, segmentation remains challenging, especially when Contrast-Enhanced T1-weighted (CE-T1w) imaging—typically used in Multiple Sclerosis (MS)—is unavailable due to its invasiveness and limited clinical use in NDDs.
+To address these challenges, we introduce three key contributions. First, we propose and validate *T1×FLAIR*, a novel, non-invasive modality created by gamma-corrected voxelwise multiplication of coregistered T1w and FLAIR images. This modality is clinically feasible and preserves the resolution of standard imaging while improving CP visibility. Second, we introduce *PSU-Mamba* (Projective Scan U-Mamba), a segmentation model that incorporates anatomical priors of the structure to be segmented into an optimal flattening strategy for Mamba layers. This design enhances segmentation accuracy while maintaining linear complexity and demonstrates faster convergence even with fewer training epochs. Third, we release *ChP-MRI*, a high-quality 3D MRI dataset of 168 patients with NDDs or MS,  including T1w, FLAIR, and T1×FLAIR images with corresponding expert-annotated CP segmentations. This dataset—clinically validated, quality-controlled, and multi-pathology—sets a new benchmark for CP segmentation research. Experimental results on ChP-MRI confirm the effectiveness of the proposed approach, showing that T1×FLAIR outperforms T1-weighted imaging as an alternative to CE-T1w and that PSU-Mamba is  systematically more robust than state-of-the-art segmentation methods. 
 
-This step is only necessary if the data you received is NOT anonymized.
+Note: Dataset can be requested contacting anonymous@anoym.com.
 
-Initial folder structure: 
+Our main contributions can be summarized as follows:
 
-```
-python3 anonymize_dataset.py --path '/Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/phuse_thesis_2024/data/processed_data' --new_folder_name 'ANON_FLAIR_COREG_2' 
-```
+- We propose and validate a novel modality, namely **T1×FLAIR**, as the new gold standard for CP segmentation as an alternative to CE-T1w imaging.
+- We introduce the **Projective Scan U-Mamba (PSU-Mamba)** model, which incorporates the geometric characteristics of the choroid plexus by incorporating a positional projectove scan strategy, to enhance U-Mamba-based segmentation.
+- We release **ChP-MRI**, a high-quality 3D MRI dataset comprising 168 patients with neurodegenerative diseases or multiple sclerosis, each with corresponding T1-weighted, FLAIR, and T1×FLAIR modalities, along with ground truth (GT) segmentations.
 
-``` 
-pazienti
-├── name1
-│   ├── FLAIR_name1.nii
-│   ├── T1_name1.nii
-│   └── T1xFLAIR.nii
-├── name2
-│   ├── FLAIR_name2.nii
-│   ├── T1_name2.nii
-│   └── T1xFLAIR.nii
-``` 
+### PSU-Mamba:
+The network follows a U-Net-style encoder-decoder structure. It begins with a ResNet-based stem layer, followed by a Mamba block comprising a convolutional layer and a Mamba layer with a projective scan to determine the flattening of the input. The remaining *N-1* encoder layers and all $N$ decoder layers are implemented as convolutional layers. 
 
-After Anonymization the folder structure should look something like this: 
+<p align="center">
+  <img src="PSU.png" 
+  width="600"/>
+</p>
 
+To compute the positional projective scan, we start from the ground truths, generate a probability map ◊and passed through the stem layer. PCA is then applied. Subsequently, all inputs processed through the same stem layer are projected on the principal direction identified by the PCA.
 
-``` 
-pazienti
-├── 001
-│   ├── 001_ChP_mask_FLAIR_manual_seg.nii
-│   ├── 001_ChP_mask_T1_manual_seg.nii
-│   ├── 001_ChP_mask_T1xFLAIR_manual_seg.nii
-│   ├── 001_FLAIR.nii
-│   ├── 001_FLAIR_gamma_corrected.nii
-│   ├── 001_T1.nii
-│   ├── 001_T1_gamma_corrected.nii
-│   └── 001_T1xFLAIR.nii
-├── 002
-│   ├── 002_ChP_mask_FLAIR_manual_seg.nii
-│   ├── 002_ChP_mask_T1_manual_seg.nii
-│   ├── 002_ChP_mask_T1xFLAIR_manual_seg.nii
-│   ├── 002_FLAIR.nii
-│   ├── 002_FLAIR_gamma_corrected.nii
-│   ├── 002_T1.nii
-│   ├── 002_T1_gamma_corrected.nii
-│   └── 002_T1xFLAIR.nii
-├── xxx
-├── ...
-└── README.md
-```
-
-### Step 2:  Generate Train Test Split to have the same data split for all models used afterwards
-This split generates a .txt file splitting the data into training indices and test indices. 
-
-```
-python /home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/Code_data_preprocessing/step1_0_group_balanced_train_test_split.py
-```
-
-### Step 3: Create dataset structure
-
-
-To generate a folder structure dependent on the model you intend to use, run the following script: 
-
-```
-python3 Code_data_preprocessing/step1_dataset_creator.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 12 --task_name 'ChoroidPlexus_T1' --datasettype 'UMAMBA' --amount_train_subjects 78 --train_test_index_list "001,004,006,014,027,101" --modality 'T1' --add_id_img '' --add_id_lab '' --fileending '.nii'
-
-
-python3 Code_data_preprocessing/step1_dataset_creator.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 12 --task_name 'ChoroidPlexus_T1' --datasettype 'UMAMBA' --amount_train_subjects 78 --modality 'T1' --add_id_img '' --add_id_lab '' --fileending '.nii'
-
-python3 step1_dataset_creator.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 11 --task_name 'ChoroidPlexus_T1_UMAMBA' --train_test_index_list "093,040,032,096,053,017,044,011,054,009,072,008,067,003,092,002,076,068,029,037,018,041,100,004,036,090,043,071,061,038,103,077,022,013,101,094,066,060,079,001,033,058,021,030,056,069,063,015,097,059,057,046,012,099,089,048,024,098,075,042,078,023,087,034,028,039,050,027,025,055,052,014,049,081,085,010" --datasettype 'UMAMBA' --modality 'T1' --fileending '.nii'
+### Conclusion:
+ PSU-Mamba as a geometry-aware 3D segmentation framework that integrates a Mamba block at the input layer to enable anatomically guided scan paths via a projective strategy. Applied to a new high-quality choroid plexus dataset with T1×FLAIR imaging, it improves segmentation in low-contrast regions, accelerates convergence, and generalizes to other complex 3D structures—offering a fast, contrast-free alternative for clinical use.
+<p align="center">
+  <img src="results_PSU.png" />
+</p>
 
 
 
-python3 step1_dataset_creator.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 11 --task_name 'ChoroidPlexus_T1_AP' --train_test_index_list "093,040,032,096,053,017,044,011,054,009,072,008,067,003,092,002,076,068,029,037,018,041,100,004,036,090,043,071,061,038,103,077,022,013,101,094,066,060,079,001,033,058,021,030,056,069,063,015,097,059,057,046,012,099,089,048,024,098,075,042,078,023,087,034,028,039,050,027,025,055,052,014,049,081,085,010" --datasettype 'ASCHOPLEX' --modality 'T1' --fileending '.nii'
+## Set Up
+Our work is built on nnUNetv2.
 
-```
-
-
-
-## Aschoplex 
-### Environment 
-```
-python3 -m venv monai13 --system-site-packages
-```
-
-## MONAI 
-### Environment 
- ```
- source envs/monai13/bin/activate
-
- pip install monai
- pip install nibabel
- pip install mlflow
- pip install testresources
- pip install wrapt==1.14.1
- pip install protobuf==3.20.3
- pip install fire
- pip install einops==0.8.0
-
- ```
-
-```
-python3 Code_data_preprocessing/step1_dataset_creator.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 12 --task_name 'ChoroidPlexus_T1' --datasettype 'UMAMBA' --amount_train_subjects 78 --modality 'T1' --add_id_img '' --add_id_lab '' --fileending '.nii'
-
-python3 Code_data_preprocessing/step1_dataset_creator.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 12 --task_name 'ChoroidPlexus_T1' --datasettype 'UMAMBA' --amount_train_subjects 78 --train_test_index_list "001,004,006,014,027,101" --modality 'T1' --add_id_img '' --add_id_lab '' --fileending '.nii'
-
-```
-
-### Step 2: 
-```
-python3 Code_data_preprocessing/step1_dataset_creator.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 13 --task_name 'ChoroidPlexus_T1' --datasettype 'NNUNETV2' --amount_train_subjects 78 --modality 'T1' --add_id_img '' --add_id_lab '' --fileending '.nii'
-
-python3 Code_data_preprocessing/step1_dataset_creator.py --path /home/linuxlia/Lia_Masterthesis/data/pazienti --task_id 13 --task_name 'ChoroidPlexus_T1' --datasettype 'NNUNETV2' --amount_train_subjects 78 --train_test_index_list "001,004,006,014,027,101" --modality 'T1' --add_id_img '' --add_id_lab '' --fileending '.nii'
-
-```
-
-### Step 3: Generate Datalist json
-
-
-
-## U-Mamba 
-### Environment 
-linuxlia@CAD-WORKSTATION
-```
- conda activate umamba
-```
-
-hpc 
-python3 -m venv {env_name} --system-site-packages
-pip3 install torch==2.2.2 torchvision==0.17.2 torchaudio==2.2.2 --index-url https://download.pytorch.org/whl/cu118 -I
-
-
-
-### Step 3: Generate Datalist json
-
-#### Training only UMAMBA 
-```
-python Code_data_preprocessing/step2_create_json_nnunetv2.py --mode "train" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset012_ChoroidPlexus_T1" --work_dir "/home/linuxlia/Lia_Masterthesis/data/Dataset012_ChoroidPlexus_T1" --train_val_ratio 1.0 --num_folds 1 --datasettype "UMAMBA" --modality "['T1']"
-```
-
-#### Training and prediction UMAMBA 
-```
-python Code_data_preprocessing/step2_create_json_nnunetv2.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset012_ChoroidPlexus_T1" --work_dir "/home/linuxlia/Lia_Masterthesis/data/Dataset012_ChoroidPlexus_T1" --train_val_ratio 1.0 --num_folds 1 --datasettype "UMAMBA" --modality "['T1']"
-```
-
-### Train 3D U-Mamba_Bot
-```
-nnUNetv2_train DATASET_ID 3d_fullres all -tr nnUNetTrainerUMambaBot
-```
-
-### Train 3D U-Mamba_Enc
-```
-nnUNetv2_train DATASET_ID 3d_fullres all -tr nnUNetTrainerUMambaBot
-```
-
-### Inference U-Mamba
-#### Predict testing cases with U-Mamba_Bot model
-```
-nnUNetv2_predict -i INPUT_FOLDER -o OUTPUT_FOLDER -d DATASET_ID -c 3d_fullres -f all -tr nnUNetTrainerUMambaBot --disable_tta
-```
-
-#### Predict testing cases with U-Mamba_Enc model
-```
-nnUNetv2_predict -i INPUT_FOLDER -o OUTPUT_FOLDER -d DATASET_ID -c 3d_fullres -f all -tr nnUNetTrainerUMambaEnc --disable_tta
-```
-
-#### nnunetv2 
-# Setting up Paths
-
-nnU-Net relies on environment variables to know where raw data, preprocessed data and trained model weights are stored. 
+nnU-Net relies on environment variables to know where raw data, preprocessed data and trained model weights are stored.
 To use the full functionality of nnU-Net, the following three environment variables must be set:
 
-1) `nnUNet_raw`: This is where you place the raw datasets. This folder will have one subfolder for each dataset names 
-DatasetXXX_YYY where XXX is a 3-digit identifier (such as 001, 002, 043, 999, ...) and YYY is the (unique) 
-dataset name. The datasets must be in nnU-Net format, see [here](dataset_format.md).
+1) `nnUNet_raw`: This is where you place the raw datasets. This folder will have one subfolder for each dataset names
+   DatasetXXX_YYY where XXX is a 3-digit identifier (such as 001, 002, 043, 999, ...) and YYY is the (unique)
+   dataset name. The datasets must be in nnU-Net format, see [here](dataset_format.md).
 
-    Example tree structure:
-    ```
-    nnUNet_raw/Dataset001_NAME1
-    ├── dataset.json
-    ├── imagesTr
-    │   ├── ...
-    ├── imagesTs
-    │   ├── ...
-    └── labelsTr
-        ├── ...
-    nnUNet_raw/Dataset002_NAME2
-    ├── dataset.json
-    ├── imagesTr
-    │   ├── ...
-    ├── imagesTs
-    │   ├── ...
-    └── labelsTr
-        ├── ...
-    ```
+   Example tree structure:
 
-2) `nnUNet_preprocessed`: This is the folder where the preprocessed data will be saved. The data will also be read from 
-this folder during training. It is important that this folder is located on a drive with low access latency and high 
-throughput (such as a nvme SSD (PCIe gen 3 is sufficient)).
+   ```
+   nnUNet_raw/Dataset001_NAME1
+   ├── dataset.json
+   ├── imagesTr
+   │   ├── ...
+   ├── imagesTs
+   │   ├── ...
+   └── labelsTr
+       ├── ...
+   nnUNet_raw/Dataset002_NAME2
+   ├── dataset.json
+   ├── imagesTr
+   │   ├── ...
+   ├── imagesTs
+   │   ├── ...
+   └── labelsTr
+       ├── ...
+   ```
+2) `nnUNet_preprocessed`: This is the folder where the preprocessed data will be saved. The data will also be read from
+   this folder during training. It is important that this folder is located on a drive with low access latency and high
+   throughput (such as a nvme SSD (PCIe gen 3 is sufficient)).
+3) `nnUNet_results`: This specifies where nnU-Net will save the model weights. If pretrained models are downloaded, this
+   is where it will save them.
 
-3) `nnUNet_results`: This specifies where nnU-Net will save the model weights. If pretrained models are downloaded, this 
-is where it will save them.
-
-### How to set environment variables
-See [here](set_environment_variables.md).
-
-In our case: 
 # Linux & MacOS
 
-## Permanent
+## Permanent setting of environment variables
+
 Locate the `.bashrc` file in your home folder and add the following lines to the bottom:
 
 ```bash
-export nnUNet_raw="/home/linuxlia/Lia_Masterthesis/data/Umamba_data/nnUNet_raw"
-export nnUNet_preprocessed="/home/linuxlia/Lia_Masterthesis/data/Umamba_data/nnUNet_preprocessed"
-export nnUNet_results="/home/linuxlia/Lia_Masterthesis/data/Umamba_data/nnUNet_results"
+export nnUNet_raw="/data/Umamba_data/nnUNet_raw"
+export nnUNet_preprocessed="/data/Umamba_data/nnUNet_preprocessed"
+export nnUNet_results="/data/Umamba_data/nnUNet_results"
 ```
 
  Furthermore, export the U-Mamba trainers to make them accessible by imports
- ```bash 
- export PYTHONPATH=$PYTHONPATH:/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/03_U-Mamba/umamba/nnunetv2
- ```
 
-and add it to PATH
-```bash 
-export PATH="/home/linuxlia/miniconda3/envs/umamba/bin:$PATH"
-```
-
-```bash 
-export PYTHONPATH=/home/studenti/facchi/lia_masterthesis/phuse_thesis_2024/U-Mamba/umamba/nnunetv2:$PYTHONPATH
-```
-
-```bash 
-export PATH="/home/studenti/facchi/lia_masterthesis/phuse_thesis_2024/U-Mamba/umamba/nnunetv":$PATH"
-```
-
-
-# Define the path to the Conda environment's bin directory
-CONDA_BIN_PATH=/home/linuxlia/miniconda3/envs/umamba/bin
-
-# Add the directory containing the custom trainer class to PYTHONPATH
-export PYTHONPATH=$PYTHONPATH:/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/03_U-Mamba/umamba/nnunetv2
-
-# Preprocessing
-nnUNetv2_plan_and_preprocess -d 332 --verify_dataset_integrity
-
-# Train 3D models using Mamba block in bottleneck (U-Mamba_Bot)
-#nnUNetv2_train 332 3d_fullres all -tr nnUNetTrainerUMambaBot
-
-IMPORTANT: If you plan to use `nnUNetv2_find_best_configuration` (see below) add the `--npz` flag. This makes 
-nnU-Net save the softmax outputs during the final validation. They are needed for that. Exported softmax
-predictions are very large and therefore can take up a lot of disk space, which is why this is not enabled by default.
-If you ran initially without the `--npz` flag but now require the softmax predictions, simply rerun the validation with:
 ```bash
-nnUNetv2_train DATASET_NAME_OR_ID UNET_CONFIGURATION FOLD --val --npz
+ export PYTHONPATH=$PYTHONPATH:/U-Mamba/umamba/nnunetv2
 ```
 
+## Usage
 
-# Inference
-#nnUNetv2_predict -i INPUT_FOLDER -o OUTPUT_FOLDER -d 332 -c CONFIGURATION -f all -tr nnUNetTrainerUMambaBot --disable_tta
+### Plan and Preprocess
 
-!! activate umamba AND monai13!!! otherwise it wont work
+```
+nnUNetv2_plan_and_preprocess -d 433 -c 3d_fullres -overwrite_plans_name nnUNetPlans_conv --verify_dataset_integrity
+```
+
+### Training of the folds
+
+```
+nnUNetv2_train 433 3d_fullres 0 -tr nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba -p nnUNetPlans_First_general_64 --npz --c
+nnUNetv2_train 433 3d_fullres 1 -tr nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba -p nnUNetPlans_First_general_64 --npz
+nnUNetv2_train 433 3d_fullres 2 -tr nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba -p nnUNetPlans_First_general_64 --npz
+nnUNetv2_train 433 3d_fullres 3 -tr nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba -p nnUNetPlans_First_general_64 --npz
 
 
- ## SAM 
- ```
- source envs/sam/bin/activate
- ```
+nnUNetv2_train 299 3d_fullres 0 -tr nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba -p nnUNetPlans_First_general_128 --npz --c # 
+nnUNetv2_train 299 3d_fullres 1 -tr nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba -p nnUNetPlans_First_general_128 --npz --c # 
+nnUNetv2_train 299 3d_fullres 2 -tr nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba -p nnUNetPlans_First_general_128 --npz --c # 
+nnUNetv2_train 299 3d_fullres 3 -tr nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba -p nnUNetPlans_First_general_128 --npz --c # 
+
+```
+
+### Finding best configuration
+```
+nnUNetv2_find_best_configuration 433 -c 3d_fullres -tr nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba -p nnUNetPlans_First_general_64 -f 0 1 2 3
+```
+
+### Postprocessing of prediction
+
+```
+OUTPUT_FOLDER = "SET_YOUR_PATH"
+OUTPUT_FOLDER_PP = "SET_YOUR_PATH_PP"
+
+
+```
+

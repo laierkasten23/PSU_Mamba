@@ -215,7 +215,7 @@ class nnUNetTrainerMambaFirstStem_PCA(nnUNetTrainer):
 
         self.logger.log('train_losses', loss_here, self.current_epoch)
         
-        # Adding pca for scan path #! Lia 
+        # Adding pca for scan path #! user 
         if self.current_epoch == 0 and self.local_rank == 0:
             print("Computing PCA scan path from ground truth masks...")
 

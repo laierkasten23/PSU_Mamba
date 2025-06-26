@@ -10,9 +10,9 @@ def generate_final_splits(input_path, output_path):
         output_path (_type_): _description_
         
         Usage: python generate_final_splits_json.py <input_path> <output_path>
-        e.g. python generate_final_splits_json.py "/mnt/turing/LIA/pazienti/folds.json" "/data1/LIA/Umamba_data/nnUNet_preprocessed/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/splits_final.json"
-        python generate_final_splits_json.py "/mnt/LIA/pazienti/folds.json" "/data1/LIA/Umamba_data/nnUNet_preprocessed/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/splits_final.json"
-        python generate_final_splits_json.py "/mnt/LIA/pazienti/folds.json" "/mnt/LIA/pazienti/splits_final.json"
+        e.g. python generate_final_splits_json.py "/mnt/turing/user/pazienti/folds.json" "/data1/user/Umamba_data/nnUNet_preprocessed/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/splits_final.json"
+        python generate_final_splits_json.py "/mnt/user/pazienti/folds.json" "/data1/user/Umamba_data/nnUNet_preprocessed/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/splits_final.json"
+        python generate_final_splits_json.py "/mnt/user/pazienti/folds.json" "/mnt/user/pazienti/splits_final.json"
         
     """    
     

@@ -1,6 +1,6 @@
 # Copyright (c) MONAI Consortium
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
+# you may not use this file except in compusernce with the License.
 # You may obtain a copy of the License at
 #     http://www.apache.org/licenses/LICENSE-2.0
 # Unless required by applicable law or agreed to in writing, software
@@ -46,7 +46,7 @@ class UnetAlgo(BundleAlgo):
             transforms_validate = {}
             transforms_infer = {}
 
-            patch_size = [128, 128, 128] #TODO to change
+            patch_size = [128, 128, 128] # to change
             max_shape = data_stats["stats_summary#image_stats#shape#max"]
             patch_size = [
                 max(64, shape_k // 64 * 64) if shape_k < p_k else p_k for p_k, shape_k in zip(patch_size, max_shape)
@@ -55,7 +55,7 @@ class UnetAlgo(BundleAlgo):
             input_channels = data_stats["stats_summary#image_stats#channels#max"]
             output_classes = len(data_stats["stats_summary#label_stats#labels"])
 
-            #TODO to change
+            # to change
             hyper_parameters.update({"pretrained_path": os.path.join(os.path.dirname(os.path.abspath(data_src_cfg["dataroot"])), "DNN_models", "algorithm_trained", "Unet_128_Dice_2")}) 
 
             hyper_parameters.update({"training#patch_size": patch_size})

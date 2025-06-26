@@ -5,9 +5,9 @@ import random
 python3 step1_0_group_balanced_train_test_split.py  
 """
 
-# TODO: change data folder if necessary
+# : change data folder if necessary
 
-data_root = '/home/linuxlia/Lia_Masterthesis/data/pazienti/'
+data_root = '/home/linuxuser/user/data/pazienti/'
 
 # Known indices for each group are stored in dictionary
 indices = {
@@ -46,7 +46,7 @@ assert len(set(test_indices)) == len(test_indices)
 assert len(set(train_indices) & set(test_indices)) == 0
 assert set(train_indices) | set(test_indices) == set(range(1, 105))
 
-# Write the indices to one .txt file with two columns "train_ids", "test_ids" in folder "/home/linuxlia/Lia_Masterthesis/data/pazienti". 
+# Write the indices to one .txt file with two columns "train_ids", "test_ids" in folder "/home/linuxuser/user/data/pazienti". 
 # Assure that all numbers are saved using 3 digits, e.g., 001, 002, 003, ..., 104.
 # The columns do not have the same length. 
 with open(data_root + 'train_test_split.txt', 'w') as f:
@@ -60,14 +60,7 @@ with open(data_root + 'train_test_split.txt', 'w') as f:
 
 print("indices written to path: ", data_root + 'train_test_split.txt')
 
-#with open(data_root + 'train_test_split.txt', 'w') as f:
-#    f.write("train_ids,")
-#    for train_id in train_indices:
-#        f.write(f"{train_id},")
-#    f.write("\n")
-#    f.write("test_ids,")
-#    for test_id in test_indices:
-#        f.write(f"{test_id},")
+
  
 
     

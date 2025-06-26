@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load the provided CSV files to inspect their structure
-file_t1_vs_ce = '/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/thesis_experiments/00_preanalysis/results_t1ce_vs_t1.csv'
-file_t1xflair_vs_ce = '/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/thesis_experiments/00_preanalysis/results_t1ce_vs_t1xflair.csv'
+file_t1_vs_ce = '/home/linuxuser/user/project_dir/_experiments/00_preanalysis/results_t1ce_vs_t1.csv'
+file_t1xflair_vs_ce = '/home/linuxuser/user/project_dir/_experiments/00_preanalysis/results_t1ce_vs_t1xflair.csv'
 
 # Reading the CSV files
 df_t1_vs_ce = pd.read_csv(file_t1_vs_ce)

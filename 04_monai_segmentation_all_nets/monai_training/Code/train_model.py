@@ -14,7 +14,7 @@ from monai.config import print_config
 from monai.utils import ensure_tuple
 from monai.utils.enums import AlgoKeys # added to work
 
-from phuse_thesis_2024.monai_segmentation.monai_training.Code.bundle_generation_script import MyBundleGen
+from project_dir.monai_segmentation.monai_training.Code.bundle_generation_script import MyBundleGen
 print_config()
 
 join=os.path.join
@@ -113,19 +113,19 @@ class TrainModel:
         parsed_content = bundle_generator.algos[0].get_parsed_content()
         print(parsed_content)
 
-        bundle_generator.generate(work_dir, num_fold=1) # TODO: why only one fold here? What does make sense?
+        bundle_generator.generate(work_dir, num_fold=1) # : why only one fold here? What does make sense?
         history = bundle_generator.get_history()
         ("DONE")
         export_bundle_algo_history(history)
 
 
-        max_epochs = 100 # TODO: what makes sense here? 
+        max_epochs = 100 # : what makes sense here? 
         max_epochs = max(max_epochs, 2)
 
         train_param = {
             "CUDA_VISIBLE_DEVICES": [0],  # use only 1 gpu
             "num_iterations": 10000,
-            "num_iterations_per_validation": 2 * max_epochs, # TODO: what makes sense here?
+            "num_iterations_per_validation": 2 * max_epochs, # : what makes sense here?
             "num_images_per_batch": 1,
             "num_epochs": max_epochs,
             "num_warmup_iterations": 2 * max_epochs,

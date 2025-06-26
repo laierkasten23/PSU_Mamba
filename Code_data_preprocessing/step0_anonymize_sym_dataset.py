@@ -24,17 +24,17 @@ def anonymize_data(path, new_folder_name):
     This function creates a new folder from the folder structure:
     DATASET
         -Name_1
-            -ChP_mask_Lia_Name_1.nii.gz
-            -ChP_mask_Lia_Name_1.nii
+            -ChP_mask_user_Name_1.nii.gz
+            -ChP_mask_user_Name_1.nii
             -coFLAIR_3D_301_Name_1.nii
             -...
         -Name_2
-            -ChP_mask_Lia_Name_2.nii.gz
-            -ChP_mask_Lia_Name_2.nii
+            -ChP_mask_user_Name_2.nii.gz
+            -ChP_mask_user_Name_2.nii
             -coFLAIR_3D_301_Name_2.nii
             -...
         ...
-    where Name_j is the subjects name. In the new folder just ChP_mask_Lia_Name_1.nii and coFLAIR_3D_301_Name_1.nii are needed 
+    where Name_j is the subjects name. In the new folder just ChP_mask_user_Name_1.nii and coFLAIR_3D_301_Name_1.nii are needed 
     (for the mask and the image respectively).
     to the following structure:
     
@@ -105,14 +105,14 @@ def anonymize_data(path, new_folder_name):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Anonymize the dataset')
-    parser.add_argument('--path', type=str, help='Path to the dataset', default='/Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/phuse_thesis_2024/pazienti_flair_coreg')
+    parser.add_argument('--path', type=str, help='Path to the dataset', default='/Users/user/Documents/projects_/project_dir/pazienti_flair_coreg')
     parser.add_argument('--new_folder_name', type=str, help='ANON_FLAIR_COREG', default='ANON_FLAIR_COREG')
     args = parser.parse_args()
     anonymize_data(args.path, args.new_folder_name)
 
 
 '''
-    python3 step0_anonymize_sym_dataset.py --path '/var/datasets/LIA/MICCAI_preanalysis_data/processed_data_Dem_SM' --new_folder_name 'ANON_MICCAI_preanalysis'
-    python3 step0_anonymize_sym_dataset.py --path '/data1/LIA/processed_data_Dem_SM' --new_folder_name 'ANON_MICCAI_preanalysis_Dem_SM'
+    python3 step0_anonymize_sym_dataset.py --path '/var/datasets/user/_preanalysis_data/processed_data_Dem_SM' --new_folder_name 'ANON__preanalysis'
+    python3 step0_anonymize_sym_dataset.py --path '/data1/user/processed_data_Dem_SM' --new_folder_name 'ANON__preanalysis_Dem_SM'
     
     '''

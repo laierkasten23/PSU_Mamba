@@ -39,10 +39,10 @@ class nnUNetTrainerDA5(nnUNetTrainer):
         """
         patch_size = self.configuration_manager.patch_size
         dim = len(patch_size)
-        # todo rotation should be defined dynamically based on patch size (more isotropic patch sizes = more rotation)
+        #  rotation should be defined dynamically based on patch size (more isotropic patch sizes = more rotation)
         if dim == 2:
             do_dummy_2d_data_aug = False
-            # todo revisit this parametrization
+            #  revisit this parametrization
             if max(patch_size) / min(patch_size) > 1.5:
                 rotation_for_DA = {
                     'x': (-15. / 360 * 2. * np.pi, 15. / 360 * 2. * np.pi),
@@ -57,7 +57,7 @@ class nnUNetTrainerDA5(nnUNetTrainer):
                 }
             mirror_axes = (0, 1)
         elif dim == 3:
-            # todo this is not ideal. We could also have patch_size (64, 16, 128) in which case a full 180deg 2d rot would be bad
+            #  this is not ideal. We could also have patch_size (64, 16, 128) in which case a full 180deg 2d rot would be bad
             # order of the axes is determined by spacing, not image size
             do_dummy_2d_data_aug = (max(patch_size) / patch_size[0]) > ANISO_THRESHOLD
             if do_dummy_2d_data_aug:
@@ -77,7 +77,7 @@ class nnUNetTrainerDA5(nnUNetTrainer):
         else:
             raise RuntimeError()
 
-        # todo this function is stupid. It doesn't even use the correct scale range (we keep things as they were in the
+        #  this function is stupid. It doesn't even use the correct scale range (we keep things as they were in the
         #  old nnunet for now)
         initial_patch_size = get_patch_size(patch_size[-dim:],
                                             *rotation_for_DA.values(),

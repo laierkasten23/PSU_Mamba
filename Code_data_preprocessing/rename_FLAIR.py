@@ -45,7 +45,7 @@ def rename_chp_mask_files(base_dir):
 
 
 if __name__ == "__main__":
-    base_dir = "/home/linuxlia/Lia_Masterthesis/data/pazienti"  # Insert your data directory here
+    base_dir = "/home/linuxuser/user/data/pazienti"  # Insert your data directory here
     #rename_old_flair_files(base_dir)
     #rename_r_flair_files(base_dir)
     rename_chp_mask_files(base_dir)

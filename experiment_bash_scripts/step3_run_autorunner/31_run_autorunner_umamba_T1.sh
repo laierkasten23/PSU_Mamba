@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # Define the base directory for the project
-BASE_DIR="/home/linuxlia/Lia_Masterthesis"
+BASE_DIR="/home/linuxuser/user"
 BASE_DATA_DIR="$BASE_DIR/data/Umamba_data/nnUNet_raw"
 datasetname="Dataset431_ChoroidPlexus_T1_sym_UMAMBA" 
 INPUT_FOLDER="$BASE_DATA_DIR/$datasetname/imagesTs"
-OUTPUT_FOLDER="/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/thesis_experiments/umamba_predictions/working_directory_T1/pred_raw"
-OUTPUT_FOLDER_PP="/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/thesis_experiments/umamba_predictions/working_directory_T1/pred_pp"
+OUTPUT_FOLDER="/home/linuxuser/user/project_dir/_experiments/umamba_predictions/working_directory_T1/pred_raw"
+OUTPUT_FOLDER_PP="/home/linuxuser/user/project_dir/_experiments/umamba_predictions/working_directory_T1/pred_pp"
 
 # Preprocessing
 nnUNetv2_plan_and_preprocess -d 431 --verify_dataset_integrity
@@ -28,13 +28,13 @@ nnUNetv2_predict -d Dataset431_ChoroidPlexus_T1_sym_UMAMBA -i $INPUT_FOLDER -o $
 
 ***Once inference is completed, run postprocessing like this:***
 
-nnUNetv2_apply_postprocessing -i $OUTPUT_FOLDER -o $OUTPUT_FOLDER_PP -pp_pkl_file /home/linuxlia/Lia_Masterthesis/data/Umamba_data/nnUNet_results/Dataset431_ChoroidPlexus_T1_sym_UMAMBA/nnUNetTrainerUMambaBot__nnUNetPlans__3d_fullres/crossval_results_folds_0_1_2_3/postprocessing.pkl -np 8 -plans_json /home/linuxlia/Lia_Masterthesis/data/Umamba_data/nnUNet_results/Dataset431_ChoroidPlexus_T1_sym_UMAMBA/nnUNetTrainerUMambaBot__nnUNetPlans__3d_fullres/crossval_results_folds_0_1_2_3/plans.json
+nnUNetv2_apply_postprocessing -i $OUTPUT_FOLDER -o $OUTPUT_FOLDER_PP -pp_pkl_file /home/linuxuser/user/data/Umamba_data/nnUNet_results/Dataset431_ChoroidPlexus_T1_sym_UMAMBA/nnUNetTrainerUMambaBot__nnUNetPlans__3d_fullres/crossval_results_folds_0_1_2_3/postprocessing.pkl -np 8 -plans_json /home/linuxuser/user/data/Umamba_data/nnUNet_results/Dataset431_ChoroidPlexus_T1_sym_UMAMBA/nnUNetTrainerUMambaBot__nnUNetPlans__3d_fullres/crossval_results_folds_0_1_2_3/plans.json
 
 
 
 # Inference
 nnUNetv2_predict -i INPUT_FOLDER -o OUTPUT_FOLDER -d 431 -c CONFIGURATION -f all -tr nnUNetTrainerUMambaBot --disable_tta
 
-nnUNetv2_predict -i "/home/linuxlia/Lia_Masterthesis/data/Umamba_data/nnUNet_raw/Dataset431_ChoroidPlexus_T1_sym_UMAMBA/imagesTs" -o "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/thesis_experiments/umamba_predictions/working_directory_T1" -d 431 -c 3d_fullres -f all -tr nnUNetTrainerUMambaBot --disable_tta
-nnUNetv2_predict -i "/home/linuxlia/Lia_Masterthesis/data/Umamba_data/nnUNet_raw/Dataset431_ChoroidPlexus_T1_sym_UMAMBA/imagesTs" -o "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/thesis_experiments/umamba_predictions/working_directory_T1" -d 431 -c 3d_fullres -f all -tr nnUNetTrainerUMambaBot 
+nnUNetv2_predict -i "/home/linuxuser/user/data/Umamba_data/nnUNet_raw/Dataset431_ChoroidPlexus_T1_sym_UMAMBA/imagesTs" -o "/home/linuxuser/user/project_dir/_experiments/umamba_predictions/working_directory_T1" -d 431 -c 3d_fullres -f all -tr nnUNetTrainerUMambaBot --disable_tta
+nnUNetv2_predict -i "/home/linuxuser/user/data/Umamba_data/nnUNet_raw/Dataset431_ChoroidPlexus_T1_sym_UMAMBA/imagesTs" -o "/home/linuxuser/user/project_dir/_experiments/umamba_predictions/working_directory_T1" -d 431 -c 3d_fullres -f all -tr nnUNetTrainerUMambaBot 
 nnUNetv2_predict -i /path/to/input -o /path/to/output -d 431 -c 3d_fullres -tr nnUNetTrainerUMambaBot

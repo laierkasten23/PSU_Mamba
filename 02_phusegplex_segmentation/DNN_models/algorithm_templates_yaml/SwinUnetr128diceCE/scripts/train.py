@@ -1,6 +1,6 @@
 # Copyright (c) MONAI Consortium
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
+# you may not use this file except in compusernce with the License.
 # You may obtain a copy of the License at
 #     http://www.apache.org/licenses/LICENSE-2.0
 # Unless required by applicable law or agreed to in writing, software
@@ -558,7 +558,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         else batch_data["ref_label"]
                     )
 
-                    _idx = torch.randperm(inputs_l.shape[0]) # TODO: set seed for reproducibility
+                    _idx = torch.randperm(inputs_l.shape[0]) # : set seed for reproducibility
                     inputs_l = inputs_l[_idx]
                     labels_l = labels_l[_idx]
                     ref_labels_l = ref_labels_l[_idx]

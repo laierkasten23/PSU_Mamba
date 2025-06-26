@@ -123,7 +123,7 @@ class UpsampleLayer(nn.Module):
         return x
 
 class MambaLayer(nn.Module):
-    def __init__(self, dim, d_state=16, d_conv=4, expand=2, scan_type='yz-diag'): #TODO
+    def __init__(self, dim, d_state=16, d_conv=4, expand=2, scan_type='yz-diag'): #
         super().__init__()
         self.dim = dim
         self.norm = nn.LayerNorm(dim)
@@ -230,7 +230,7 @@ class ResidualMambaEncoder(nn.Module):
                  return_skips: bool = False,
                  stem_channels: int = None,
                  pool_type: str = 'conv',
-                 mamba_scan_type: str = 'yz-diag'  # 'x', 'y', 'z', 'yz-diag', 'xy-diag', 'pca' #TODO 
+                 mamba_scan_type: str = 'yz-diag'  # 'x', 'y', 'z', 'yz-diag', 'xy-diag', 'pca' # 
                  ):
         super().__init__()
         if isinstance(kernel_sizes, int):
@@ -520,7 +520,7 @@ class UMambaEnc(nn.Module):
                  nonlin_kwargs: dict = None,
                  deep_supervision: bool = False,
                  stem_channels: int = None,
-                 mamba_scan_type: str = 'yz-diag', #TODO
+                 mamba_scan_type: str = 'yz-diag', #
                  ):
         super().__init__()
         n_blocks_per_stage = n_conv_per_stage

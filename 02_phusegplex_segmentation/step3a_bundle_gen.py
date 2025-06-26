@@ -1,6 +1,6 @@
 # Copyright (c) MONAI Consortium
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
+# you may not use this file except in compusernce with the License.
 # You may obtain a copy of the License at
 #     http://www.apache.org/licenses/LICENSE-2.0
 # Unless required by applicable law or agreed to in writing, software
@@ -31,13 +31,13 @@ from monai.utils import ensure_tuple
 logger = get_logger(module_name=__name__)
 ALGO_HASH = os.environ.get("MONAI_ALGO_HASH", "d7bf36c")
 
-__all__ = ["LiaBundleAlgo", "BundleGen"]
+__all__ = ["userBundleAlgo", "BundleGen"]
 
 
 
 
 
-class LiaBundleAlgo(Algo):
+class userBundleAlgo(Algo):
     """
     An algorithm represented by a set of bundle configurations and scripts.
 
@@ -168,7 +168,7 @@ class LiaBundleAlgo(Algo):
         if n_devices > 1:
             cmd = f"torchrun --nnodes={1:d} --nproc_per_node={n_devices:d} "
         else:
-            cmd = "python "  # TODO: which system python?
+            cmd = "python "  # : which system python?
         cmd += base_cmd
         if params and isinstance(params, Mapping):
             for k, v in params.items():
@@ -297,7 +297,7 @@ default_algos = {
 }
 
 
-class LiaBundleGen(AlgoGen):
+class userBundleGen(AlgoGen):
     """
     This class generates a set of bundles according to the cross-validation folds, each of them can run independently.
 

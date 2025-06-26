@@ -92,7 +92,7 @@ def fast_resize_segmentation(segmentation, new_shape, mode="nearest"):
         assert len(segmentation.shape[1:]) == len(new_shape), f"segmentation.shape = {segmentation.shape}, new_shape = {new_shape}"
         segmentation = torch.from_numpy(segmentation).unsqueeze(0).float()
     #if order == 0:
-        #return resize(segmentation.astype(float), new_shape, order, mode="edge", clip=True, anti_aliasing=False).astype(tpe)
+        #return resize(segmentation.astype(float), new_shape, order, mode="edge", clip=True, anti_ausersing=False).astype(tpe)
     if mode == "nearest":
         seg_torch = torch.nn.functional.interpolate(segmentation, new_shape, mode=mode)
         reshaped = seg_torch
@@ -103,7 +103,7 @@ def fast_resize_segmentation(segmentation, new_shape, mode="nearest"):
         reshaped = torch.zeros([*seg_torch.shape[:2], *new_shape], dtype=seg_torch.dtype, device=seg_torch.device)
         for i, c in enumerate(unique_labels):
             #mask = segmentation == c
-            #reshaped_multihot = resize(mask.astype(float), new_shape, order, mode="edge", clip=True, anti_aliasing=False)
+            #reshaped_multihot = resize(mask.astype(float), new_shape, order, mode="edge", clip=True, anti_ausersing=False)
             mask = seg_torch == c
             reshaped_multihot = torch.nn.functional.interpolate(mask.float(), new_shape, mode=mode, align_corners=False)
             reshaped[reshaped_multihot >= 0.5] = c
@@ -257,7 +257,7 @@ def resample_data_or_seg(data: np.ndarray, new_shape: Union[Tuple[float, ...], L
         print("resizing data, order is", order)
         print("data shape", data.shape)
         resize_fn = resize
-        kwargs = {'mode': 'edge', 'anti_aliasing': False}
+        kwargs = {'mode': 'edge', 'anti_ausersing': False}
     dtype_data = data.dtype
     shape = np.array(data[0].shape)
     new_shape = np.array(new_shape)

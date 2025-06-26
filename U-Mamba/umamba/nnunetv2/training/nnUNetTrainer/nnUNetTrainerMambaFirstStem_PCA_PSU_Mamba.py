@@ -46,14 +46,14 @@ from scipy.ndimage import binary_dilation
 from nnunetv2.training.dataloading.convex_data_loader_3d import nnUNetDataLoader3D_convex
 from nnunetv2.nets.UMambaFirst import MambaLayer
 
-class nnUNetTrainerMambaFirstStem_PCA_2components_general(nnUNetTrainer):
+class nnUNetTrainerMambaFirstStem_PCA_PSU_Mamba(nnUNetTrainer):
     """
     A custom nnUNetTrainer that generally applies PCA to the stem features of the model.
     """
 
     def __init__(self, plans, configuration, fold, dataset_json, unpack_dataset=True, device=torch.device('cuda'), **kwargs):
         # Extract custom args and REMOVE them from kwargs before passing to base class
-        self.scan_type = kwargs.pop('scan_type', 'y') # kwargs.pop('scan_type', 'global_pca') # TODO: 'global_pca', 'local_pca', 'local_pca_2components', 'x', 'y', 'diag'
+        self.scan_type = kwargs.pop('scan_type', 'global_pca') # kwargs.pop('scan_type', 'global_pca') # : 'global_pca', 'local_pca', 'x', 'y', 'z', 'xy_scan', 'diag'
         self.pca_patch_size = kwargs.pop('pca_patch_size', None)
 
 

@@ -623,7 +623,7 @@ class MambaLayer(nn.Module):
         else:
             out = x_mamba.transpose(-1, -2).reshape(B, C, *x.shape[2:]) #! CANNOT change this, otherwise x scan is wrong!!!
             #out_flat = out.permute(0, 2, 3, 4, 1).reshape(B, D*H*W, C) #! flat for global scan
-            return unpermute(out) # TODO why does "x" work with flattened and unflattened version???
+            return unpermute(out) #  why does "x" work with flattened and unflattened version???
 
 
 
@@ -684,7 +684,7 @@ class ResidualMambaEncoder(nn.Module):
                  return_skips: bool = False,
                  stem_channels: int = None,
                  pool_type: str = 'conv',
-                 scan_type: str = 'x'  # 'x', 'y', 'z', 'yz-diag', 'xy-diag', 'pca', 'global_pca # TODO 
+                 scan_type: str = 'x'  # 'x', 'y', 'z', 'yz-diag', 'xy-diag', 'pca', 'global_pca #  
                  ):
         super().__init__()
         if isinstance(kernel_sizes, int):
@@ -982,7 +982,7 @@ class UMambaEnc(nn.Module):
                  nonlin_kwargs: dict = None,
                  deep_supervision: bool = False,
                  stem_channels: int = None,
-                 scan_type: str = 'x', #TODO, 'global_pca', 'local_pca', 'pca', 'x', 'y', 'z', 'diag' (yz-diag, xy-diag, etc. are not implemented yet!
+                 scan_type: str = 'x', #, 'global_pca', 'local_pca', 'pca', 'x', 'y', 'z', 'diag' (yz-diag, xy-diag, etc. are not implemented yet!
                  pca_patch_size=None,
                  local_pca_vectors=None,
                  local_pca_coords=None,

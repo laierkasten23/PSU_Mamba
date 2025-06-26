@@ -16,11 +16,11 @@ from monai.bundle.config_parser import ConfigParser
 
 
 
-def run_autorunner(work_dir: str="/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/monai_segmentation/monai_training/working_directory_0606", 
-                   dataroot: str="/home/linuxlia/Lia_Masterthesis/data/pazienti", 
-                   json_path: str="/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training/JSON_dir/train_val.json",
+def run_autorunner(work_dir: str="/home/linuxuser/user/project_dir/monai_segmentation/monai_training/working_directory_0606", 
+                   dataroot: str="/home/linuxuser/user/data/pazienti", 
+                   json_path: str="/var/data/student_home/user/project_dir/monai_segmentation/monai_training/JSON_dir/train_val.json",
                    algos: list = ["resnet3d", "unet3d", "vnet3d"],
-                   templates_path_or_url: str = "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/monai_segmentation/DNN_models/algorithm_templates_yaml/"):
+                   templates_path_or_url: str = "/home/linuxuser/user/project_dir/monai_segmentation/DNN_models/algorithm_templates_yaml/"):
     """
     This function runs the AutoRunner from MONAI to train the models
 
@@ -57,11 +57,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--work_dir', default='.', help="Working directory for the AutoRunner where to save the results")
     parser.add_argument('--dataroot', type=str, default='/var/data/MONAI_Choroid_Plexus/ANON_DATA_01_labels')
-    parser.add_argument('--json_path', type=str, default='/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training/JSON_dir/train_val.json', help="Path to the json file containing the train and val subjects")
+    parser.add_argument('--json_path', type=str, default='/var/data/student_home/user/project_dir/monai_segmentation/monai_training/JSON_dir/train_val.json', help="Path to the json file containing the train and val subjects")
     parser.add_argument('--algos', type=list, default=["resnet3d", "unet3d", "vnet3d"], help="List of algorithms to be used")
-    parser.add_argument('--templates_path_or_url', type=str, default="/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/DNN_models/algorithm_templates_yaml/", help="Path to the algorithm templates")
+    parser.add_argument('--templates_path_or_url', type=str, default="/var/data/student_home/user/project_dir/monai_segmentation/DNN_models/algorithm_templates_yaml/", help="Path to the algorithm templates")
     args = parser.parse_args()
 
-    run_autorunner(args.work_dir, args.dataroot, args.json_path, algos=["resnet3d", "unet3d", "vnet3d"], templates_path_or_url="/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/DNN_models/algorithm_templates_yaml/")
+    run_autorunner(args.work_dir, args.dataroot, args.json_path, algos=["resnet3d", "unet3d", "vnet3d"], templates_path_or_url="/var/data/student_home/user/project_dir/monai_segmentation/DNN_models/algorithm_templates_yaml/")
     print('Autorunner done')
     

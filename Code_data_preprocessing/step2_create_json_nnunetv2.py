@@ -123,33 +123,15 @@ def generate_json(args):
     Class for writing .json files to run training/ finetuning/ testing/ training and predicting or finetuning and predicting Choroid Plexus segmentations.
 
     dataroot = "/var/data/MONAI_Choroid_Plexus/dataset_monai_train_from_scratch"
-    work_dir = "/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training"
+    work_dir = "/var/data/student_home/user/project_dir/monai_segmentation/monai_training"
     json_file=WriteTrainJSON(dataroot, work_dir).write_train_val_json(json_filename = "train_val3.json")
 
     Usage: 
-        python step2_create_json_nnunetv2.py --mode "train" --dataroot "/var/data/MONAI_Choroid_Plexus/dataset_monai_train_from_scratch" --work_dir "/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training" --train_val_ratio 0.5 --num_folds 5   
-        python step2_create_json_nnunetv2.py --mode "test" --dataroot "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex" --work_dir "/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training" --train_val_ratio 0.5 --num_folds 5   
-        python step2_create_json_nnunetv2.py --mode "train" --dataroot "/home/linuxlia/Lia_Masterthesis/data/dataset_aschoplex" --work_dir "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/monai_segmentation/monai_training/working_directory_0509" --train_val_ratio 0.8 --num_folds 5   
-        python step2_create_json_nnunetv2.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset059_ChoroidPlexus_FLAIR" --work_dir "/home/linuxlia/Lia_Masterthesis/data/Dataset059_ChoroidPlexus_FLAIR" --train_val_ratio 0.8 --num_folds 1  
-        python step2_create_json_nnunetv2.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset059_ChoroidPlexus_FLAIR" --work_dir "/home/linuxlia/Lia_Masterthesis/data/Dataset059_ChoroidPlexus_FLAIR" --train_val_ratio 0.8 --num_folds 1 --datasettype "NNUNETV2" --modality "['FLAIR']"
-        python step2_create_json_nnunetv2.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP" --work_dir "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1']"
-        python step2_create_json_nnunetv2.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA" --work_dir "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA" --train_val_ratio 1.0 --num_folds 4 --datasettype "UMAMBA" --modality "['T1']"
-        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1']"
-        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_FLAIR_sym_AP" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' --include_groups "['AD', 'Psy']" --json_dir "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/JSON_file_experiments" (successful :) ) 
- 
+        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxuser/user/data/Dataset001_ChoroidPlexus_T1_sym_AP" --train_val_ratio .5 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1']" --groups '/home/linuxuser/user/data/pazienti/patients.json' --json_dir "/home/linuxuser/user/project_dir/JSON_file_experiments" (successful :) ) 
+        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxuser/user/data/Dataset001_ChoroidPlexus_T1_sym_AP" --train_val_ratio .5 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1']" --groups '/home/linuxuser/user/data/pazienti/patients.json' --json_dir "/home/linuxuser/user/project_dir/JSON_file_experiments" (successful :) ) 
+        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxuser/user/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA" --train_val_ratio .5 --num_folds 4 --datasettype "UMAMBA" --modality "['T1']" --groups '/home/linuxuser/user/data/pazienti/patients.json' --json_dir "/home/linuxuser/user/project_dir/JSON_file_experiments" (successful :) ) 
         
-        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset002_ChoroidPlexus_T1_sym_PHU" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' 
-        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset002_ChoroidPlexus_FLAIR_sym_PHU" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['FLAIR']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' 
-        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset002_ChoroidPlexus_T1xFLAIR_sym_PHU" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1xFLAIR']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' 
-        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset002_ChoroidPlexus_T1_FLAIR_sym_PHU" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1', 'FLAIR']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' 
-        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset002_ChoroidPlexus_T1_FLAIR_T1xFLAIRmask_sym_PHU" --train_val_ratio 1.0 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1', 'FLAIR']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' 
-        
-
-        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP" --train_val_ratio .5 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' --json_dir "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/JSON_file_experiments" (successful :) ) 
-        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP" --train_val_ratio .5 --num_folds 4 --datasettype "ASCHOPLEX" --modality "['T1']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' --json_dir "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/JSON_file_experiments" (successful :) ) 
-        python step2b_create_json_nnunetv2_newversion.py --mode "train_predict" --dataroot "/home/linuxlia/Lia_Masterthesis/data/Dataset003_ChoroidPlexus_T1_sym_UMAMBA" --train_val_ratio .5 --num_folds 4 --datasettype "UMAMBA" --modality "['T1']" --groups '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json' --json_dir "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/JSON_file_experiments" (successful :) ) 
-        
-        python step2_create_json_nnunetv2.py --mode "test" --dataroot "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex" --work_dir "/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training" --train_val_ratio 0.5 --num_folds 5   
+        python step2_create_json_nnunetv2.py --mode "test" --dataroot "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex" --work_dir "/var/data/student_home/user/project_dir/monai_segmentation/monai_training" --train_val_ratio 0.5 --num_folds 5   
         
         
 
@@ -163,7 +145,7 @@ def generate_json(args):
         train_val_ratio (float): The ratio of training data to validation data. Default is 0.5.
         num_folds (int): The number of folds to split the training data into. Default is 5.
         indices (list): The indices of the training data. Default is None.
-        groups_json_path (str): The path to the groups file. Default is '/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json'.
+        groups_json_path (str): The path to the groups file. Default is '/home/linuxuser/user/data/pazienti/patients.json'.
         include_groups (list): The groups to include in the experiment. Default is None.
         pretrained_model_path (str): The path to the pretrained model. Default is None.
         datasettype (str): The type of dataset. Default is 'ASCHOPLEX'. Other option is 'NNUNETV2' and 'UMAMBA.
@@ -281,7 +263,7 @@ def generate_json(args):
     json_dict = OrderedDict()
     json_dict['name'] = "MRI Dataset - Choroid Plexus Segmentation" 
     json_dict['description'] = args.description if args.description is not None else "Dataset for Choroid Plexus segmentation"
-    json_dict['data_benchmark_base_dir'] = args.benchmark_dataroot if args.benchmark_dataroot is not None else None # TODO: Generalize when setting overall projectdirectory for later distribution 
+    json_dict['data_benchmark_base_dir'] = args.benchmark_dataroot if args.benchmark_dataroot is not None else None # : Generalize when setting overall projectdirectory for later distribution 
     json_dict['tensorImageSize'] = "3D"
     
 
@@ -467,7 +449,7 @@ def generate_json(args):
                 group_distribution = calculate_group_distribution(used_groups)
                 json_dict['group_distribution'] = group_distribution
                 print("group_distribution", group_distribution)
-                split_ratios = (args.train_val_ratio, 1 - args.train_val_ratio) # TODO: include test data
+                split_ratios = (args.train_val_ratio, 1 - args.train_val_ratio) # : include test data
                 indices_tr_val = split_data(used_groups, group_distribution, split_ratios)
                 
                 # Format indices to be zero-padded to three digits and add 1 to match the filenames (ESSENTIAL)
@@ -549,7 +531,7 @@ def generate_json(args):
                 else:
                     # if no groups are provided, split the data randomly and assign folds to the training data
                     # Split data into training and validation based on randomly sample jj indices 
-                    jj=math.ceil(len(filenames_image) * args.train_val_ratio)   # TODO: reconsider randomness and seed
+                    jj=math.ceil(len(filenames_image) * args.train_val_ratio)   # : reconsider randomness and seed
                     random.seed(42) 
                     indices = random.sample(range(len(filenames_image)), jj)
                 
@@ -566,8 +548,6 @@ def generate_json(args):
                     for j in range(fold_size):
                         json_dict["training"][i * fold_size + j]["fold"] = i   
                 
-                # TODO: check whether this part is inside or outside the else statement
-                # TODO: is random stuff still needed or can we throw it? If needed, add if modality is T1 and FLAIR or multiple modalities
                 json_dict['numTraining'] = len(train_ids)
                 json_dict['numValidation'] = len(validation_ids)
                 json_dict['training'] = [{"fold": 0, "image": '%s' %i , "label": '%s' %j} for i, j in zip(train_ids, label_train_ids)]
@@ -651,7 +631,7 @@ def generate_json(args):
                         if args.modality == ['T1', 'FLAIR'] or args.modality == ['FLAIR', 'T1']:
                             test_ids2.append(path.replace('0000', '0001'))
                         break
-            #test_ids = [test_image_paths[i] for i in indices_test[0]]       # TODO: CONTINUE HERE!!!
+            #test_ids = [test_image_paths[i] for i in indices_test[0]]       # : CONTINUE HERE!!!
             json_dict['numTest'] = len(test_ids)
             if args.modality == ['T1', 'FLAIR'] or args.modality == ['FLAIR', 'T1']:
                 json_dict['testing'] = [{"image": ['%s' %i, '%s' %j], "subject_id": '%s' %k} for i, j, k in zip(test_ids, test_ids2, sorted(formatted_indices_test))]
@@ -660,7 +640,7 @@ def generate_json(args):
         else:
 
             json_dict['numTest'] = len(test_image_paths)
-            json_dict['testing'] = [{"image": '%s' %i} for i in test_image_paths] # TODO: maybe there will be an error here
+            json_dict['testing'] = [{"image": '%s' %i} for i in test_image_paths] # : maybe there will be an error here
 
             
     # create json file - manually set path to pretrained model
@@ -700,9 +680,9 @@ def setup_argparse():
     parser.add_argument('--datasettype', type=str, default='ASCHOPLEX', required=False, choices=['ASCHOPLEX', 'NNUNETV2', 'UMAMBA'], help='Type of dataset (ASCHOPLEX, NNUNETV2 or UMAMBA)')
     parser.add_argument("--description", required=False, help="Data description")
     parser.add_argument('--fileending', type=str, default='.nii', required=False, help='File ending of the images')
-    parser.add_argument("--groups_json_path", required=False, default='/home/linuxlia/Lia_Masterthesis/data/pazienti/patients.json', help="Path to the groups json file")  # TODO: check
-    parser.add_argument("--include_groups", type=ast.literal_eval, required=False, help="List of groups to include in the experiment")    # TODO: check, maybe  type=str, nargs='+',
-    parser.add_argument("--indices", type=ast.literal_eval, required=False, help="List of indices to use for training and validation")    # TODO: check, maybe  type=str, nargs='+',
+    parser.add_argument("--groups_json_path", required=False, default='/home/linuxuser/user/data/pazienti/patients.json', help="Path to the groups json file")  # : check
+    parser.add_argument("--include_groups", type=ast.literal_eval, required=False, help="List of groups to include in the experiment")    # : check, maybe  type=str, nargs='+',
+    parser.add_argument("--indices", type=ast.literal_eval, required=False, help="List of indices to use for training and validation")    # : check, maybe  type=str, nargs='+',
     parser.add_argument('--json_dir', type=str, default=None, required=False, help='Name of the directory where the json files are stored. If nothing is specified, json will be stored in data folder, otherwise a new folder will be created where it will be created.')
     parser.add_argument('--modality', type=parse_modality, default='MR', required=False, help='Modality of the dataset', choices=['T1', 'FLAIR', 'T1xFLAIR',  ['T1', 'FLAIR'], ['FLAIR', 'T1'], 'MR', ['T1'], ['FLAIR'], ['T1xFLAIR']])
     parser.add_argument("--mode", type=str, required=True, choices=['train', 'finetune', 'test', 'train_predict', 'finetune_predict'], default='train', help="Operation mode")

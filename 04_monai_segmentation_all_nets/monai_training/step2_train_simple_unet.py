@@ -33,9 +33,9 @@ def main(train_json):
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
-    # TODO read images and labels: 
+    #  read images and labels: 
 
-    datalist = "/var/data/student_home/lia/thesis/monai_segmentation/monai_training/JSON_dir/train.json"
+    datalist = "/var/data/student_home/user//monai_segmentation/monai_training/JSON_dir/train.json"
 
     images = sorted(glob(os.path.join(train_json, "im*.nii.gz")))
     segs = sorted(glob(os.path.join(train_json, "seg*.nii.gz")))

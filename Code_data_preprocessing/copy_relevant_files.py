@@ -2,8 +2,8 @@ import os
 import shutil
 
 # Define the source and destination directories
-source_dir = '/home/linuxlia/Lia_Masterthesis/data/pazienti81_end'
-dest_dir = '/home/linuxlia/Lia_Masterthesis/data/pazienti_final_tests'
+source_dir = '/home/linuxuser/user/data/pazienti81_end'
+dest_dir = '/home/linuxuser/user/data/pazienti_final_tests'
 
 # Ensure the destination directory exists
 os.makedirs(dest_dir, exist_ok=True)

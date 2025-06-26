@@ -24,17 +24,17 @@ def anonymize_data(path, new_folder_name):
     This function creates a new folder from the folder structure:
     DATASET
         -Name_1
-            -ChP_mask_Lia_Name_1.nii.gz
-            -ChP_mask_Lia_Name_1.nii
+            -ChP_mask_user_Name_1.nii.gz
+            -ChP_mask_user_Name_1.nii
             -coFLAIR_3D_301_Name_1.nii
             -...
         -Name_2
-            -ChP_mask_Lia_Name_2.nii.gz
-            -ChP_mask_Lia_Name_2.nii
+            -ChP_mask_user_Name_2.nii.gz
+            -ChP_mask_user_Name_2.nii
             -coFLAIR_3D_301_Name_2.nii
             -...
         ...
-    where Name_j is the subjects name. In the new folder just ChP_mask_Lia_Name_1.nii and coFLAIR_3D_301_Name_1.nii are needed 
+    where Name_j is the subjects name. In the new folder just ChP_mask_user_Name_1.nii and coFLAIR_3D_301_Name_1.nii are needed 
     (for the mask and the image respectively).
     to the following structure:
     
@@ -105,19 +105,19 @@ def anonymize_data(path, new_folder_name):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Anonymize the dataset')
-    parser.add_argument('--path', type=str, help='Path to the dataset', default='/Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/phuse_thesis_2024/pazienti_flair_coreg')
+    parser.add_argument('--path', type=str, help='Path to the dataset', default='/Users/user/Documents/projects_/project_dir/pazienti_flair_coreg')
     parser.add_argument('--new_folder_name', type=str, help='ANON_FLAIR_COREG', default='ANON_FLAIR_COREG')
     args = parser.parse_args()
     anonymize_data(args.path, args.new_folder_name)
 
 
 '''
-    python3 step0_anonymize_dataset.py --path '/Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/phuse_thesis_2024/data/pazienti_flair_coreg' --new_folder_name 'ANON_FLAIR_COREG' 
-    python3 step0_anonymize_dataset.py --path '/Users/liaschmid/Documents/Uni_Heidelberg/7_Semester_Thesis/phuse_thesis_2024/data/processed_data' --new_folder_name 'ANON_FLAIR_COREG_2' 
-    python3 step0_anonymize_dataset.py --path '/var/datasets/LIA/Lia_SM_preanalysis' --new_folder_name 'ANON_Lia_SM_preanalysis'
-    /Users/liaschmid/Documents/Uni Heidelberg/7. Semester Thesis/ASCHOPLEX/launching_tool.py
-    --path /Users/liaschmid/Documents/Uni Heidelberg/7_Semester_Thesis/ASCHOPLEX/ANON_DATA
-    python3 step0_anonymize_dataset.py --path '/var/datasets/LIA/Lia_SM_preanalysis' --new_folder_name 'ANON_Lia_SM_preanalysis'
-    python3 step0_anonymize_dataset.py --path '/var/datasets/LIA/MICCAI_preanalysis_data/processed_data_Dem' --new_folder_name 'ANON_DEM_preanalysis'
+    python3 step0_anonymize_dataset.py --path '/Users/user/Documents/projects_/project_dir/data/pazienti_flair_coreg' --new_folder_name 'ANON_FLAIR_COREG' 
+    python3 step0_anonymize_dataset.py --path '/Users/user/Documents/projects_/project_dir/data/processed_data' --new_folder_name 'ANON_FLAIR_COREG_2' 
+    python3 step0_anonymize_dataset.py --path '/var/datasets/user/user_SM_preanalysis' --new_folder_name 'ANON_user_SM_preanalysis'
+    /Users/user/Documents/projects/ASCHOPLEX/launching_tool.py
+    --path /Users/user/Documents/projects_/ASCHOPLEX/ANON_DATA
+    python3 step0_anonymize_dataset.py --path '/var/datasets/user/user_SM_preanalysis' --new_folder_name 'ANON_user_SM_preanalysis'
+    python3 step0_anonymize_dataset.py --path '/var/datasets/user/_preanalysis_data/processed_data_Dem' --new_folder_name 'ANON_DEM_preanalysis'
     
     '''

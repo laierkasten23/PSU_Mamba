@@ -35,8 +35,8 @@ Screenshots/
 pazienti_*
 data/
 
-# Ignore SAM Lia folder 
-SAM_LIA/
+# Ignore SAM user folder 
+SAM_user/
 # Ignore model checkpoints (replace with your actual model checkpoints)
 #models/
 *pth
@@ -176,7 +176,7 @@ nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
-.hypothesis/
+.hypo/
 .pytest_cache/
 cover/
 

@@ -2,7 +2,7 @@
 #    (DKFZ), Heidelberg, Germany
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
-#    you may not use this file except in compliance with the License.
+#    you may not use this file except in compusernce with the License.
 #    You may obtain a copy of the License at
 #
 #        http://www.apache.org/licenses/LICENSE-2.0
@@ -26,7 +26,7 @@ class Tiff3DIO(BaseReaderWriter):
 
     If you have 2D tiffs, use NaturalImage2DIO
 
-    Supports the use of auxiliary files for spacing information. If used, the auxiliary files are expected to end
+    Supports the use of auxiuserry files for spacing information. If used, the auxiuserry files are expected to end
     with .json and omit the channel identifier. So, for example, the corresponding of image image1_0000.tif is
     expected to be image1.json)!
     """

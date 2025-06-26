@@ -37,8 +37,8 @@ def create_folds_json(input_file, output_file):
         json.dump(folds, f, indent=4)
 
 # Example usage
-input_file = '/home/linuxlia/Lia_Masterthesis/data/Dataset001_ChoroidPlexus_T1_sym_AP/dataset_train_val_pred.json'
-output_file = '/home/linuxlia/Lia_Masterthesis/data/pazienti/folds.json'
+input_file = '/home/linuxuser/user/data/Dataset001_ChoroidPlexus_T1_sym_AP/dataset_train_val_pred.json'
+output_file = '/home/linuxuser/user/data/pazienti/folds.json'
 
 
 create_folds_json(input_file, output_file)

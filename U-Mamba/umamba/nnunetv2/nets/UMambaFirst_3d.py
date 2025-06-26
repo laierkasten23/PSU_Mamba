@@ -171,11 +171,11 @@ class UpsampleLayer(nn.Module):
         return x
 
 class MambaLayer(nn.Module):
-    # TODO 
+    #  
     # - check patch size to avoid segmenting ears
     # - scan paths
     # - put mamba also in encoding layers
-    def __init__(self, dim, d_state = 16, d_conv = 4, expand = 2, scan_type='z'): # TODO 
+    def __init__(self, dim, d_state = 16, d_conv = 4, expand = 2, scan_type='z'): #  
             
         super().__init__()
         self.dim = dim
@@ -236,7 +236,7 @@ class MambaLayer(nn.Module):
             return unpermute(out)
 
     
-    ## NEW VERSION UNTIL #TODO delete what comes after
+    ## NEW VERSION UNTIL # delete what comes after
     
 
 class BasicResBlock(nn.Module):
@@ -572,7 +572,7 @@ class UMambaFirst(nn.Module):
                  nonlin_kwargs: dict = None,
                  deep_supervision: bool = False,
                  stem_channels: int = None,
-                 mamba_scan_type: str = 'z', #TODO
+                 mamba_scan_type: str = 'z', #
                  ):
         super().__init__()
         n_blocks_per_stage = n_conv_per_stage
@@ -636,7 +636,7 @@ def get_umamba_first_3d_from_plans(
         configuration_manager: ConfigurationManager,
         num_input_channels: int,
         deep_supervision: bool = True,
-        mamba_scan_type: str = 'z'  # 'x', 'y', 'z', 'xy-diag', 'yz-diag', 'xz-diag', 'pca' # TODO
+        mamba_scan_type: str = 'z'  # 'x', 'y', 'z', 'xy-diag', 'yz-diag', 'xz-diag', 'pca' # 
     ):
     num_stages = len(configuration_manager.conv_kernel_sizes)
 

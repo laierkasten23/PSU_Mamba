@@ -17,7 +17,7 @@ training:
   input_channels: 1
   learning_rate: 0.0002
   num_images_per_batch: 2                               # number of images per batch (before 1)
-  num_iterations: 1500         # TODO: was 40000 before
+  num_iterations: 1500         # : was 40000 before
   num_iterations_per_validation: 5                        # number of iterations between each validation step during training
   num_patches_per_image: 2
   num_sw_batch_size: 8                                      # batch size for the sliding window during training
@@ -40,7 +40,7 @@ training:
     batch: true
     include_background: false
     sigmoid: $not @training#softmax
-    smooth_dr: 1.0e-06    # TODO check this value
+    smooth_dr: 1.0e-06    #  check this value
     smooth_nr: 0
     softmax: $@training#softmax
     to_onehot_y: $@training#softmax
@@ -48,7 +48,7 @@ training:
   optimizer:
     _target_: torch.optim.AdamW
     lr: '@training#learning_rate'
-    weight_decay: 1.0e-05 # TODO: decide this parameter
+    weight_decay: 1.0e-05 # : decide this parameter
 
   lr_scheduler:
     _target_: torch.optim.lr_scheduler.StepLR
@@ -74,7 +74,7 @@ log_output_file: "$@bundle_root + '/model/training.log'"
 
 finetune:
   activate: True
-  pretrained_ckpt_name: $@pretrained_path + '/model_fold2' + '/best_metric_model.pt'  # TODO: check this path
+  pretrained_ckpt_name: $@pretrained_path + '/model_fold2' + '/best_metric_model.pt'  # : check this path
 
 
 # validation 

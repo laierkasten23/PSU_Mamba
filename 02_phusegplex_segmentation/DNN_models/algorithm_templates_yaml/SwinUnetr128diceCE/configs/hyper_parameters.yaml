@@ -122,7 +122,7 @@ num_crops_per_image: 1
 # fine-tuning
 finetune:
   activate: false
-  pretrained_ckpt_name: "$@bundle_root + '/model'+ '/best_metric_model.pt'"  # TODO: check this path
+  pretrained_ckpt_name: "$@bundle_root + '/model'+ '/best_metric_model.pt'"  # : check this path
   enabled: false
   ckpt_name: $@bundle_root + '/model/best_metric_model.pt'
 

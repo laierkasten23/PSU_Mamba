@@ -73,7 +73,7 @@ class MambaLayer(nn.Module):
         if self.local_pca_coords is None:
             print("[MambaLayer] No local PCA coordinates set Should run normal path flattening . Returning None.")
             return None
-        matches = np.all(self.local_pca_coords == arr, axis=0) # ! TODO check this 
+        matches = np.all(self.local_pca_coords == arr, axis=0) # !  check this 
         idx = np.where(matches)[0] # get idxs of the rows that match
         return idx[0] if len(idx) > 0 else None # if no match, return None
 
@@ -110,7 +110,7 @@ class MambaLayer(nn.Module):
         return x_flat, unpermute
 
     def flatten_pca_scan(self, x, principal_vector):
-        # ! TODO: INCLUDE LOGIC HERE TO FALL BACK TO x!! 
+        # ! : INCLUDE LOGIC HERE TO FALL BACK TO x!! 
         """
         Flattens the input tensor x using the given principal_vector.
         Input:
@@ -138,7 +138,7 @@ class MambaLayer(nn.Module):
             principal_vector = torch.from_numpy(principal_vector).to(device, dtype=torch.float32)
         else: 
             principal_vector = principal_vector.to(device, dtype=torch.float32)
-        # TODO: Forse qua niente matmul, ma dot product??? Gets messed up here? 
+        # : Forse qua niente matmul, ma dot product??? Gets messed up here? 
         projections = torch.matmul(coords, principal_vector)
         sorted_idx = torch.argsort(projections)
 
@@ -232,7 +232,7 @@ class ResidualMambaEncoder(nn.Module):
                  return_skips: bool = False,
                  stem_channels: int = None,
                  pool_type: str = 'conv',
-                 mamba_scan_type: str = 'x'  # 'x', 'y', 'z', 'yz-diag', 'xy-diag', 'pca' # TODO 
+                 mamba_scan_type: str = 'x'  # 'x', 'y', 'z', 'yz-diag', 'xy-diag', 'pca' #  
                  ):
         super().__init__()
         if isinstance(kernel_sizes, int):
@@ -380,7 +380,7 @@ class ResidualMambaEncoder(nn.Module):
             for patch, origin in zip(patches, coords):
                 print("Origin of patch:", origin)
                 principal_vector = mamba.get_local_pca_vector(origin)
-                #! TODO: here incorporate that output can be none and directly go to scan x. 
+                #! : here incorporate that output can be none and directly go to scan x. 
                 x_flat, unpermute = mamba.flatten_pca_scan(patch, principal_vector)
                 
                 if x_flat is None:
@@ -549,7 +549,7 @@ class UMambaEnc(nn.Module):
                  nonlin_kwargs: dict = None,
                  deep_supervision: bool = False,
                  stem_channels: int = None,
-                 mamba_scan_type: str = 'pca', #TODO
+                 mamba_scan_type: str = 'pca', #
                  ):
         super().__init__()
         n_blocks_per_stage = n_conv_per_stage

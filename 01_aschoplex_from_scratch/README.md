@@ -12,7 +12,7 @@ ASCHOPLEX was trained in a 5-folds cross-validation fashion on 128 subjects deri
 | #1 | 67 subjects (24 controls, 43 Relapsing-Remitting Multiple Sclerosis patients)| Philips Achieva TX with 8-channels head coil (Software version R3.2.3.2) | 3D T1-w MPRAGE, resolution 1x1x1 mm, SENSE acceleration factor 2.5, TE/TR 3.7/8.4 ms, FA: 9°|
 | #2 | 61 subjects Relapsing-Remitting Multiple Sclerosis patients | Philips Elition S with 32-channels head coil (Software version R5.7.2.1) | 3D T1-w MPRAGE, resolution 1x1x1 mm, SENSE acceleration factor 4, TE/TR 3.7/8.4 ms, FA: 8° |
 
-ASCHOPLEX returns the ensemble by major voting segmentation of five selected models (best one for each fold) predictions, improving robustness and reliability of the output segmentation.
+ASCHOPLEX returns the ensemble by major voting segmentation of five selected models (best one for each fold) predictions, improving robustness and reuserbility of the output segmentation.
 
 Two main modality has been tested:
 1. Direct Inference: ASCHOPLEX has been directly inferred on the unseen dataset. The final prediction is the ensemble by major voting of the predictions obtained with the best five-folds models trained on Dataset 1 and Dataset 2.

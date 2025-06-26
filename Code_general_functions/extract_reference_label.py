@@ -3,7 +3,7 @@ import re
 
 
 # The files still need to have three digits in the file name, otherwise atm it does not work. 
-# TODO: Change the code to work with any number of digits in the file name.
+# : Change the code to work with any number of digits in the file name.
 
 def get_reference_label_path(image_path, reference_labels_base_path):
     """
@@ -40,9 +40,9 @@ def get_reference_label_path(image_path, reference_labels_base_path):
 
 
 # Example usage
-#image_path = "/home/linuxlia/Lia_Masterthesis/data/Dataset009_ChoroidPlexus_T1_sym_AP/image_Tr/010_image0001.nii"
-#image_path = "/home/linuxlia/Lia_Masterthesis/data/Dataset009_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/026_image0001.nii"
-#reference_labels_base_path = "/home/linuxlia/Lia_Masterthesis/data/reference_labels/ref_labelTs"
+#image_path = "/home/linuxuser/user/data/Dataset009_ChoroidPlexus_T1_sym_AP/image_Tr/010_image0001.nii"
+#image_path = "/home/linuxuser/user/data/Dataset009_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/026_image0001.nii"
+#reference_labels_base_path = "/home/linuxuser/user/data/reference_labels/ref_labelTs"
 #reference_label_path = get_reference_label_path(image_path, reference_labels_base_path)
 #print(reference_label_path)
 
@@ -73,10 +73,10 @@ def get_reference_label_paths(image_paths, reference_labels_base_path):
 
 # Example usage
 #image_paths = [
-#    "/home/linuxlia/Lia_Masterthesis/data/Dataset009_ChoroidPlexus_T1_sym_AP/image_Tr/010_image0001.nii",
-#    "/home/linuxlia/Lia_Masterthesis/data/Dataset009_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/025_image0001.nii"
+#    "/home/linuxuser/user/data/Dataset009_ChoroidPlexus_T1_sym_AP/image_Tr/010_image0001.nii",
+#    "/home/linuxuser/user/data/Dataset009_ChoroidPlexus_T1_sym_UMAMBA/imagesTs/025_image0001.nii"
 #]
-#reference_labels_base_path = "/home/linuxlia/Lia_Masterthesis/data/reference_labels/ref_labelTr"
+#reference_labels_base_path = "/home/linuxuser/user/data/reference_labels/ref_labelTr"
 #reference_label_paths = get_reference_label_paths(image_paths, reference_labels_base_path)
 #for path in reference_label_paths:
 #    print(path)

@@ -1,4 +1,4 @@
-# in /data1/LIA/BIDS, loop throught all subjects sub-00x/seg read the sub-00x_ses-00x_training_labels.nii.gz file. Create a new file sub-00x_ses-00x_training_labels_brainstem.nii.gz with only the brainstem segmentation which corresponds to the label 6 in the original file. 
+# in /data1/user/BIDS, loop throught all subjects sub-00x/seg read the sub-00x_ses-00x_training_labels.nii.gz file. Create a new file sub-00x_ses-00x_training_labels_brainstem.nii.gz with only the brainstem segmentation which corresponds to the label 6 in the original file. 
 # Save with same metadata as the original file. Save it to the same directory as the original file.
 
 import nibabel as nib
@@ -40,6 +40,6 @@ def extract_brainstem_segmentation(dataset_dir):
                 
                 
 if __name__ == "__main__":
-    dataset_dir = '/data1/LIA/BIDS'  # Change this to your dataset directory
+    dataset_dir = '/data1/user/BIDS'  # Change this to your dataset directory
     extract_brainstem_segmentation(dataset_dir)
 # This script will loop through all subjects in the specified dataset directory, extract the brainstem segmentation

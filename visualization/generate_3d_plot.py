@@ -63,9 +63,9 @@ class ImageViewer:
 
 
 # Example usage
-dataroot = "/home/linuxlia/Lia_Masterthesis/data/pazienti"
+dataroot = "/home/linuxuser/user/data/pazienti"
 modality = "T1"
-ensemble_folder = "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/thesis_experiments/01_aschoplex_from_scratch/working_directory_T1_240820_1823/ensemble_output/image_Ts/"
+ensemble_folder = "/home/linuxuser/user/project_dir/_experiments/01_aschoplex_from_scratch/working_directory_T1_240820_1823/ensemble_output/image_Ts/"
 viewer = ImageViewer(dataroot, modality, ensemble_folder)
 print('Viewer created')
 plt.show()

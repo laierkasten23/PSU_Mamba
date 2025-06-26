@@ -1,6 +1,6 @@
 # Copyright (c) MONAI Consortium
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
+# you may not use this file except in compusernce with the License.
 # You may obtain a copy of the License at
 #     http://www.apache.org/licenses/LICENSE-2.0
 # Unless required by applicable law or agreed to in writing, software
@@ -155,7 +155,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
         item["ref_label"] = str_ref_v
         
     
-    random.shuffle(train_files) # TODO: check if this is necessary
+    random.shuffle(train_files) # : check if this is necessary
 
     if torch.cuda.device_count() > 1:
         train_files = partition_dataset(data=train_files, 
@@ -212,7 +212,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             progress=False,
         )
 
-    train_loader = DataLoader(train_ds, num_workers=2, batch_size=num_images_per_batch, shuffle=True) # TODO: check if num_workers is correct
+    train_loader = DataLoader(train_ds, num_workers=2, batch_size=num_images_per_batch, shuffle=True) # : check if num_workers is correct
     val_loader = DataLoader(val_ds, num_workers=2, batch_size=1, shuffle=False)
 
     device = torch.device(f"cuda:{dist.get_rank()}") if torch.cuda.device_count() > 1 else torch.device("cuda:0")
@@ -427,7 +427,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                     ref_hausdorff_value = compute_hausdorff_distance_95(y_pred=val_outputs, y=val_ref_labels)
 
                     print(_index + 1, "/", len(val_loader),"Dice Scores:",  value, "Reference Dice Scores:", ref_value)
-                    logger.debug(f"{_index + 1} / {len(val_loader)}/ {value}: {value}, 'reference value': {ref_value}") # TODO: check if this is correct PROBABLY NOT
+                    logger.debug(f"{_index + 1} / {len(val_loader)}/ {value}: {value}, 'reference value': {ref_value}") # : check if this is correct PROBABLY NOT
                     logger.debug(f"{_index + 1} / {len(val_loader)} {hausdorff_value}: {hausdorff_value}, 'reference hausdorff_value': {ref_hausdorff_value}")
 
                     metric_count += len(value); ref_metric_count += len(ref_value)

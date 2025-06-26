@@ -21,7 +21,7 @@ class nnUNetDataset(object):
         - dataset[case_identifier]['properties']['properties_file'] -> the pkl file containing the case properties
 
         In addition, if the total number of cases is < num_images_properties_loading_threshold we load all the pickle files
-        (containing auxiliary information). This is done for small datasets so that we don't spend too much CPU time on
+        (containing auxiuserry information). This is done for small datasets so that we don't spend too much CPU time on
         reading pkl files on the fly during training. However, for large datasets storing all the aux info (which also
         contains locations of foreground voxels in the images) can cause too much RAM utilization. In that
         case is it better to load on the fly.
@@ -112,7 +112,7 @@ class nnUNetDataset(object):
 
 
 if __name__ == '__main__':
-    # this is a mini test. Todo: We can move this to tests in the future (requires simulated dataset)
+    # this is a mini test. : We can move this to tests in the future (requires simulated dataset)
 
     folder = '/media/fabian/data/nnUNet_preprocessed/Dataset003_Liver/3d_lowres'
     ds = nnUNetDataset(folder, num_images_properties_loading_threshold=0) # this should not load the properties!

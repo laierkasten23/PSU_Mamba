@@ -1,10 +1,10 @@
 #!/bin/bash
 
 
-EXP_FOLDER="/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/thesis_experiments"
-EXP_FOLDER="/data1/LIA/Umamba_data"
+EXP_FOLDER="/home/linuxuser/user/project_dir/_experiments"
+EXP_FOLDER="/data1/user/Umamba_data"
 AP_FOLDER="01_aschoplex_from_scratch"
-PHUSE_FOLDER="02_phusegplex"
+lab_FOLDER="02_labgplex"
 UMAMBA_FOLDER="umamba_predictions"
 um_loc="working_directory_T1xFLAIR/pred_raw"
 
@@ -15,10 +15,10 @@ PRED_FOLDERS=(
     "$EXP_FOLDER/$AP_FOLDER/working_directory_01_FLAIR/ensemble_output/image_Ts"
     "$EXP_FOLDER/$AP_FOLDER/working_directory_01_T1xFLAIR/ensemble_output/image_Ts"
     "$EXP_FOLDER/$AP_FOLDER/working_directory_01_T1_FLAIR_T1xFLAIRmask/ensemble_output/image_Ts"
-    "$EXP_FOLDER/$PHUSE_FOLDER/working_directory_02_T1/ensemble_output/image_Ts"
-    "$EXP_FOLDER/$PHUSE_FOLDER/working_directory_02_FLAIR/ensemble_output/image_Ts" 
-    "$EXP_FOLDER/$PHUSE_FOLDER/working_directory_02_T1xFLAIR/ensemble_output/image_Ts" 
-    "$EXP_FOLDER/$PHUSE_FOLDER/working_directory_02_T1_FLAIR_T1xFLAIRmask/ensemble_output/image_Ts"
+    "$EXP_FOLDER/$lab_FOLDER/working_directory_02_T1/ensemble_output/image_Ts"
+    "$EXP_FOLDER/$lab_FOLDER/working_directory_02_FLAIR/ensemble_output/image_Ts" 
+    "$EXP_FOLDER/$lab_FOLDER/working_directory_02_T1xFLAIR/ensemble_output/image_Ts" 
+    "$EXP_FOLDER/$lab_FOLDER/working_directory_02_T1_FLAIR_T1xFLAIRmask/ensemble_output/image_Ts"
     "$EXP_FOLDER/$UMAMBA_FOLDER/working_directory_T1/pred_pp"
     "$EXP_FOLDER/$UMAMBA_FOLDER/working_directory_FLAIR/pred_pp"
     "$EXP_FOLDER/$UMAMBA_FOLDER/working_directory_T1xFLAIR/pred_pp"
@@ -41,8 +41,8 @@ PRED_FOLDERS=( #nnUNetTrainerMambaFirstStem_diag
     #"$EXP_FOLDER/$UMAMBA_FOLDER/$um_loc/nnUNetTrainerPCApath_First_PCA_raw"     # 0.8379   1.9506     0.8665   0.818    0.8413   091.nii    029.nii  005.nii  029.nii
     #"$EXP_FOLDER/$UMAMBA_FOLDER/$um_loc/nnUNetTrainerPCApath_First_PCA_resnet"  # 0.85   1.7515     0.8647   0.838    0.8509   091.nii    029.nii  005.nii  029.nii
     #"$EXP_FOLDER/$UMAMBA_FOLDER/$um_loc/nnUNetTrainerUMambaFirst_PCA_patch16_32"    # 0.8564   2.1927     0.8407  0.8754    0.8574   034.nii    029.nii  005.nii  029.nii
-    #"$EXP_FOLDER/$UMAMBA_FOLDER/$um_loc/nnUNetTrainerUMambaFirst_diag" #TODO check ZeroDivisionError: division by zero
-    #"$EXP_FOLDER/$UMAMBA_FOLDER/$um_loc/nnUNetTrainerUMambaFirst_PCA_patch16_32" # TODO check
+    #"$EXP_FOLDER/$UMAMBA_FOLDER/$um_loc/nnUNetTrainerUMambaFirst_diag" # check ZeroDivisionError: division by zero
+    #"$EXP_FOLDER/$UMAMBA_FOLDER/$um_loc/nnUNetTrainerUMambaFirst_PCA_patch16_32" #  check
     #"$EXP_FOLDER/$UMAMBA_FOLDER/$um_loc/nnUNetTrainerMambaEnc_PRL" # 0.8635,0.0445,1.6702,1.8136,0.8657,0.0205,0.856,0.0114,0.8606,0.0101,091.nii,029.nii,005.nii,029.nii
     #"$EXP_FOLDER/$UMAMBA_FOLDER/$um_loc/nnUNetTrainerMambaBot_PRL" # 0.8696,0.0425,1.5537,1.8366,0.868,0.0211,0.869,0.0105,0.8683,0.0079,091.nii,029.nii,004.nii,029.nii
     #"$EXP_FOLDER/$UMAMBA_FOLDER/$um_loc/nnUNetTrainerMambaFirst_globalPCA_64_PRL" # 0.8811,0.0327,1.1723,0.3547,0.8712,0.0222,0.8846,0.0139,0.8775,0.0072,091.nii,055.nii,004.nii,035.nii
@@ -51,15 +51,15 @@ PRED_FOLDERS=( #nnUNetTrainerMambaFirstStem_diag
 
 
 # Define the ground truth folder
-GT_FOLDER="/home/linuxlia/Lia_Masterthesis/data/reference_labels_T1/ref_labelTs"
-GT_FOLDER="/home/linuxlia/Lia_Masterthesis/data/reference_labels/ref_labelTs"
-GT_FOLDER="/home/linuxlia/Lia_Masterthesis/data/reference_labels_FLAIR/ref_labelTs"
-GT_FOLDER="/mnt/LIA/reference_labels/ref_labelTs"
+GT_FOLDER="/home/linuxuser/user/data/reference_labels_T1/ref_labelTs"
+GT_FOLDER="/home/linuxuser/user/data/reference_labels/ref_labelTs"
+GT_FOLDER="/home/linuxuser/user/data/reference_labels_FLAIR/ref_labelTs"
+GT_FOLDER="/mnt/user/reference_labels/ref_labelTs"
 
 # Define the path to save the CSV file
-SAVE_CSV_PATH="/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/thesis_experiments/segmentation_metrics_t1_gt.csv"
-SAVE_CSV_PATH="/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/thesis_experiments/segmentation_metrics_t1xflair_gt.csv"
-SAVE_CSV_PATH="/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/thesis_experiments/segmentation_metrics_flair_gt.csv"
-SAVE_CSV_PATH="/data1/LIA/Umamba_data/segmentation_metrics_t1xflair_gt_1.csv"
+SAVE_CSV_PATH="/home/linuxuser/user/project_dir/_experiments/segmentation_metrics_t1_gt.csv"
+SAVE_CSV_PATH="/home/linuxuser/user/project_dir/_experiments/segmentation_metrics_t1xflair_gt.csv"
+SAVE_CSV_PATH="/home/linuxuser/user/project_dir/_experiments/segmentation_metrics_flair_gt.csv"
+SAVE_CSV_PATH="/data1/user/Umamba_data/segmentation_metrics_t1xflair_gt_1.csv"
 # Call the Python script with the arguments
 python evaluate.py --pred_folders "${PRED_FOLDERS[@]}" --gt_folder "$GT_FOLDER" --save_csv_path "$SAVE_CSV_PATH"

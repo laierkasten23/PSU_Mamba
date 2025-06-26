@@ -413,16 +413,16 @@ class nnUNetTrainer(object):
                 - initial_patch_size (list): List of initial patch sizes for each dimension.
                 - mirror_axes (tuple): Tuple of axes indices for mirroring.
         '''
-        # TODO (LIA: ) prpbably overwrite this part or at least extend it
+        #  (user: ) prpbably overwrite this part or at least extend it
         """
         This function is stupid and certainly one of the weakest spots of this implementation. Not entirely sure how we can fix it.
         """
         patch_size = self.configuration_manager.patch_size
         dim = len(patch_size)
-        # todo rotation should be defined dynamically based on patch size (more isotropic patch sizes = more rotation)
+        #  rotation should be defined dynamically based on patch size (more isotropic patch sizes = more rotation)
         if dim == 2:
             do_dummy_2d_data_aug = False
-            # todo revisit this parametrization
+            #  revisit this parametrization
             if max(patch_size) / min(patch_size) > 1.5:
                 rotation_for_DA = {
                     'x': (-15. / 360 * 2. * np.pi, 15. / 360 * 2. * np.pi),
@@ -437,7 +437,7 @@ class nnUNetTrainer(object):
                 }
             mirror_axes = (0, 1)
         elif dim == 3:
-            # todo this is not ideal. We could also have patch_size (64, 16, 128) in which case a full 180deg 2d rot would be bad
+            #  this is not ideal. We could also have patch_size (64, 16, 128) in which case a full 180deg 2d rot would be bad
             # order of the axes is determined by spacing, not image size
             do_dummy_2d_data_aug = (max(patch_size) / patch_size[0]) > ANISO_THRESHOLD
             if do_dummy_2d_data_aug:
@@ -457,7 +457,7 @@ class nnUNetTrainer(object):
         else:
             raise RuntimeError()
 
-        # todo this function is stupid. It doesn't even use the correct scale range (we keep things as they were in the
+        #  this function is stupid. It doesn't even use the correct scale range (we keep things as they were in the
         #  old nnunet for now)
         initial_patch_size = get_patch_size(patch_size[-dim:],
                                             *rotation_for_DA.values(),
@@ -728,7 +728,7 @@ class nnUNetTrainer(object):
         return dl_tr, dl_val
 
     @staticmethod
-    # TODO LIA: maybe also tackle this function for the new trainer class
+    #  user: maybe also tackle this function for the new trainer class
     def get_training_transforms(
         patch_size: Union[np.ndarray, Tuple[int]],
         rotation_for_DA: dict,
@@ -744,7 +744,7 @@ class nnUNetTrainer(object):
         regions: List[Union[List[int], Tuple[int, ...], int]] = None,
         ignore_label: int = None,
     ) -> AbstractTransform:
-        # todo extract data shape #lia
+        #  extract data shape #user
         #print("data shape:", self.data_dict['data'].shape)
         tr_transforms = []
         if do_dummy_2d_data_aug:
@@ -759,13 +759,13 @@ class nnUNetTrainer(object):
             patch_size_spatial, patch_center_dist_from_border=None,
             do_elastic_deform=False, alpha=(0, 0), sigma=(0, 0),
             do_rotation=True, angle_x=rotation_for_DA['x'], angle_y=rotation_for_DA['y'], angle_z=rotation_for_DA['z'],
-            p_rot_per_axis=1,  # todo experiment with this
+            p_rot_per_axis=1,  #  experiment with this
             do_scale=True, scale=(0.7, 1.4),
             border_mode_data="constant", border_cval_data=0, order_data=order_resampling_data,
             border_mode_seg="constant", border_cval_seg=border_val_seg, order_seg=order_resampling_seg,
             random_crop=False,  # random cropping is part of our dataloaders
             p_el_per_sample=0, p_scale_per_sample=0.2, p_rot_per_sample=0.2,
-            independent_scale_for_each_axis=False  # todo experiment with this
+            independent_scale_for_each_axis=False  #  experiment with this
         ))
 
         if do_dummy_2d_data_aug:
@@ -824,7 +824,7 @@ class nnUNetTrainer(object):
         tr_transforms = Compose(tr_transforms)
         return tr_transforms
 
-    @staticmethod # TODO LIA: maybe also tackle this function for the new trainer class
+    @staticmethod #  user: maybe also tackle this function for the new trainer class
     def get_validation_transforms(
         deep_supervision_scales: Union[List, Tuple, None],
         is_cascaded: bool = False,
@@ -888,7 +888,7 @@ class nnUNetTrainer(object):
 
         # dataloaders must be instantiated here because they need access to the training data which may not be present
         # when doing inference
-        # TODO LIA: maybe change this part for the new trainer class
+        #  user: maybe change this part for the new trainer class
         print("BEFORE GETTING DATALOADERS in nnUNetTrainer")
         self.dataloader_train, self.dataloader_val = self.get_dataloaders() # ! here our overwritten method is taken
         print("AFTER GETTING DATALOADERS (nnUNetTrainer)")
@@ -946,7 +946,7 @@ class nnUNetTrainer(object):
         data = batch['data']
         target = batch['target']
         
-        #! added to debug (lia)
+        #! added to debug (user)
         #("in train_step: data TYPE", type(data), "target TYPER", type(target))
         # (batch_size, num_channels, x, y, z)
         # Print shapes once at the beginning of training
@@ -970,7 +970,7 @@ class nnUNetTrainer(object):
                 matplotlib.use('Agg')  # Use non-interactive backend
 
                 # path to save the images
-                inspection_path = "/home/studenti/lia/lia_masterthesis/phuse_thesis_2024/PRL/path_analysis_results/inspection/"
+                inspection_path = "/home/stud/user/user/project_dir/PRL/path_analysis_results/inspection/"
                 os.makedirs(inspection_path, exist_ok=True)
                 
                 mid_x = img.shape[0] // 2
@@ -989,7 +989,7 @@ class nnUNetTrainer(object):
                 overlay_plot(img[mid_x, :, :], seg[0, mid_x, :, :], "Mid-X Slice", inspection_path + "xy.png")
                 overlay_plot(img[:, mid_y, :], seg[0, :, mid_y, :], "Mid-Y Slice", inspection_path + "xz.png")
                 overlay_plot(img[:, :, mid_z], seg[0, :, :, mid_z], "Mid-Z Slice", inspection_path + "yz.png")
-                # end if plot # TODO: remove this later (lia)
+                # end if plot # : remove this later (user)
 
         data = data.to(self.device, non_blocking=True)
         if isinstance(target, list):
@@ -1362,7 +1362,7 @@ class nnUNetTrainer(object):
 
     def run_training(self):
         self.on_train_start()
-        # first step done. until now, no transformations done (LIA)
+        # first step done. until now, no transformations done (user)
         for epoch in range(self.current_epoch, self.num_epochs):
             self.on_epoch_start()
             # this part was just logging

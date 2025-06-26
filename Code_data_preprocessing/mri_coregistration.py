@@ -83,11 +83,11 @@ def save_image(image, file_path):
     sitk.WriteImage(image, file_path)
 
 # Example usage
-root_dir = '/home/linuxlia/Lia_Masterthesis/data/pazienti1_52_Lia'
+root_dir = '/home/linuxuser/user/data/pazienti1_52_user'
 subject_id = '038'
 fixed_image_path = f'{root_dir}/{subject_id}/{subject_id}_T1.nii'
 moving_image_path = f'{root_dir}/{subject_id}/{subject_id}_FLAIR.nii'
-output_image_path = f'{root_dir}/{subject_id}/{subject_id}_FLAIR_Lia_registered.nii'
+output_image_path = f'{root_dir}/{subject_id}/{subject_id}_FLAIR_user_registered.nii'
 
 fixed_image = load_image(fixed_image_path)
 moving_image = load_image(moving_image_path)

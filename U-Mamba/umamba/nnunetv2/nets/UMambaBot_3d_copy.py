@@ -72,7 +72,7 @@ def flatten_for_scan(x, scan_type='x'):
             torch.arange(Y, device=x.device),
             indexing='ij'
         )
-        #diag_order = torch.argsort(z_coords + y_coords, dim=None) #TODO
+        #diag_order = torch.argsort(z_coords + y_coords, dim=None) #
         diag_order = torch.argsort((z_coords + y_coords).flatten()) #! changed
         x_flat = x_perm.reshape(B, C, X, Y * Z)[:, :, :, diag_order]
         flatten = x_flat.reshape(B, C, -1).transpose(-1, -2)
@@ -87,7 +87,7 @@ def flatten_for_scan(x, scan_type='x'):
             torch.arange(Y, device=x.device),
             indexing='ij'
         )
-        #diag_order = torch.argsort(x_coords + y_coords, dim=None) #TODO check
+        #diag_order = torch.argsort(x_coords + y_coords, dim=None) # check
         diag_order = torch.argsort((x_coords + y_coords).flatten()) #! changed
         x_flat = x_perm.reshape(B, C, D, X * Y)[:, :, :, diag_order]
         flatten = x_flat.reshape(B, C, -1).transpose(-1, -2)
@@ -152,7 +152,7 @@ class UpsampleLayer(nn.Module):
         return x
 
 class MambaLayer(nn.Module):
-    # TODO 
+    #  
     # - check patch size to avoid segmenting ears
     # - scan paths
     # - put mamba also in encoding layers
@@ -208,7 +208,7 @@ class MambaLayer(nn.Module):
         out = x_mamba.transpose(-1, -2).reshape(B, C, *img_dims)
         return out  # Already in original shape; no need to permute back if you unify shape
     
-    ## NEW VERSION UNTIL #TODO delete what comes after
+    ## NEW VERSION UNTIL # delete what comes after
     
     
     ''' # ! Original Version

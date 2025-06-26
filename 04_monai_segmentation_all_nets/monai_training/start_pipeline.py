@@ -11,7 +11,7 @@ from Code.finetuning import Finetuning
 from Code.train_model import TrainModel
 
 '''
-python3 launching_tool.py --dataroot '/var/data/MONAI_Choroid_Plexus/dataset_aschoplex' --work_dir '/var/data/student_home/lia/ASCHOPLEX' --finetune yes --prediction yes --output_pred_dir '/var/data/student_home/lia/ASCHOPLEX/Ensemble_Predictions' --finetune_dir '/var/data/student_home/lia/ASCHOPLEX/Finetuned_Models'
+python3 launching_tool.py --dataroot '/var/data/MONAI_Choroid_Plexus/dataset_aschoplex' --work_dir '/var/data/student_home/user/ASCHOPLEX' --finetune yes --prediction yes --output_pred_dir '/var/data/student_home/user/ASCHOPLEX/Ensemble_Predictions' --finetune_dir '/var/data/student_home/user/ASCHOPLEX/Finetuned_Models'
 '''
 
 join = os.path.join
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     # Add the parameters positional/optional
     parser.add_argument('--dataroot', required=True, help="Data directory", default='/var/data/MONAI_Choroid_Plexus/dataset_aschoplex')
     parser.add_argument('--description', required=False, help="Data description")
-    parser.add_argument('--work_dir', required=True, help="working directory", default='/var/data/student_home/lia/ASCHOPLEX')
+    parser.add_argument('--work_dir', required=True, help="working directory", default='/var/data/student_home/user/ASCHOPLEX')
     parser.add_argument('--finetune', required=True, choices=['yes', 'no'], help="finetuning flag")
     parser.add_argument('--prediction', required=True, choices=['yes', 'no', 'ft'], help="prediction flag")
     parser.add_argument('--output_pred_dir', required=False, help="Working directory where to save predictions. If not specified, default folder name and locations will be used")

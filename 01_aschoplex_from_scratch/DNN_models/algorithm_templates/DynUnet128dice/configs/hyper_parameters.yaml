@@ -20,7 +20,7 @@ infer:
   fast: false
   ouptut_path: $@bundle_root + '/prediction_' + @infer#data_list_key
 
-input_channels: 1 # TODO: change this for T1, FLAIR when using 2 channels
+input_channels: 1 # : change this for T1, FLAIR when using 2 channels
 learning_rate: 0.001
 
 loss:

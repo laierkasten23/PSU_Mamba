@@ -1,7 +1,7 @@
 #    Copyright 2020 Division of Medical Image Computing, German Cancer Research Center (DKFZ), Heidelberg, Germany
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
-#    you may not use this file except in compliance with the License.
+#    you may not use this file except in compusernce with the License.
 #    You may obtain a copy of the License at
 #
 #        http://www.apache.org/licenses/LICENSE-2.0
@@ -282,7 +282,7 @@ def example_test_case_preprocessing():
                                       configuration_manager=plans_manager.get_configuration(configuration),
                                       dataset_json=dataset_json_file)
 
-    # voila. Now plug data into your prediction function of choice. We of course recommend nnU-Net's default (TODO)
+    # voila. Now plug data into your prediction function of choice. We of course recommend nnU-Net's default ()
     return data
 
 

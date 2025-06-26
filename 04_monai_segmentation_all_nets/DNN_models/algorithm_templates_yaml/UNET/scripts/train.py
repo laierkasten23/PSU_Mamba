@@ -1,6 +1,6 @@
 # Copyright (c) MONAI Consortium
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
+# you may not use this file except in compusernce with the License.
 # You may obtain a copy of the License at
 #     http://www.apache.org/licenses/LICENSE-2.0
 # Unless required by applicable law or agreed to in writing, software
@@ -197,7 +197,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
 
     loss_function = parser.get_parsed_content("training#loss")
 
-    optimizer_part = parser.get_parsed_content("training#optimizer", instantiate=False) # TODO: why not instantiate?
+    optimizer_part = parser.get_parsed_content("training#optimizer", instantiate=False) # : why not instantiate?
     optimizer = optimizer_part.instantiate(params=model.parameters()) # because it is done here
 
     num_epochs_per_validation = num_iterations_per_validation // len(train_loader)

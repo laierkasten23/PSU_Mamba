@@ -40,7 +40,7 @@ from nnunetv2.nets.UMambaFirst import MambaLayer
 from nnunetv2.nets.UMambaFirst_3d import MambaLayer as MambaLayer3d
 from nnunetv2.nets.UMambaFirst_32 import MambaLayer as MambaLayer32
 from nnunetv2.nets.UMambaFirst_patch16 import MambaLayer as MambaLayer_patch16
-#from nnunetv2.nets.UMambaFirst_global32 import MambaLayer as MambaLayer_global32 #!TODO add reassemble patches to utils 
+#from nnunetv2.nets.UMambaFirst_global32 import MambaLayer as MambaLayer_global32 #! add reassemble patches to utils 
 from nnunetv2.nets.UMambaFirst_z_3d import MambaLayer as MambaLayer_z
 from nnunetv2.nets.UMambaFirst_global import MambaLayer as MambaLayer_global
 from nnunetv2.nets.UMambaFirst_PCA import MambaLayer as MambaLayer_PCA
@@ -97,7 +97,7 @@ class nnUNetPredictor(object):
             #checkpoint = torch.load(join(model_training_output_dir, f'fold_{f}', checkpoint_name),
             #                        map_location=torch.device('cpu'))
             checkpoint = torch.load(join(model_training_output_dir, f'fold_{f}', checkpoint_name),
-                                    map_location=torch.device('cpu'), weights_only=False) # ! LIA changed python stuff rita
+                                    map_location=torch.device('cpu'), weights_only=False) # ! user changed python stuff rita
             if i == 0:
                 trainer_name = checkpoint['trainer_name']
                 configuration_name = checkpoint['init_args']['configuration']

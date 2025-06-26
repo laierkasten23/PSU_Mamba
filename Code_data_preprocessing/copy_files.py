@@ -7,12 +7,12 @@ dividedbysubject = False
 # Define the source and destination directories
 
 if dividedbysubject:
-    source_dir = '/home/linuxlia/Lia_Masterthesis/data/pazienti'
-    dest_dir = '/home/linuxlia/Lia_Masterthesis/data/pazienti_tobecontrolled_T1xFLAIR'
+    source_dir = '/home/linuxuser/user/data/pazienti'
+    dest_dir = '/home/linuxuser/user/data/pazienti_tobecontrolled_T1xFLAIR'
 else:
-    source_dir = '/home/linuxlia/Lia_Masterthesis/data/T1xFLAIR_mask_ref'
-    source_dir = '/home/linuxlia/Lia_Masterthesis/data/FLAIR_e_FLAIRmask_OK_1'
-    dest_dir = '/home/linuxlia/Lia_Masterthesis/data/pazienti'
+    source_dir = '/home/linuxuser/user/data/T1xFLAIR_mask_ref'
+    source_dir = '/home/linuxuser/user/data/FLAIR_e_FLAIRmask_OK_1'
+    dest_dir = '/home/linuxuser/user/data/pazienti'
 
 
 if dividedbysubject:

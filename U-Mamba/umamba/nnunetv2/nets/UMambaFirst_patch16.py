@@ -114,7 +114,7 @@ class MambaLayer(nn.Module):
         return x_flat, unpermute
 
     def flatten_pca_scan(self, x, principal_vector):
-        # ! TODO: INCLUDE LOGIC HERE TO FALL BACK TO x!! 
+        # ! : INCLUDE LOGIC HERE TO FALL BACK TO x!! 
         """
         Flattens the input tensor x using the given principal_vector.
         Input:
@@ -142,7 +142,7 @@ class MambaLayer(nn.Module):
             principal_vector = torch.from_numpy(principal_vector).to(device, dtype=torch.float32)
         else: 
             principal_vector = principal_vector.to(device, dtype=torch.float32)
-        # TODO: Forse qua niente matmul, ma dot product??? Gets messed up here? 
+        # : Forse qua niente matmul, ma dot product??? Gets messed up here? 
         projections = torch.matmul(coords, principal_vector)
         sorted_idx = torch.argsort(projections)
 
@@ -236,7 +236,7 @@ class ResidualMambaEncoder(nn.Module):
                  return_skips: bool = False,
                  stem_channels: int = None,
                  pool_type: str = 'conv',
-                 mamba_scan_type: str = 'pca'  # 'x', 'y', 'z', 'yz-diag', 'xy-diag', 'pca' # TODO 
+                 mamba_scan_type: str = 'pca'  # 'x', 'y', 'z', 'yz-diag', 'xy-diag', 'pca' #  
                  ):
         super().__init__()
         if isinstance(kernel_sizes, int):
@@ -376,7 +376,7 @@ class ResidualMambaEncoder(nn.Module):
 
             x = conv(x)
 
-            patch_size = (16, 16, 16) # TODO dangerous hardcoded value, should be passed as argument
+            patch_size = (16, 16, 16) #  dangerous hardcoded value, should be passed as argument
             # divide the volume in mini sub volumes and where each sub volume is a patch
             patches, coords = extract_patches_and_origins(x, patch_size)
             #print("[ResidualMambaEncoder] Extracted {} patches from input volume.".format(len(patches)))
@@ -389,7 +389,7 @@ class ResidualMambaEncoder(nn.Module):
                     principal_vector = mamba.local_pca_vectors[i]
                     principal_vector = mamba.local_pca_vectors[i]       
                     #print("[ResidualMambaEncoder] Using principal vector for patch origin {}: {}".format(origin, principal_vector))
-                    #! TODO: here incorporate that output can be none and directly go to scan x. 
+                    #! : here incorporate that output can be none and directly go to scan x. 
                     
                     x_flat, unpermute = mamba.flatten_pca_scan(patch, principal_vector)
                 
@@ -559,7 +559,7 @@ class UMambaEnc(nn.Module):
                  nonlin_kwargs: dict = None,
                  deep_supervision: bool = False,
                  stem_channels: int = None,
-                 mamba_scan_type: str = 'pca', #TODO
+                 mamba_scan_type: str = 'pca', #
                  ):
         super().__init__()
         n_blocks_per_stage = n_conv_per_stage

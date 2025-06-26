@@ -99,10 +99,10 @@ def create_nnunet_dataset_from_bids(
             
 
 create_nnunet_dataset_from_bids(
-    path="/data1/LIA/BIDS",
+    path="/data1/user/BIDS",
     task_id=299,
     task_name="BrainStem",
-    output_dir="/data1/LIA/Umamba_data/nnUNet_raw",
+    output_dir="/data1/user/Umamba_data/nnUNet_raw",
     image_pattern="sub-{sid}_ses-001_INV1.nii.gz",
     seg_pattern="sub-{sid}_ses-001_training_labels_brainstem.nii.gz",
     modality_identifier="0001",

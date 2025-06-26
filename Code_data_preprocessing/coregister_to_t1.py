@@ -2,7 +2,7 @@ import nibabel as nib
 import SimpleITK as sitk
 import os
 
-parent_dir = "/home/linuxlia/Lia_Masterthesis/data/own_coregistration_240831/022"
+parent_dir = "/home/linuxuser/user/data/own_coregistration_240831/022"
 # Load the T1 (fixed) and FLAIR (moving) images using nibabel
 fixed_image = sitk.ReadImage(os.path.join(parent_dir,'022_T1.nii'), sitk.sitkFloat32)
 moving_image = sitk.ReadImage(os.path.join(parent_dir, '022_ChP_mask_T1xFLAIR_manual_seg.nii'), sitk.sitkFloat32)

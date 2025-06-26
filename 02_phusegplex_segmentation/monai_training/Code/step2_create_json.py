@@ -14,14 +14,14 @@ def generate_json(args):
     Class for writing .json files to run training/ finetuning/ testing/ training and predicting or finetuning and predicting Choroid Plexus segmentations.
 
     dataroot = "/var/data/MONAI_Choroid_Plexus/dataset_monai_train_from_scratch"
-    work_dir = "/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training"
+    work_dir = "/var/data/student_home/user/project_dir/monai_segmentation/monai_training"
     json_file=WriteTrainJSON(dataroot, work_dir).write_train_val_json(json_filename = "train_val3.json")
 
     Usage: 
-        python step2_create_json.py --mode "train" --dataroot "/var/data/MONAI_Choroid_Plexus/dataset_monai_train_from_scratch" --work_dir "/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training" --train_val_ratio 0.5 --num_folds 5   
-        python step2_create_json.py --mode "test" --dataroot "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex" --work_dir "/var/data/student_home/lia/phuse_thesis_2024/monai_segmentation/monai_training" --train_val_ratio 0.5 --num_folds 5   
-        python step2_create_json.py --mode "train" --dataroot "C:/Users/lia/Documents/Lia_Masterthesis/data/dataset_aschoplex" --work_dir "C:/Users/lia/Documents/Lia_Masterthesis/phuse_thesis_2024/monai_segmentation/monai_training/run_240426" --train_val_ratio 0.5 --num_folds 5   
-        python step2_create_json.py --mode "train" --dataroot "/home/linuxlia/Lia_Masterthesis/data/dataset_aschoplex" --work_dir "/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/monai_segmentation/monai_training/working_directory_0509" --train_val_ratio 0.8 --num_folds 5   
+        python step2_create_json.py --mode "train" --dataroot "/var/data/MONAI_Choroid_Plexus/dataset_monai_train_from_scratch" --work_dir "/var/data/student_home/user/project_dir/monai_segmentation/monai_training" --train_val_ratio 0.5 --num_folds 5   
+        python step2_create_json.py --mode "test" --dataroot "/var/data/MONAI_Choroid_Plexus/dataset_aschoplex" --work_dir "/var/data/student_home/user/project_dir/monai_segmentation/monai_training" --train_val_ratio 0.5 --num_folds 5   
+        python step2_create_json.py --mode "train" --dataroot "C:/Users/user/Documents/user/data/dataset_aschoplex" --work_dir "C:/Users/user/Documents/user/project_dir/monai_segmentation/monai_training/run_240426" --train_val_ratio 0.5 --num_folds 5   
+        python step2_create_json.py --mode "train" --dataroot "/home/linuxuser/user/data/dataset_aschoplex" --work_dir "/home/linuxuser/user/project_dir/monai_segmentation/monai_training/working_directory_0509" --train_val_ratio 0.8 --num_folds 5   
         
     Args:
         dataroot (str): The root directory of the dataset. Default is ".".
@@ -47,7 +47,7 @@ def generate_json(args):
                 i_ChP.nii.gz
                 j_ChP.nii.gz
                 ...
-                # TODO: maybe also incorporate the other folder structure
+                # : maybe also incorporate the other folder structure
         --------------------------------
         or 
         image_Tr
@@ -176,7 +176,7 @@ def generate_json(args):
     #------------------------------------------------------------------------------------------
     if args.mode in ['test', 'train_predict', 'finetune_predict']:
         test_dir = os.path.join(args.dataroot, 'image_Ts')
-        # TODO: maybe also incorporate the other folder structure: 
+        # : maybe also incorporate the other folder structure: 
         # But there, the testting images are all the images in the main folder, 
         # #which do not have a label in the labels -> final folder 
         
@@ -194,7 +194,7 @@ def generate_json(args):
                 raise ValueError("Data are not in the correct format. Please, provide images in .nii or .nii.gz Nifti format")
             
         json_dict['numTest'] = len(test_image_paths)
-        json_dict['testing'] = [{"image": '%s' %i} for i in filenames_test_image] # TODO: maybe there will be an error here
+        json_dict['testing'] = [{"image": '%s' %i} for i in filenames_test_image] # : maybe there will be an error here
 
             
     # create json file - manually set path to pretrained model

@@ -1,7 +1,7 @@
 #    Copyright 2020 Division of Medical Image Computing, German Cancer Research Center (DKFZ), Heidelberg, Germany
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
-#    you may not use this file except in compliance with the License.
+#    you may not use this file except in compusernce with the License.
 #    You may obtain a copy of the License at
 #
 #        http://www.apache.org/licenses/LICENSE-2.0
@@ -42,7 +42,7 @@ data/
 │   ├── ...
 """
 base = join(os.sep.join(__file__.split(os.sep)[:-3]), 'data') 
-base = '/var/datasets/LIA/Umamba_data'
+base = '/var/datasets/user/Umamba_data'
 
 # or you can set your own path, e.g., base = '/home/user_name/Documents/U-Mamba/data'
 nnUNet_raw = join(base, 'nnUNet_raw') # os.environ.get('nnUNet_raw')

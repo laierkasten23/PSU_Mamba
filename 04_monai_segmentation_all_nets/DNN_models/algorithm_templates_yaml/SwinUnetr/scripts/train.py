@@ -1,6 +1,6 @@
 # Copyright (c) MONAI Consortium
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
+# you may not use this file except in compusernce with the License.
 # You may obtain a copy of the License at
 #     http://www.apache.org/licenses/LICENSE-2.0
 # Unless required by applicable law or agreed to in writing, software
@@ -190,7 +190,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             [
                 infer_transforms,
                 transforms.LoadImaged(keys=["label", "ref_label"], image_only=False),
-                # TODO: add ref_label to the data list file
+                # : add ref_label to the data list file
                 transforms.EnsureChannelFirstd(keys=["label", "ref_label"]),
                 transforms.EnsureTyped(keys=["label", "ref_label"]),
             ]
@@ -202,7 +202,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
             infer_transforms = transforms.Compose(
                 [
                     infer_transforms,
-                    # TODO: add ref_label to the data list file
+                    # : add ref_label to the data list file
                     transforms.Lambdad(
                         keys=["label", "ref_label"],
                         func=lambda x: torch.cat([sum([x == i for i in c]) for c in class_index], dim=0).to(
@@ -547,7 +547,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                         else batch_data["ref_label"]
                     )
 
-                    _idx = torch.randperm(inputs_l.shape[0]) # TODO: set seed for reproducibility
+                    _idx = torch.randperm(inputs_l.shape[0]) # : set seed for reproducibility
                     inputs_l = inputs_l[_idx]
                     labels_l = labels_l[_idx]
                     ref_labels_l = ref_labels_l[_idx]
@@ -719,7 +719,7 @@ def run(config_file: Optional[Union[str, Sequence[str]]] = None, **override):
                             value = torch.full((1, metric_dim), float("nan")).to(device)
                             ref_value = torch.full((1, metric_dim), float("nan")).to(device)
 
-                        logger.debug(f"{_index + 1} / {len(val_loader)}/ {val_filename}: {value}, 'reference value': {ref_value}") # TODO: check if this is correct
+                        logger.debug(f"{_index + 1} / {len(val_loader)}/ {val_filename}: {value}, 'reference value': {ref_value}") # : check if this is correct
 
                         for _c in range(metric_dim):
                             val0 = torch.nan_to_num(value[0, _c], nan=0.0)

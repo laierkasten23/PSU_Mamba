@@ -59,5 +59,5 @@ def check_affine_matrices(parent_dir):
 
 
 # Example usage
-parent_directory = '/home/linuxlia/Lia_Masterthesis/data/pazienti_final_tests'
+parent_directory = '/home/linuxuser/user/data/pazienti_final_tests'
 check_affine_matrices(parent_directory)

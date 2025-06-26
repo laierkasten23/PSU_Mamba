@@ -61,7 +61,7 @@ class nnUNetDataLoaderBase(DataLoader):
 
         data_shape = (self.batch_size, num_color_channels, *self.patch_size)
         seg_shape = (self.batch_size, seg.shape[0], *self.patch_size)
-        print("data_shape", data_shape, "seg_shape", seg_shape) # TODO LIA
+        print("data_shape", data_shape, "seg_shape", seg_shape) #  user
         return data_shape, seg_shape
 
     def get_bbox(self, data_shape: np.ndarray, force_fg: bool, class_locations: Union[dict, None],

@@ -2,7 +2,7 @@ import numpy as np
 from nnunetv2.training.dataloading.base_data_loader import nnUNetDataLoaderBase
 from nnunetv2.training.dataloading.nnunet_dataset import nnUNetDataset
 
-import matplotlib.pyplot as plt # Added by Lia 
+import matplotlib.pyplot as plt # Added by user 
 
 
 class nnUNetDataLoader3D(nnUNetDataLoaderBase):
@@ -28,10 +28,10 @@ class nnUNetDataLoader3D(nnUNetDataLoaderBase):
             shape = data.shape[1:]
             # print('SHAPE (generate_train_batch -> here it is still correct):', shape) # ! HERE DATA IS OKAY; WTF IS THE DATA SHAPE ABOVE?????
             
-            # Added by Lia to show if images are consistent. Shape is (z,y,x)
+            # Added by user to show if images are consistent. Shape is (z,y,x)
             # plt.imshow(data[0,100,:,:])
             # plt.gca().invert_yaxis()
-            # plt.savefig(f"/home/studenti/lia/lia_masterthesis/phuse_thesis_2024/visualization/patch{i}{j}.png")
+            # plt.savefig(f"/home/stud/user/user/project_dir/visualization/patch{i}{j}.png")
             dim = len(shape)
             bbox_lbs, bbox_ubs = self.get_bbox(shape, force_fg, properties['class_locations'])
 
@@ -59,13 +59,13 @@ class nnUNetDataLoader3D(nnUNetDataLoaderBase):
 
             # ! THIS IS DONE BEFORE DATA AUGMENTATION WHICH MEANS THAT OUR CONVEX HULL CALCULATION NEEDS TO BE DONE HERE!
             padding = [(-min(0, bbox_lbs[i]), max(bbox_ubs[i] - shape[i], 0)) for i in range(dim)]
-            # Here the cropped and padded patch id added to the data_all and seg_all arrays (LIA) 
+            # Here the cropped and padded patch id added to the data_all and seg_all arrays (user) 
             data_all[j] = np.pad(data, ((0, 0), *padding), 'constant', constant_values=0)
             seg_all[j] = np.pad(seg, ((0, 0), *padding), 'constant', constant_values=-1)
             
             # (batch, C, X, Y, Z)
             
-            # Added by Lia: 
+            # Added by user: 
             # Plot some slices of the patch
             #self.plot_slices(data_all[j])
             #################
@@ -90,7 +90,7 @@ class nnUNetDataLoader3D(nnUNetDataLoaderBase):
 
 if __name__ == '__main__':
     folder = '/media/fabian/data/nnUNet_preprocessed/Dataset002_Heart/3d_fullres'
-    folder = '/data1/LIA/Umamba_data/nnUNet_preprocessed/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/nnUNetPlans_3d_fullres'
+    folder = '/data1/user/Umamba_data/nnUNet_preprocessed/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/nnUNetPlans_3d_fullres'
     folder = ''
     ds = nnUNetDataset(folder)  # this should not load the properties!
     dl = nnUNetDataLoader3D(ds, 5, (16, 16, 16), (16, 16, 16), 0.33, None, None)

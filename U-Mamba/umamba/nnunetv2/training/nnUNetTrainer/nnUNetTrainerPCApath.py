@@ -48,7 +48,7 @@ class nnUNetTrainerPCApath(nnUNetTrainer):
         super().__init__(plans, configuration, fold, dataset_json, unpack_dataset, device)
         self.margin = 5
         
-   #@staticmethod # ! TODO: THIS CHANGES ERROR -> should it be static or not????? 
+   #@staticmethod # ! : THIS CHANGES ERROR -> should it be static or not????? 
     
     
     def get_tr_and_val_datasets(self):
@@ -72,11 +72,11 @@ class nnUNetTrainerPCApath(nnUNetTrainer):
         #print("dataset_tr keys: ", dataset_tr.keys())
         #print("shape: ", dataset_tr.dataset[tr_keys[0]]['data'].shape)
         #plt.imshow(dataset_tr.dataset[tr_keys[0]]['data'][0, :, 100, :])
-        #plt.savefig('/data1/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_slice_x_dataset_tr.png')
+        #plt.savefig('/data1/user/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_slice_x_dataset_tr.png')
         #plt.close()
         
         #plt.imshow(dataset_val.dataset[val_keys[0]]['data'][0, :, 100, :])
-        #plt.savefig('/data1/LIA/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_slice_x_dataset_val.png')
+        #plt.savefig('/data1/user/Umamba_data/nnUNet_results/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/convex_hull_transform_data_slice_x_dataset_val.png')
         #plt.close()
         
         return dataset_tr, dataset_val
@@ -221,7 +221,7 @@ class nnUNetTrainerPCApath(nnUNetTrainer):
 
         self.logger.log('train_losses', loss_here, self.current_epoch)
         
-        # Adding pca for scan path #! Lia 
+        # Adding pca for scan path #! user 
         if self.current_epoch == 0 and self.local_rank == 0:
             print("Computing PCA scan path from ground truth masks...")
 

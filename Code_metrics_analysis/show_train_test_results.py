@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 
 # Load the Excel file
-file_path = '/home/linuxlia/Lia_Masterthesis/phuse_thesis_2024/thesis_experiments/train_test_results.xlsx'
+file_path = '/home/linuxuser/user/project_dir/_experiments/train_test_results.xlsx'
 
 # Load the sheets based on the correct sheet names
 train_results = pd.read_excel(file_path, sheet_name='Train')

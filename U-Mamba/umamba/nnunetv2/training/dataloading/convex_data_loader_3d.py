@@ -3,7 +3,7 @@ from nnunetv2.training.dataloading.data_loader_3d import nnUNetDataLoader3D
 from nnunetv2.training.data_augmentation.custom_transforms.convex_hull_transform import ConvexHullTransform
 
 class nnUNetDataLoader3D_convex(nnUNetDataLoader3D):
-    def __init__(self, *args, convex_hull_path, **kwargs): # TODO: just added
+    def __init__(self, *args, convex_hull_path, **kwargs): # : just added
         super().__init__(*args, **kwargs)
         self.convex_hull_path = convex_hull_path
         

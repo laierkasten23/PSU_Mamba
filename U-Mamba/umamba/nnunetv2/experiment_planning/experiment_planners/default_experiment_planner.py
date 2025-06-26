@@ -171,7 +171,7 @@ class ExperimentPlanner(object):
 
         target = np.percentile(np.vstack(spacings), 50, 0)
 
-        # todo sizes_after_resampling = [compute_new_shape(j, i, target) for i, j in zip(spacings, sizes)]
+        #  sizes_after_resampling = [compute_new_shape(j, i, target) for i, j in zip(spacings, sizes)]
 
         target_size = np.percentile(np.vstack(sizes), 50, 0)
         # we need to identify datasets for which a different target spacing could be beneficial. These datasets have
@@ -217,7 +217,7 @@ class ExperimentPlanner(object):
         if self.suppress_transpose:
             return [0, 1, 2], [0, 1, 2]
 
-        # todo we should use shapes for that as well. Not quite sure how yet
+        #  we should use shapes for that as well. Not quite sure how yet
         target_spacing = self.determine_fullres_target_spacing()
 
         max_spacing_axis = np.argmax(target_spacing)
@@ -251,7 +251,7 @@ class ExperimentPlanner(object):
 
         # clip initial patch size to median_shape. It makes little sense to have it be larger than that. Note that
         # this is different from how nnU-Net v1 does it!
-        # todo patch size can still get too large because we pad the patch size to a multiple of 2**n
+        #  patch size can still get too large because we pad the patch size to a multiple of 2**n
         initial_patch_size = np.array([min(i, j) for i, j in zip(initial_patch_size, median_shape[:len(spacing)])])
 
         # use that to get the network topology. Note that this changes the patch_size depending on the number of

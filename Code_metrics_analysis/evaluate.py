@@ -21,8 +21,8 @@ def extract_prefix(filename):
 def get_model_modality(pred_folder):
     if 'aschoplex' in pred_folder:
         model = 'aschoplex'
-    elif 'phusegplex' in pred_folder:
-        model = 'phusegplex'
+    elif 'labgplex' in pred_folder:
+        model = 'labgplex'
     elif 'umamba' in pred_folder:
         model = 'umamba'
     else:

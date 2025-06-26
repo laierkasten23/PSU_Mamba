@@ -43,7 +43,7 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *,cover
-.hypothesis/
+.hypo/
 
 # Translations
 *.mo

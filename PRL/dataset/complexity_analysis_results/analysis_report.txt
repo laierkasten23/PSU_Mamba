@@ -1,0 +1,69 @@
+================================================================================
+DATASET COMPLEXITY ANALYSIS REPORT
+Choroid Plexus Segmentation Dataset
+================================================================================
+
+DATASET OVERVIEW
+----------------------------------------
+Total patients processed: 104
+
+AD: 43 patients
+other: 22 patients
+MCI: 20 patients
+Psy: 19 patients
+
+CLUSTERING ANALYSIS (K-MEANS)
+----------------------------------------
+Number of clusters: 4
+Silhouette Score: 0.176
+Adjusted Rand Index: -0.003
+
+✗ Poor cluster separation - limited distinct patterns
+
+GROUP COMPLEXITY ANALYSIS
+----------------------------------------
+AD Group:
+  Sample size: 43
+  Mean volume: 3472 voxels
+  Mean compactness: 5573.209
+  Mean components: 2.7
+  Mean intensity: 2199969143.37
+  Mean entropy: 2.615
+
+MCI Group:
+  Sample size: 20
+  Mean volume: 2852 voxels
+  Mean compactness: 5509.278
+  Mean components: 3.1
+  Mean intensity: 2295243679.56
+  Mean entropy: 2.698
+
+Psy Group:
+  Sample size: 19
+  Mean volume: 3131 voxels
+  Mean compactness: 5481.827
+  Mean components: 2.9
+  Mean intensity: 2348452001.11
+  Mean entropy: 2.794
+
+other Group:
+  Sample size: 22
+  Mean volume: 3268 voxels
+  Mean compactness: 5625.089
+  Mean components: 2.5
+  Mean intensity: 2359499154.29
+  Mean entropy: 2.592
+
+COMPLEXITY RANKING (by volume variability):
+1. Psy (std: 1359.3)
+2. other (std: 1094.2)
+3. AD (std: 1058.9)
+4. MCI (std: 858.1)
+
+RECOMMENDATIONS
+----------------------------------------
+• Low agreement between clusters and pathology groups suggests
+  that pathology alone may not determine segmentation complexity
+• Psy group shows highest variability - may need more careful handling
+• MCI group shows most consistent patterns
+• Consider stratified sampling or group-specific preprocessing

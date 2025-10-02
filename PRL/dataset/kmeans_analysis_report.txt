@@ -1,0 +1,34 @@
+K-MEANS CLUSTERING ANALYSIS SUMMARY
+==================================================
+
+Total patients: 104
+Group distribution:
+  AD: 43 patients
+  other: 22 patients
+  MCI: 20 patients
+  Psy: 19 patients
+
+Clustering Results:
+  Silhouette Score: 0.165
+  Adjusted Rand Index: 0.010
+  Cluster Purity: 0.423 (42.3%)
+  Best Cluster Accuracy: 0.327 (32.7%)
+
+Optimal Cluster-to-Group Mapping:
+  Cluster 0 → other
+  Cluster 1 → Psy
+  Cluster 2 → AD
+  Cluster 3 → MCI
+
+Dataset Complexity: LOW - Limited distinct patterns in the data
+
+Group Statistics (mean ± std):
+  AD: Volume=3472±1059, Intensity=2199969143.37
+  MCI: Volume=2852±858, Intensity=2295243679.56
+  Psy: Volume=3131±1359, Intensity=2348452001.11
+  other: Volume=3268±1094, Intensity=2359499154.29
+
+Files generated:
+  - kmeans_analysis_results.png
+  - cluster_feature_profiles.png
+  - features_data.csv

@@ -205,18 +205,18 @@ if __name__ == "__main__":
     evaluate_all_experiments(args.pred_folders, args.gt_folder, args.save_csv_path)
     
     # python evaluate_umamba.py \
-  # --pred_folders /data1/LIA/umamba_predictions/working_directory_T1xFLAIR/pred_raw/ \
-  # --gt_folder /data1/LIA/Umamba_data/nnUNet_raw/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/labelsTs \
-  # --save_csv_path /data1/LIA/Umamba_data/results_umamba.csv
+  # --pred_folders /data1/umamba_predictions/working_directory_T1xFLAIR/pred_raw/ \
+  # --gt_folder /data1/Umamba_data/nnUNet_raw/Dataset433_ChoroidPlexus_T1xFLAIR_sym_UMAMBA/labelsTs \
+  # --save_csv_path /data1/Umamba_data/results_umamba.csv
   
-  # /mnt/LIA/reference_labels/ref_labelTs
+  # /mnt/reference_labels/ref_labelTs
   
 #python3 evaluate_umamba.py \
-#    --pred_folders "/data1/LIA/umamba_predictions/working_directory_T1xFLAIR/pred_raw/" \
-#    --gt_folder "/mnt/LIA/reference_labels/ref_labelTs" \
-#    --save_csv_path "/data1/LIA/Umamba_data/results_umamba.csv"
+#    --pred_folders "/data1/umamba_predictions/working_directory_T1xFLAIR/pred_raw/" \
+#    --gt_folder "/mnt/reference_labels/ref_labelTs" \
+#    --save_csv_path "/data1/Umamba_data/results_umamba.csv"
 
 #python3 evaluate_umamba.py \
-#    --pred_folders "/data1/LIA/Umamba_data/umamba_predictions/working_directory_T1xFLAIR/pred_raw/" \
-#    --gt_folder "/mnt/LIA/reference_labels/ref_labelTs" \
-#    --save_csv_path "/data1/LIA/Umamba_data/results_umamba.csv"
+#    --pred_folders "/data1/Umamba_data/umamba_predictions/working_directory_T1xFLAIR/pred_raw/" \
+#    --gt_folder "/mnt/reference_labels/ref_labelTs" \
+#    --save_csv_path "/data1/Umamba_data/results_umamba.csv"

@@ -1347,8 +1347,8 @@ def main(skip_processing=False, generate_all=False):
         generate_all: If True, generate all possible visualization combinations
     """
     # Configuration
-    DATA_PATH = "/mnt/LIA/pazienti"
-    JSON_PATH = "/mnt/LIA/pazienti/patients.json"
+    DATA_PATH = "/mnt/pazienti"
+    JSON_PATH = "/mnt/pazienti/patients.json"
     
     # Check if we should skip processing and load existing files
     if skip_processing:

@@ -486,8 +486,8 @@ def generate_summary_report_raw(df, clustering_results):
 def main():
     """Main function for raw image clustering"""
     # Configuration
-    DATA_PATH = "/mnt/LIA/pazienti"
-    JSON_PATH = "/mnt/LIA/pazienti/patients.json"
+    DATA_PATH = "/mnt/pazienti"
+    JSON_PATH = "/mnt/pazienti/patients.json"
     
     # Verify paths
     if not os.path.exists(DATA_PATH):

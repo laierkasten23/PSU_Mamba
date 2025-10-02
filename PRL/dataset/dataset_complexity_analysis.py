@@ -527,8 +527,8 @@ class DatasetComplexityAnalyzer:
 def main():
     """Main function to run the analysis"""
     # Configuration
-    DATA_PATH = "/mnt/LIA/pazienti"
-    JSON_PATH = "/mnt/LIA/pazienti/patients.json"
+    DATA_PATH = "/mnt/pazienti"
+    JSON_PATH = "/mnt/pazienti/patients.json"
     
     # Verify paths exist
     if not os.path.exists(DATA_PATH):

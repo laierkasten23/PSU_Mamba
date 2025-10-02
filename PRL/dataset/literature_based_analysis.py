@@ -482,8 +482,8 @@ def generate_literature_report(df, clustering_results):
 
 def main():
     """Main function for literature-based analysis"""
-    DATA_PATH = "/mnt/LIA/pazienti"
-    JSON_PATH = "/mnt/LIA/pazienti/patients.json"
+    DATA_PATH = "/mnt/pazienti"
+    JSON_PATH = "/mnt/pazienti/patients.json"
     
     if not os.path.exists(DATA_PATH):
         print(f"Error: Data path {DATA_PATH} does not exist!")
